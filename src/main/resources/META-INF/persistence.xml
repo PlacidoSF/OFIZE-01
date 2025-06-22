@@ -1,22 +1,35 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<persistence version="2.2"
-             xmlns="http://xmlns.jcp.org/xml/ns/persistence"
+<persistence xmlns="https://jakarta.ee/xml/ns/persistence"
              xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-             xsi:schemaLocation="http://xmlns.jcp.org/xml/ns/persistence
-             http://xmlns.jcp.org/xml/ns/persistence/persistence_2_2.xsd">
-    <persistence-unit name="ofize-01-pu" transaction-type="RESOURCE_LOCAL">
+             xsi:schemaLocation="https://jakarta.ee/xml/ns/persistence
+             https://jakarta.ee/xml/ns/persistence/persistence_3_0.xsd"
+             version="3.0">
+
+    <persistence-unit name="ofize-pu" transaction-type="RESOURCE_LOCAL">
         <provider>org.hibernate.jpa.HibernatePersistenceProvider</provider>
+
+        <!-- Especifica suas entidades (opcional mas recomendado) -->
+        <class>com.ufersa.OFIZE.model.entitie.Clientes</class>
+
         <properties>
-            <property name="javax.persistence.jdbc.driver" value="com.mysql.cj.jdbc.Driver"/>
-            <property name="javax.persistence.jdbc.url" value="jdbc:mysql://localhost:3306/ofize_01_db"/>
-            <property name="javax.persistence.jdbc.user" value="ofize_user"/>
-            <property name="javax.persistence.jdbc.password" value="ofize_password"/>
+            <!-- URL com parâmetro para criar banco automaticamente -->
+            <property name="jakarta.persistence.jdbc.url"
+                      value="jdbc:mysql://localhost:3306/ofize_db?createDatabaseIfNotExist=true&amp;useSSL=false"/>
+
+            <property name="jakarta.persistence.jdbc.user" value="root"/>
+            <property name="jakarta.persistence.jdbc.password" value=""/>
 
             <!-- Configurações do Hibernate -->
             <property name="hibernate.dialect" value="org.hibernate.dialect.MySQL8Dialect"/>
             <property name="hibernate.hbm2ddl.auto" value="update"/>
             <property name="hibernate.show_sql" value="true"/>
             <property name="hibernate.format_sql" value="true"/>
+
+            <!-- Logging detalhado para debug -->
+            <property name="hibernate.generate_statistics" value="true"/>
+
+            <!-- Mensagens de log mais amigáveis -->
+            <property name="hibernate.id.new_generator_mappings" value="true"/>
         </properties>
     </persistence-unit>
 </persistence>

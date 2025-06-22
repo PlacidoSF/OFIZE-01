@@ -1,68 +1,69 @@
 package com.ufersa.OFIZE.model.entitie;
+
+import javax.persistence.Entity;
+import javax.persistence.Id;
+import javax.persistence.Table;
+
+@Entity
+@Table(name = "clientes")
 public class Clientes {
 
-    // atributos
-    private String nome;
-    private String endereco;
+    @Id
     private String cpf;
 
-    //Construtor || cadastrar
-    public Clientes(String nome, String endereco, String cpf) {
-        setNome(nome);
-        setEndereco(endereco);
-        setCPF(cpf);
+    private String nome;
+    private String endereco;
+
+    /**
+     * Construtor padrão obrigatório para JPA/Hibernate
+     */
+    public Clientes() {
     }
 
-    // Set e Get: nome
+    /**
+     * Construtor para criação de novos clientes
+     * @param nome Nome completo do cliente
+     * @param endereco Endereço completo do cliente
+     * @param cpf CPF do cliente (chave primária)
+     */
+    public Clientes(String nome, String endereco, String cpf) {
+        this.nome = nome;
+        this.endereco = endereco;
+        this.cpf = cpf;
+    }
+
+    // Getters e Setters
+
     public String getNome() {
         return nome;
     }
 
     public void setNome(String nome) {
-        if(nome != null || !nome.isEmpty()) {
-            this.nome = nome;
-        } else {
-            this.nome = null;
-        }
+        this.nome = nome;
     }
 
-    // Set e Get: endereço
     public String getEndereco() {
         return endereco;
     }
+
     public void setEndereco(String endereco) {
-        if(endereco != null || !endereco.isEmpty()) {
-            this.endereco = endereco;
-        } else {
-            this.endereco = null;
-        } 
+        this.endereco = endereco;
     }
 
-    //Set e Get: cpf
-    public String getCPF() {
+    public String getCpf() {
         return cpf;
     }
-    
-    public void setCPF(String cpf) {
-        if(cpf != null || !cpf.isEmpty()) {
-            this.cpf = cpf;
-        } else {
-            this.cpf = null;
-        }  
+
+    public void setCpf(String cpf) {
+        this.cpf = cpf;
     }
 
-    //Alterar
-    public void aLterar(String nome,  String endereco, String cpf) {
-        setNome(nome);
-        setEndereco(endereco);
-        setCPF(cpf);
+    /**
+     * Representação em string do objeto Cliente
+     * @return String formatada com os dados do cliente
+     */
+    @Override
+    public String toString() {
+        return "Cliente [CPF: " + cpf + ", Nome: " + nome + ", Endereço: " + endereco + "]";
     }
-
-    //Deletar
-    public void deletar() {
-        this.nome = null;
-        this.endereco = null;
-        this.cpf = null;
-    }
-    
 }
