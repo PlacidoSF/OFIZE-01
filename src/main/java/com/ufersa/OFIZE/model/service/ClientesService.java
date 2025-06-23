@@ -4,10 +4,9 @@ import com.ufersa.OFIZE.model.dao.ClientesDAO;
 import com.ufersa.OFIZE.model.entitie.Clientes;
 
 public class ClientesService {
-    private final ClientesDAO dao;
+    private final ClientesDAO dao = new ClientesDAO();
 
-    public ClientesService(ClientesDAO dao) {
-        this.dao = dao;
+    public ClientesService() {
     }
 
     /**

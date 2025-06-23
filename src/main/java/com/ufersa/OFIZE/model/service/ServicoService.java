@@ -8,12 +8,10 @@ import java.util.List;
 
 public class ServicoService {
 
-    private final ServicoDAO servicoDAO;
-    private final ClientesDAO clientesDAO;
+    private final ServicoDAO servicoDAO = new ServicoDAO();
+    private final ClientesDAO clientesDAO = new ClientesDAO();
 
-    public ServicoService(ServicoDAO servicoDAO, ClientesDAO clientesDAO) {
-        this.servicoDAO = servicoDAO;
-        this.clientesDAO = clientesDAO;
+    public ServicoService() {
     }
 
     public void cadastrarServico(Servico servico) {
