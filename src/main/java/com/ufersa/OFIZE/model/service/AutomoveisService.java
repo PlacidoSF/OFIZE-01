@@ -7,10 +7,10 @@ import com.ufersa.OFIZE.model.entitie.Automoveis;
 
 public class AutomoveisService {
 
-    private final AutomoveisDAO dao;
+    private final AutomoveisDAO dao = new AutomoveisDAO();
 
-    public AutomoveisService(AutomoveisDAO dao) {
-        this.dao = dao;
+    public AutomoveisService() {
+
     }
 
     // Cadastro com validação básica

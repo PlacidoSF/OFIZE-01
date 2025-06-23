@@ -21,8 +21,8 @@ public class Servico {
     private boolean status; // false: não finalizado, true: finalizado
 
     @ManyToOne
-    @JoinColumn(name = "cliente_cpf", referencedColumnName = "cpf")
-    private Clientes cliente;
+    @JoinColumn(name = "automovel_id")
+    private Automoveis automovel;
 
     // Construtor padrão (obrigatório para JPA)
     public Servico() {
@@ -33,12 +33,12 @@ public class Servico {
      * Construtor para criação de novos serviços
      * @param nome Nome do serviço
      * @param valor Valor do serviço
-     * @param cliente Cliente associado ao serviço
+     * @param automovel Automóvel associado ao serviço
      */
-    public Servico(String nome, double valor, Clientes cliente) {
+    public Servico(String nome, double valor, Automoveis automovel) {
         this.nome = nome;
         this.valor = valor;
-        this.cliente = cliente;
+        this.automovel = automovel;
         this.status = false; // Status inicia como não finalizado
     }
 
@@ -75,14 +75,13 @@ public class Servico {
         return status;
     }
 
-    // Não há setter para status, pois ele só deve ser alterado pelo método de finalização
-    public Clientes getCliente() {
-        return cliente;
+    public Automoveis getAutomovel() {
+        return automovel;
     }
 
-    public void setCliente(Clientes cliente) {
-        if(cliente != null) {
-            this.cliente = cliente;
+    public void setAutomovel(Automoveis automovel) {
+        if(automovel != null) {
+            this.automovel = automovel;
         }
     }
 

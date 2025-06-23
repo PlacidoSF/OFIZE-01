@@ -1,11 +1,11 @@
 package com.ufersa.OFIZE.model.entitie;
 
-import jakarta.persistence.Entity;
-import jakarta.persistence.GeneratedValue;
-import jakarta.persistence.GenerationType;
-import jakarta.persistence.Id;
-import jakarta.persistence.JoinColumn;
-import jakarta.persistence.ManyToOne;
+import javax.persistence.Entity;
+import javax.persistence.GeneratedValue;
+import javax.persistence.GenerationType;
+import javax.persistence.Id;
+import javax.persistence.JoinColumn;
+import javax.persistence.ManyToOne;
 
 @Entity
 public class Automoveis {
@@ -40,11 +40,12 @@ public class Automoveis {
         return marca;
     }
     public void setMarca(String marca) {
-        if (!getMarca().isEmpty() && getMarca() != null) {
-                this.marca = marca;
-      }else{
-        this.marca = null;
-      }    }
+        if (marca != null && !marca.isEmpty()) { // CORREÇÃO AQUI
+            this.marca = marca;
+        } else {
+            this.marca = null;
+        }
+    }
 
     //Cor
     
@@ -52,11 +53,12 @@ public class Automoveis {
         return cor;
     }
     public void setCor(String cor) {
-        if (!getCor().isEmpty() && getCor() != null) {
-                this.cor = cor;
-      }else{
-        this.cor = null;
-      }    }
+        if (cor != null && !cor.isEmpty()) { // CORREÇÃO AQUI
+            this.cor = cor;
+        } else {
+            this.cor = null;
+        }
+    }
 
     // Ano
 

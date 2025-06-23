@@ -1,11 +1,12 @@
 package com.ufersa.OFIZE;
 
-import com.ufersa.OFIZE.model.dao.ClientesDAO;
-import com.ufersa.OFIZE.model.dao.ServicoDAO;
+import com.ufersa.OFIZE.model.dao.AutomoveisDAO;
+import com.ufersa.OFIZE.model.entitie.Automoveis;
 import com.ufersa.OFIZE.model.entitie.Clientes;
 import com.ufersa.OFIZE.model.entitie.Servico;
 import com.ufersa.OFIZE.model.service.ClientesService;
 import com.ufersa.OFIZE.model.service.ServicoService;
+import com.ufersa.OFIZE.model.service.AutomoveisService;
 import com.ufersa.OFIZE.utils.DatabaseTest;
 import javax.persistence.EntityManager;
 import javax.persistence.EntityManagerFactory;
@@ -14,84 +15,32 @@ import javax.persistence.Persistence;
 
 public class Main {
     public static void main(String[] args) {
-
-        //---> TESTANDO A CONEXÃO COM O BANCO DE DADOS<---
-        /*
-        DatabaseTest teste = new DatabaseTest();
-        teste.datatest();
-        */
-
-        // --->TESTANDO AS CLASSES CLIENTES, CLIENTESDAO E CLIENTESSERVICE<---
-        /*
-        // Configuração inicial
-        EntityManagerFactory emf = Persistence.createEntityManagerFactory("ofize-pu");
-        EntityManager em = emf.createEntityManager();
-        //DatabaseTest teste1 = new DatabaseTest();
-        //teste1.datatest()
-
-        ClientesDAO dao = new ClientesDAO(em);
-        ClientesService service = new ClientesService(dao);
-
-        // CADASTRAR usando construtor da entidade
-
-        Clientes novoCliente = new Clientes(
-                "Ana Souza",
-                "Av. Brasil, 1500",
-                "987.654.321-00"
-        );
-
-        service.cadastrarCliente(novoCliente);
-        // BUSCAR cliente
-        Clientes clienteBuscado = service.buscarCliente("987.654.321-00");
-        System.out.println("Cliente encontrado: " + clienteBuscado.getNome());
-
-        // ALTERAR cliente
-        clienteBuscado.setNome("Ana Carolina Souza");
-        clienteBuscado.setEndereco("Av. Brasil, 1501");
-        service.atualizarCliente(clienteBuscado);
-
-        // LISTAR todos os clientes
-        System.out.println("\nTodos os clientes:");
-        for (Clientes c : dao.findAll()) {
-            System.out.println("- " + c.getNome() + " | " + c.getCpf());
-        }
-        for(int i = 0; i < 100; i++) {
-            System.out.println(1);
-        }
-
-        // DELETAR cliente
-        service.removerCliente(clienteBuscado);
-        System.out.println("\nCliente removido com sucesso!");
-        // Fechar recursos
-        em.close();
-        emf.close();
-         */
-
-
-        ClientesService clientesService = new ClientesService();
+        // Configurar DAO de automóveis
+        AutomoveisService automoveisService = new AutomoveisService();
         ServicoService servicoService = new ServicoService();
+        ClientesService clientesService = new ClientesService();
 
+        // 1. Cadastrar automóvel (pré-requisito para serviços)
+        Clientes proprietario = new Clientes("João Silva", "Rua Principal, 123", "111.222.333-44");
+        //clientesService.cadastrarCliente(proprietario);
+        Automoveis automovel = new Automoveis("Toyota", "Preto", 2015, 3000, proprietario);
+
+        Automoveis automovelBuscado = automoveisService.buscarPorId(1L);
+        System.out.println("🔍 Automóvel encontrado: " + automovelBuscado.getMarca());
+
+        // 4. Atualizar automóvel
+        automovelBuscado.setCor("Vermelho");
+        automovelBuscado.setQuilometragem(18000);
+        automoveisService.atualizar(automovelBuscado);
+        System.out.println("🔄 Automóvel atualizado");
+        // 2. Cadastrar serviço associado ao automóvel
+        Servico novoServico = new Servico("Troca de Óleo", 150.0, automovel);
+        //servicoService.cadastrarServico(novoServico);
+        System.out.println("✅ Serviço cadastrado: " + novoServico.getNome());
 
         for(int i = 0; i < 100; i++) {
             System.out.println(i);
         }
-        System.out.println("===== CADASTRO DE CLIENTE =====");
-         //Cadastrar cliente
-        Clientes cliente = new Clientes("Maria Oliveira", "Av. Principal, 456", "111.222.333-44");
-        //clientesService.cadastrarCliente(cliente);
-        Servico servico1 = new Servico("Troca de Óleo", 150.0, cliente);
-        //servicoService.cadastrarServico(servico1);
-        System.out.println("✅ Serviço cadastrado: " + servico1.getNome() + " | ID: " + servico1.getId());
-
-
-        System.out.println("\n===== ALTERAÇÃO DE SERVIÇO =====");
-        // Alterar serviço - FORMA CORRETA: buscar o serviço primeiro
-        Servico servicoParaAtualizar = servicoService.buscarServico(1L);
-        servicoParaAtualizar.setNome("Revisão Completa Premium");
-        servicoParaAtualizar.setValor(500.0);
-        servicoService.atualizarServico(servicoParaAtualizar);
-        System.out.println("🔄 Serviço atualizado: " + servicoParaAtualizar.getNome() + " | Novo valor: R$" + servicoParaAtualizar.getValor());
-
 
     }
 }

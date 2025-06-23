@@ -4,10 +4,10 @@ import java.util.List;
 
 import com.ufersa.OFIZE.model.entitie.Automoveis;
 
-import jakarta.persistence.EntityManager;
-import jakarta.persistence.EntityManagerFactory;
-import jakarta.persistence.NoResultException;
-import jakarta.persistence.Persistence;
+import javax.persistence.EntityManager;
+import javax.persistence.EntityManagerFactory;
+import javax.persistence.NoResultException;
+import javax.persistence.Persistence;
 
 public class AutomoveisDAO {
 

@@ -1,15 +1,15 @@
 package com.ufersa.OFIZE.model.service;
 
-import com.ufersa.OFIZE.model.dao.ClientesDAO;
+import com.ufersa.OFIZE.model.dao.AutomoveisDAO;
 import com.ufersa.OFIZE.model.dao.ServicoDAO;
-import com.ufersa.OFIZE.model.entitie.Clientes;
+import com.ufersa.OFIZE.model.entitie.Automoveis;
 import com.ufersa.OFIZE.model.entitie.Servico;
 import java.util.List;
 
 public class ServicoService {
 
     private final ServicoDAO servicoDAO = new ServicoDAO();
-    private final ClientesDAO clientesDAO = new ClientesDAO();
+    private final AutomoveisDAO automoveisDAO = new AutomoveisDAO();
 
     public ServicoService() {
     }
@@ -19,12 +19,12 @@ public class ServicoService {
             throw new IllegalArgumentException("Dados do serviço são inválidos");
         }
 
-        Clientes clienteExistente = clientesDAO.findById(servico.getCliente().getCpf());
-        if (clienteExistente == null) {
-            throw new IllegalArgumentException("Cliente associado não cadastrado");
+        Automoveis automovelExistente = automoveisDAO.findById(servico.getAutomovel().getId());
+        if (automovelExistente == null) {
+            throw new IllegalArgumentException("Automóvel associado não cadastrado");
         }
 
-        servico.setCliente(clienteExistente);
+        servico.setAutomovel(automovelExistente);
         servicoDAO.persist(servico);
     }
 
@@ -33,38 +33,32 @@ public class ServicoService {
     }
 
     public void atualizarServico(Servico servicoAtualizado) {
-        // Verifica se o ID está presente
         if (servicoAtualizado.getId() == null) {
             throw new IllegalArgumentException("ID do serviço não pode ser nulo para atualização");
         }
 
-        // Busca o serviço existente no banco
         Servico servicoExistente = servicoDAO.findById(servicoAtualizado.getId());
         if (servicoExistente == null) {
             throw new IllegalArgumentException("Serviço não encontrado para o ID: " + servicoAtualizado.getId());
         }
 
-        // Atualiza os campos permitidos
         servicoExistente.setNome(servicoAtualizado.getNome());
         servicoExistente.setValor(servicoAtualizado.getValor());
 
-        // Se o cliente for alterado, verifica se o novo cliente existe
-        if (servicoAtualizado.getCliente() != null &&
-                !servicoAtualizado.getCliente().getCpf().equals(servicoExistente.getCliente().getCpf())) {
+        if (servicoAtualizado.getAutomovel() != null &&
+                !servicoAtualizado.getAutomovel().getId().equals(servicoExistente.getAutomovel().getId())) {
 
-            Clientes novoCliente = clientesDAO.findById(servicoAtualizado.getCliente().getCpf());
-            if (novoCliente == null) {
-                throw new IllegalArgumentException("Cliente associado não encontrado");
+            Automoveis novoAutomovel = automoveisDAO.findById(servicoAtualizado.getAutomovel().getId());
+            if (novoAutomovel == null) {
+                throw new IllegalArgumentException("Automóvel associado não encontrado");
             }
-            servicoExistente.setCliente(novoCliente);
+            servicoExistente.setAutomovel(novoAutomovel);
         }
 
-        // Valida o serviço atualizado
         if (!isServicoValido(servicoExistente)) {
             throw new IllegalArgumentException("Dados do serviço são inválidos após atualização");
         }
 
-        // Persiste as alterações
         servicoDAO.merge(servicoExistente);
     }
 
@@ -81,8 +75,8 @@ public class ServicoService {
         return false;
     }
 
-    public List<Servico> buscarServicosPorCliente(String cpf) {
-        return servicoDAO.findByClienteCpf(cpf);
+    public List<Servico> buscarServicosPorProprietarioCpf(String cpf) {
+        return servicoDAO.findByProprietarioCpf(cpf);
     }
 
     public void removerServico(Long id) {
@@ -97,7 +91,7 @@ public class ServicoService {
         return servico != null &&
                 servico.getNome() != null && !servico.getNome().isEmpty() &&
                 servico.getValor() > 0 &&
-                servico.getCliente() != null &&
-                servico.getCliente().getCpf() != null;
+                servico.getAutomovel() != null &&
+                servico.getAutomovel().getId() != null;
     }
 }
