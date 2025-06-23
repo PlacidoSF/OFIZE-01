@@ -2,12 +2,12 @@ package com.ufersa.OFIZE.model.dao;
 
 import java.util.List;
 
-import com.ufersa.OFIZE.model.entitie.Automoveis;
-
 import javax.persistence.EntityManager;
 import javax.persistence.EntityManagerFactory;
 import javax.persistence.NoResultException;
 import javax.persistence.Persistence;
+
+import com.ufersa.OFIZE.model.entitie.Automoveis;
 
 public class AutomoveisDAO {
 

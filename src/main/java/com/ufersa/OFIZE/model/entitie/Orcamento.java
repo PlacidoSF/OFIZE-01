@@ -3,15 +3,37 @@ import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
 
+import jakarta.persistence.Entity;
+import jakarta.persistence.GeneratedValue;
+import jakarta.persistence.GenerationType;
+import jakarta.persistence.Id;
+import jakarta.persistence.ManyToMany;
+import jakarta.persistence.ManyToOne;
+
+
+
+@Entity
 public class Orcamento {
-    /*
-    private List<Pecas> pecas; //lista de pecas da classe pecas (a comunicacao entre as classes ainda nao implementada)
-    private List<Servico> servicos; //lista de servicos da classe servicos (a comunicacao entre as classes ainda nao implementada)
+    
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    private Long id; // Id unico do orçamento
+
+   
     private String veiculo;
     private double valorVeiculo;
     private LocalDate data;
     private boolean status;
-    private List<Clientes> cliente;
+
+    @ManyToOne
+    private Clientes cliente;
+
+    @ManyToMany
+    private List<Pecas> pecas; 
+
+    @ManyToMany
+    private List<Servico> servicos; 
+
 
     // GETTERS AND SETTERS
 
@@ -87,70 +109,46 @@ public class Orcamento {
         this.status = status;
     }
 
+    //Cliente
+
+    public Clientes getCliente() {
+        return cliente;
+    }
+
+    public void setCliente(Clientes cliente) {
+        if (cliente != null && cliente.getNome() != null && !cliente.getNome().isEmpty()) {
+            this.cliente = cliente;
+        } else {
+            this.cliente = null;
+        }
+    }
+
+    //ID
+
+    public Long getId() {
+        return id;
+}
+
+    public void setId(Long id) {
+        this.id = id;
+    }
+
 
     //Construtor
 
-    public Orcamento(String veiculo, double valorVeiculo , List<Peca> pecas, List<Servico> servicos) {
+    public Orcamento() {
+        this.data = LocalDate.now();
+        this.status = false;
+    }
+
+    public Orcamento(String veiculo, double valorVeiculo , List<Pecas> pecas, List<Servico> servicos, Clientes cliente) {
         setPecas(pecas);
         setServicos(servicos);
         this.data = LocalDate.now();
         this.status = false;
         setVeiculo(veiculo);
-        setValorVeiculo(valorVeiculo); }
-
-    
-    //Métodos
-
-    // Alterar
-
-    public void Alterar (String veiculo, double valorVeiculo, boolean status, List<Peca> pecas, List<Servico> servicos) {
-        setVeiculo(veiculo);
         setValorVeiculo(valorVeiculo);
-        setStatus(status);
-        setPecas(pecas);
-        setServicos(servicos);
-    }
+        setCliente(cliente);}
 
-    // Deletar
-    // Deletar apenas limpando os atributos pois ainda nao existe uma lista de orcamentos para que possa deletar o objeto dela
-    
-    public void Deletar() {
-        this.pecas = null;
-        this.servicos = null;
-        this.veiculo = null;
-        this.valorVeiculo = 0;
-        this.data = null;
-        this.status = false;
-    }
-
-    // Pesquisar por veiculo e/ou por periodo e/ou por cliente
-    // Cliente nao pertence a esta classe, mas a ideia é que exista uma lista de clientes e haja comunicacao entre as classes
-
-    public void Pesquisar(String veiculo, List<Clientes> cliente, LocalDate dataInicio, LocalDate dataFim) {
-        boolean veiculoOk = veiculo == null || this.veiculo.equalsIgnoreCase(veiculo);
-        boolean clienteOk = cliente == null || this.cliente.equalsIgnoreCase(cliente);
-        boolean dataOk = true;
-
-        if (dataInicio != null && this.data.isBefore(dataInicio)) {
-            dataOk = false;
-        }
-        if (dataFim != null && this.data.isAfter(dataFim)) {
-            dataOk = false;
-        }
-
-        if (veiculoOk && clienteOk && dataOk) {
-            System.out.println("Veículo: " + getVeiculo());
-            System.out.println("Cliente: " + getCliente());
-            System.out.println("Data: " + getData());
-            System.out.println("Valor do veículo: " + getValorVeiculo());
-            System.out.println("Pecas: " + getPecas());
-            System.out.println("Servicos: " + getServicos());
-            System.out.println("Status: " + (this.status ? "Pago" : "Não pago"));
-        } else {
-            System.out.println("Orçamento não encontrado.");
-        }
-
-
-}
-     */
+       
 }
