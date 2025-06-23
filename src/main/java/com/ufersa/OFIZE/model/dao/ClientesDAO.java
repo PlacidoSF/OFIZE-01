@@ -2,14 +2,16 @@ package com.ufersa.OFIZE.model.dao;
 
 import com.ufersa.OFIZE.model.entitie.Clientes;
 import javax.persistence.EntityManager;
+import javax.persistence.EntityManagerFactory;
 import javax.persistence.NoResultException;
+import javax.persistence.Persistence;
 import java.util.List;
 
 public class ClientesDAO {
-    private final EntityManager em;
+    private final EntityManagerFactory emf = Persistence.createEntityManagerFactory("ofize-pu");
+    private final EntityManager em = emf.createEntityManager();;
 
-    public ClientesDAO(EntityManager em) {
-        this.em = em;
+    public ClientesDAO() {
     }
 
     /**

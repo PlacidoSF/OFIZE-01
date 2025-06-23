@@ -1,8 +1,11 @@
 package com.ufersa.OFIZE;
 
 import com.ufersa.OFIZE.model.dao.ClientesDAO;
+import com.ufersa.OFIZE.model.dao.ServicoDAO;
 import com.ufersa.OFIZE.model.entitie.Clientes;
+import com.ufersa.OFIZE.model.entitie.Servico;
 import com.ufersa.OFIZE.model.service.ClientesService;
+import com.ufersa.OFIZE.model.service.ServicoService;
 import com.ufersa.OFIZE.utils.DatabaseTest;
 import javax.persistence.EntityManager;
 import javax.persistence.EntityManagerFactory;
@@ -63,5 +66,32 @@ public class Main {
         em.close();
         emf.close();
          */
+
+        /*
+        ClientesService clientesService = new ClientesService();
+        ServicoService servicoService = new ServicoService();
+
+
+        for(int i = 0; i < 100; i++) {
+            System.out.println(i);
+        }
+        System.out.println("===== CADASTRO DE CLIENTE =====");
+         //Cadastrar cliente
+        Clientes cliente = new Clientes("Maria Oliveira", "Av. Principal, 456", "111.222.333-44");
+        //clientesService.cadastrarCliente(cliente);
+        Servico servico1 = new Servico("Troca de Óleo", 150.0, cliente);
+        //servicoService.cadastrarServico(servico1);
+        System.out.println("✅ Serviço cadastrado: " + servico1.getNome() + " | ID: " + servico1.getId());
+
+
+        System.out.println("\n===== ALTERAÇÃO DE SERVIÇO =====");
+        // Alterar serviço - FORMA CORRETA: buscar o serviço primeiro
+        Servico servicoParaAtualizar = servicoService.buscarServico(servicoService.buscarServico(7L).getId());
+        servicoParaAtualizar.setNome("Revisão Completa Premium");
+        servicoParaAtualizar.setValor(500.0);
+        servicoService.atualizarServico(servicoParaAtualizar);
+        System.out.println("🔄 Serviço atualizado: " + servicoParaAtualizar.getNome() + " | Novo valor: R$" + servicoParaAtualizar.getValor());
+    */
+
     }
 }

@@ -1,36 +1,66 @@
-//import java.util.ArrayList;
-//import java.util.List;
 package com.ufersa.OFIZE.model.entitie;
+
+import javax.persistence.Entity;
+import javax.persistence.Id;
+import javax.persistence.ManyToOne;
+import javax.persistence.JoinColumn;
+import javax.persistence.GenerationType;
+import javax.persistence.GeneratedValue;
+import javax.persistence.Table;
+
+@Entity
+@Table(name = "servicos")
 public class Servico {
 
-    // Atributos
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    private Long id;
+
     private String nome;
     private double valor;
-    private boolean status;
-    //private List<Clientes> cliente;
+    private boolean status; // false: não finalizado, true: finalizado
 
-    //construtor || cadastrar 
-    public Servico(String nome, double valor) {
-        setNome(nome);
-        setValor(valor);
-        this.status = false;
+    @ManyToOne
+    @JoinColumn(name = "cliente_cpf", referencedColumnName = "cpf")
+    private Clientes cliente;
 
+    // Construtor padrão (obrigatório para JPA)
+    public Servico() {
+        this.status = false; // Status inicia como não finalizado
     }
 
-    // Set e Get: nome
+    /**
+     * Construtor para criação de novos serviços
+     * @param nome Nome do serviço
+     * @param valor Valor do serviço
+     * @param cliente Cliente associado ao serviço
+     */
+    public Servico(String nome, double valor, Clientes cliente) {
+        this.nome = nome;
+        this.valor = valor;
+        this.cliente = cliente;
+        this.status = false; // Status inicia como não finalizado
+    }
+
+    // Getters e Setters
+    public Long getId() {
+        return id;
+    }
+
+    public void setId(Long id) {
+        this.id = id;
+    }
+
     public String getNome() {
         return nome;
     }
 
     public void setNome(String nome) {
-        if(nome != null || !nome.isEmpty()) {
+        if(nome != null && !nome.isEmpty()) {
             this.nome = nome;
-        } else {
-            this.nome = null;
         }
     }
 
-    //Set e Get: valor
     public double getValor() {
         return valor;
     }
@@ -38,49 +68,33 @@ public class Servico {
     public void setValor(double valor) {
         if(valor > 0) {
             this.valor = valor;
-        } else {
-            valor = 0;
         }
     }
 
-    // Get: Status
-    public boolean getStatus() {
+    public boolean isStatus() {
         return status;
     }
 
-    //Deletar
-    public void deletar() {
-        this.nome = null;
-        this.valor = 0;
-        this.status = false;
+    // Não há setter para status, pois ele só deve ser alterado pelo método de finalização
+    public Clientes getCliente() {
+        return cliente;
     }
 
-    //pesquisar por cliente
-    public void pesquisarCliente() {
-        //Ainda não tenho o conhecimento necessário para fazer esse método
-        System.out.println("Aqui está o seu cliente/Serviço.");
-    }
-
-    //pesquisar por Automóvel/placa
-    public void pesquisarPLaca() {
-        //Ainda não tenho o conhecimento necessário para fazer esse método
-        System.out.println("Aqui está o Automóvel/Serviço.");
-    }
-
-    //Finalizar
-    public boolean finalizar() {
-        this.status = true;
-        return status;
-    }
-
-    //Registrar Pagamento
-    public void registarPagamento() {
-        if(finalizar()) {
-            // Ainda não tenho o conhecimento necessário para fazer esse método
-            System.out.println("O serviço foi registrado");
-        } else {
-            System.out.println("O serviço ainda não pode ser registrado.");
+    public void setCliente(Clientes cliente) {
+        if(cliente != null) {
+            this.cliente = cliente;
         }
     }
 
+    /**
+     * Finaliza o serviço e registra o pagamento
+     * @return true se o serviço foi finalizado com sucesso
+     */
+    public boolean finalizarERegistrarPagamento() {
+        if(!this.status) {
+            this.status = true;
+            return true;
+        }
+        return false; // Já estava finalizado
+    }
 }
