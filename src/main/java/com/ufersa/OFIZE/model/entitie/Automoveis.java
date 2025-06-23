@@ -1,13 +1,38 @@
 package com.ufersa.OFIZE.model.entitie;
+
+import jakarta.persistence.Entity;
+import jakarta.persistence.GeneratedValue;
+import jakarta.persistence.GenerationType;
+import jakarta.persistence.Id;
+import jakarta.persistence.JoinColumn;
+import jakarta.persistence.ManyToOne;
+
+@Entity
 public class Automoveis {
-    
-    // Atributos
+
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    private Long id;
 
     private String marca;
     private String cor;
     private int ano;
     private int quilometragem;
-    private String proprietario;
+   
+    @ManyToOne
+    @JoinColumn(name = "proprietario_id")
+    private Clientes proprietario;
+
+    public Automoveis() {} // Obrigatório para o Hibernate
+
+    public Automoveis(String marca, String cor, int ano, int quilometragem, Clientes proprietario) {
+        setMarca(marca);
+        setCor(cor);
+        setAno(ano);
+        setQuilometragem(quilometragem);
+        setProprietario(proprietario);
+    }
+
 
     // GETTERS AND SETTERS
     // Marca
@@ -15,7 +40,7 @@ public class Automoveis {
         return marca;
     }
     public void setMarca(String marca) {
-        if (!getMarca().isEmpty()) {
+        if (!getMarca().isEmpty() && getMarca() != null) {
                 this.marca = marca;
       }else{
         this.marca = null;
@@ -27,7 +52,7 @@ public class Automoveis {
         return cor;
     }
     public void setCor(String cor) {
-        if (!getCor().isEmpty()) {
+        if (!getCor().isEmpty() && getCor() != null) {
                 this.cor = cor;
       }else{
         this.cor = null;
@@ -39,7 +64,8 @@ public class Automoveis {
         return ano;
     }
     public void setAno(int ano) {
-        if (ano > 1885 && ano <= 2025) {
+        int anoAtual = java.time.LocalDate.now().getYear();
+        if (getAno() > 1885 && getAno() <= anoAtual) {
             this.ano = ano;
         } else {
             this.ano = 0;
@@ -61,59 +87,24 @@ public class Automoveis {
 
     // Proprietario
 
-    public String getProprietario() {
+    public Clientes getProprietario() {
         return proprietario;
     }
-    public void setProprietario(String proprietario) {
-        if (!getProprietario().isEmpty()) {
+    public void setProprietario(Clientes proprietario) {
+        if (proprietario.getNome() != null && !proprietario.getNome().isEmpty()) {
                 this.proprietario = proprietario;
       }else{
-        this.proprietario = "sem proprietario";
+        throw new IllegalArgumentException("Nome do proprietário é inválido");
       }    }
 
-    // Construtor
-    public Automoveis(String marca, String cor, int ano, int quilometragem, String proprietario) {
-        setMarca(marca);
-        setCor(cor);
-        setAno(ano);
-        setQuilometragem(quilometragem);
-        setProprietario(proprietario); //foi considerado que o proprietario nao precisa ter cadastro (estar na lista de clientes), o proprietario precisa ter cadastro?
+      // ID
+    public Long getId() {
+        return id;
+    }
+    
+    public void setId(Long id) {
+        this.id = id;
     }
 
-    // metodo alterar
 
-    public void Alterar(String marca, String cor, int ano, int quilometragem, String proprietario) {
-        setMarca(marca);
-        setCor(cor);
-        setAno(ano);
-        setQuilometragem(quilometragem);
-        setProprietario(proprietario);
     }
-
-    // metodo Deletar
-    // Deletar apenas limpando os atributos pois ainda nao existe uma lista de automoveis para que possa deletar o objeto dela
-    public void Deletar() {
-        this.marca = null;
-        this.cor = null;
-        this.ano = 0;
-        this.quilometragem = 0;
-        this.proprietario = null;
-    }
-
-    // Metodo Pesquisar por placa e/ou por proprietario
-
-    public void Pesquisar(String marca, String proprietario) {
-        if (this.marca.equalsIgnoreCase(marca) || this.proprietario.equalsIgnoreCase(proprietario)) {
-            System.out.println("Marca: " + this.marca);
-            System.out.println("Cor: " + this.cor);
-            System.out.println("Ano: " + this.ano);
-            System.out.println("Quilometragem: " + this.quilometragem);
-            System.out.println("Proprietário: " + this.proprietario);
-        } else {
-            System.out.println("Veículo não encontrado.");
-        }
-    }
-
-   
-
-}
