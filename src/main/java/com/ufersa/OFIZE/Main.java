@@ -67,7 +67,7 @@ public class Main {
         emf.close();
          */
 
-        /*
+
         ClientesService clientesService = new ClientesService();
         ServicoService servicoService = new ServicoService();
 
@@ -86,12 +86,12 @@ public class Main {
 
         System.out.println("\n===== ALTERAÇÃO DE SERVIÇO =====");
         // Alterar serviço - FORMA CORRETA: buscar o serviço primeiro
-        Servico servicoParaAtualizar = servicoService.buscarServico(servicoService.buscarServico(7L).getId());
+        Servico servicoParaAtualizar = servicoService.buscarServico(1L);
         servicoParaAtualizar.setNome("Revisão Completa Premium");
         servicoParaAtualizar.setValor(500.0);
         servicoService.atualizarServico(servicoParaAtualizar);
         System.out.println("🔄 Serviço atualizado: " + servicoParaAtualizar.getNome() + " | Novo valor: R$" + servicoParaAtualizar.getValor());
-    */
+
 
     }
 }
