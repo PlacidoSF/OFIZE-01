@@ -1,3 +1,4 @@
+/*
 package com.ufersa.OFIZE.model.entitie;
 import javax.persistence.Entity;
 import javax.persistence.Table;
@@ -15,3 +16,4 @@ public class Gerentes extends Funcionarios {
     }
     //Os métodos alterar peça e alterar serviço serão implementados futuramente
 }
+*/
