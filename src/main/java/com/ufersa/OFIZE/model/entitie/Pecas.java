@@ -12,7 +12,7 @@ public class Pecas {
     //Atributos
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private int idPecas;
+    private Long id;
     private String nome;
     private double preco;
     private String fabricante;
@@ -29,7 +29,18 @@ public class Pecas {
     }
 
     //Métodos Getters e Setters
-        //Nome
+    //ID
+    public void setId(Long id){
+        if(id > 0){
+            this.id = id;
+        }
+    }
+
+    public Long getId(){
+        return id;
+    }
+
+    //Nome
     public void setNome(String nome){
         if(!nome.isEmpty()){
             this.nome = nome;
@@ -42,7 +53,7 @@ public class Pecas {
         return nome;
     }
 
-        //Preço
+    //Preço
     public void setPreco(double preco){
         if(preco > 0){
             this.preco = preco;
@@ -55,7 +66,7 @@ public class Pecas {
         return preco;
     }
 
-        //Fabricante
+    //Fabricante
     public void setFabricante(String fabricante){
         if(!fabricante.isEmpty()){
             this.fabricante = fabricante;
@@ -67,5 +78,5 @@ public class Pecas {
     public String getFabricante(){
         return fabricante;
     }
-    
+
 }
