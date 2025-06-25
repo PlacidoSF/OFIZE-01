@@ -1,4 +1,3 @@
-/*
 package com.ufersa.OFIZE.model.entitie;
 
 import javax.persistence.Entity;
@@ -14,7 +13,7 @@ public class Funcionarios{
     //Atributos
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private int idFunc;
+    private Long id;
     private String usuario;
     private String senha;
 
@@ -22,22 +21,23 @@ public class Funcionarios{
     public Funcionarios(){
     }
     //Construtor
-    public Funcionarios(String usuario, String senha){
+    public Funcionarios(Long id, String usuario, String senha){
+        setIdFunc(id);
         setUsuario(usuario);
         setSenha(senha);
     }
 
     //Métodos Getters e Setters
         //id_Funcionario
-    public void setIdFunc(int idFunc){
-        if(idFunc > 0){
-            this.idFunc = idFunc;
+    public void setId(Long id){
+        if(id > 0){
+            this.id = id;
         }
     }
 
-    public int getIdFunc(){
-        return idFunc;
-    }    
+    public Long getId(){
+        return id;
+    }
 
         //Usuário
     public void setUsuario(String usuario){
@@ -51,7 +51,7 @@ public class Funcionarios{
     public String getUsuario(){
         return usuario;
     }
-    
+
         //Senha
     public void setSenha(String senha){
         if(!senha.isEmpty()){
@@ -70,14 +70,13 @@ public class Funcionarios{
         if(usuario == null || senha == null){
             return false;
         }
-        return this.usuario.equals(usuario) && this.senha.equals(senha); 
-    }  
+        return this.usuario.equals(usuario) && this.senha.equals(senha);
+    }
 
     //Escreve como uma string o objeto funcionario
     @Override
     public String toString(){
-        return "Funcionario [ID: " + idFunc + ", Usuario: " + usuario + ", Senha: " + senha + "]";
+        return "Funcionario [ID: " + id + ", Usuario: " + usuario + ", Senha: " + senha + "]";
     }
-        
+
 }
-*/
