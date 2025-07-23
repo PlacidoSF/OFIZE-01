@@ -1,0 +1,36 @@
+Listagem de caminhos de pasta
+O n£mero de s‚rie do volume ‚ 1CF4-6B3F
+C:.
+ÃÄÄÄ.idea
+³   ÃÄÄÄinspectionProfiles
+³   ÀÄÄÄlibraries
+ÃÄÄÄ.mvn
+ÃÄÄÄsrc
+³   ÃÄÄÄmain
+³   ³   ÃÄÄÄjava
+³   ³   ³   ÀÄÄÄcom
+³   ³   ³       ÀÄÄÄufersa
+³   ³   ³           ÀÄÄÄOFIZE
+³   ³   ³               ÃÄÄÄmodel
+³   ³   ³               ³   ÃÄÄÄdao
+³   ³   ³               ³   ÃÄÄÄentitie
+³   ³   ³               ³   ÀÄÄÄservice
+³   ³   ³               ÃÄÄÄutils
+³   ³   ³               ÀÄÄÄview
+³   ³   ÀÄÄÄresources
+³   ³       ÀÄÄÄMETA-INF
+³   ÀÄÄÄtest
+³       ÀÄÄÄjava
+ÀÄÄÄtarget
+    ÃÄÄÄclasses
+    ³   ÃÄÄÄcom
+    ³   ³   ÀÄÄÄufersa
+    ³   ³       ÀÄÄÄOFIZE
+    ³   ³           ÃÄÄÄmodel
+    ³   ³           ³   ÃÄÄÄdao
+    ³   ³           ³   ÃÄÄÄentitie
+    ³   ³           ³   ÀÄÄÄservice
+    ³   ³           ÀÄÄÄutils
+    ³   ÀÄÄÄMETA-INF
+    ÀÄÄÄgenerated-sources
+        ÀÄÄÄannotations
