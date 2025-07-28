@@ -1,66 +1,45 @@
 package com.ufersa.OFIZE.model.dao;
 
-import java.util.List;
-
-import javax.persistence.EntityManager;
-import javax.persistence.EntityManagerFactory;
-import javax.persistence.NoResultException;
-import javax.persistence.Persistence;
-
 import com.ufersa.OFIZE.model.entitie.Automoveis;
+import java.util.List;
+import javax.persistence.NoResultException;
+import javax.persistence.TypedQuery;
 
-public class AutomoveisDAO {
+public class AutomoveisDAO extends AutomoveisDAOAbstract {
 
-    private final EntityManagerFactory emf = Persistence.createEntityManagerFactory("ofize-pu");
-    private final EntityManager em = emf.createEntityManager();
+    public List<Automoveis> buscarPorMarcaOuProprietario(String textoBusca) {
+        String jpql = "SELECT a FROM Automoveis a WHERE " +
+                "LOWER(a.marca) LIKE LOWER(:textoBusca) OR " +
+                "LOWER(a.proprietario.nome) LIKE LOWER(:textoBusca)";
 
-    public AutomoveisDAO() {}
-
-    // Salva novo automóvel
-    public void persist(Automoveis auto) {
-        em.getTransaction().begin();
-        em.persist(auto);
-        em.getTransaction().commit();
+        TypedQuery<Automoveis> query = em.createQuery(jpql, Automoveis.class);
+        query.setParameter("textoBusca", "%" + textoBusca + "%");
+        return query.getResultList();
     }
 
-    // Atualiza um automóvel existente
-    public void merge(Automoveis auto) {
-        em.getTransaction().begin();
-        em.merge(auto);
-        em.getTransaction().commit();
-    }
-
-    // Remove um automóvel
-    public void remove(Automoveis auto) {
-        em.getTransaction().begin();
-        em.remove(em.contains(auto) ? auto : em.merge(auto));
-        em.getTransaction().commit();
-    }
-
-    // Busca por ID
-    //Nao sei se será necessario no projeto final
-    public Automoveis findById(Long id) {
+    public Automoveis findByPlaca(String placa) {
         try {
-            return em.find(Automoveis.class, id);
+            TypedQuery<Automoveis> query = em.createQuery("SELECT a FROM Automoveis a WHERE a.placa = :placa", Automoveis.class);
+            query.setParameter("placa", placa);
+            return query.getSingleResult();
         } catch (NoResultException e) {
             return null;
         }
     }
 
-    // Lista todos os automóveis
-    public List<Automoveis> findAll() {
-        return em.createQuery("SELECT a FROM Automoveis a", Automoveis.class).getResultList();
+    public boolean clientePossuiAutomoveis(Long clienteId) {
+        TypedQuery<Long> query = em.createQuery(
+                "SELECT count(a) FROM Automoveis a WHERE a.proprietario.id = :clienteId", Long.class
+        );
+        query.setParameter("clienteId", clienteId);
+        return query.getSingleResult() > 0;
     }
 
-    // Busca por marca ou proprietário (uso do like para pesquisa parcial)
-    public List<Automoveis> buscarPorMarcaOuProprietario(String marca, String nomeProprietario) {
-        String jpql = "SELECT a FROM Automoveis a WHERE " +
-                "(:marca IS NULL OR LOWER(a.marca) LIKE LOWER(CONCAT('%', :marca, '%'))) " +
-                "OR (:nomeProprietario IS NULL OR LOWER(a.proprietario.nome) LIKE LOWER(CONCAT('%', :nomeProprietario, '%')))";
-
-        return em.createQuery(jpql, Automoveis.class)
-                .setParameter("marca", marca)
-                .setParameter("nomeProprietario", nomeProprietario)
-                .getResultList();
+    public List<Automoveis> findByClienteId(Long clienteId) {
+        TypedQuery<Automoveis> query = em.createQuery(
+                "SELECT a FROM Automoveis a WHERE a.proprietario.id = :clienteId", Automoveis.class
+        );
+        query.setParameter("clienteId", clienteId);
+        return query.getResultList();
     }
 }
