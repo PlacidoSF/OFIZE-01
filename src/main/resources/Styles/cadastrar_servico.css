@@ -1,0 +1,85 @@
+.root-pane {
+    -fx-background-color: #f0f0f0; /* Cor de fundo suave */
+}
+
+.header-bar {
+    -fx-background-color: #000000; /* Preto para o cabeçalho */
+    -fx-padding: 10px 20px;
+    -fx-alignment: CENTER_LEFT;
+}
+
+.logo-label {
+    -fx-text-fill: #ffffff; /* Texto branco */
+    -fx-font-family: "Arial Black"; /* Fonte forte */
+    -fx-font-size: 24px;
+    -fx-font-weight: bold;
+}
+
+.menu-button {
+    -fx-background-color: transparent;
+    -fx-text-fill: #ffffff;
+    -fx-font-size: 20px;
+    -fx-font-weight: bold;
+    -fx-padding: 5px;
+}
+
+.title-label {
+    -fx-font-family: "Arial";
+    -fx-font-size: 28px;
+    -fx-font-weight: bold;
+    -fx-text-fill: #333333; /* Cor mais escura para o título */
+}
+
+.subtitle-label {
+    -fx-font-family: "Arial";
+    -fx-font-size: 14px;
+    -fx-text-fill: #666666; /* Cor mais clara para o subtítulo */
+}
+
+.text-field {
+    -fx-pref-height: 40px;
+    -fx-background-color: #ffffff;
+    -fx-border-color: #cccccc;
+    -fx-border-width: 1px;
+    -fx-border-radius: 5px;
+    -fx-padding: 0 10px;
+    -fx-font-size: 14px;
+}
+
+.text-field:focused {
+    -fx-border-color: #007bff; /* Cor azul ao focar */
+    -fx-effect: dropshadow(gaussian, rgba(0,0,0,0.1), 5, 0, 0, 0);
+}
+
+.confirm-button {
+    -fx-background-color: #28a745; /* Verde para o botão confirmar */
+    -fx-text-fill: #ffffff;
+    -fx-font-size: 16px;
+    -fx-font-weight: bold;
+    -fx-padding: 10px 20px;
+    -fx-border-radius: 5px;
+    -fx-cursor: hand;
+}
+
+.confirm-button:hover {
+    -fx-background-color: #218838; /* Verde mais escuro ao passar o mouse */
+}
+
+.cancel-button {
+    -fx-background-color: #dc3545; /* Vermelho para o botão cancelar */
+    -fx-text-fill: #ffffff;
+    -fx-font-size: 16px;
+    -fx-font-weight: bold;
+    -fx-padding: 10px 20px;
+    -fx-border-radius: 5px;
+    -fx-cursor: hand;
+}
+
+.cancel-button:hover {
+    -fx-background-color: #c82333; /* Vermelho mais escuro ao passar o mouse */
+}
+
+.footer-bar {
+    -fx-background-color: #000000; /* Preto para o rodapé */
+    -fx-pref-height: 50px;
+}

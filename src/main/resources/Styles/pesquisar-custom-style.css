@@ -1,0 +1,78 @@
+/* Importa o estilo base */
+@import "entity-style.css";
+
+/* Estilo da barra de pesquisa ATUALIZADO */
+.search-bar {
+    -fx-background-color: #e9e5e5;
+    -fx-background-radius: 20px;
+    -fx-padding: 5px 15px;
+    -fx-alignment: center-left;
+    -fx-pref-width: 300px; /*  */
+}
+
+.search-field {
+    -fx-background-color: transparent;
+    -fx-font-size: 14px;
+}
+
+.search-content-area {
+    -fx-padding: 20px 80px;
+}
+
+.list-header {
+    -fx-background-color: #e9e5e5;
+    -fx-padding: 10px;
+    -fx-border-color: #cccccc;
+    -fx-border-width: 0 0 2px 0;
+}
+
+.list-header .label {
+    -fx-text-fill: black;
+    -fx-font-family: "System Bold";
+    -fx-font-size: 14px;
+}
+
+.client-row {
+    -fx-padding: 14px 10px;
+    -fx-border-color: #cccccc;
+    -fx-border-width: 0 0 1px 0;
+    -fx-alignment: center-left;
+}
+
+.client-data {
+    -fx-font-size: 14px;
+    -fx-text-fill: black;
+}
+
+.edit-button, .delete-button {
+    -fx-background-color: #e0e0e0;
+    -fx-background-radius: 5px;
+    -fx-padding: 5px;
+    -fx-cursor: hand;
+}
+
+.delete-button {
+    -fx-background-color: #d12c2c;
+}
+
+.edit-button:hover {
+    -fx-background-color: #d0d0d0;
+}
+
+.delete-button:hover {
+    -fx-background-color: #b02424;
+}
+
+.new-service-button {
+    -fx-background-color: #2fb551; /* Green color from your client's confirm button */
+    -fx-text-fill: white;
+    -fx-font-size: 14px; /* Adjust font size as needed */
+    -fx-font-weight: bold;
+    -fx-background-radius: 8; /* Rounded corners */
+    -fx-padding: 8px 15px; /* Adjust padding as needed */
+    -fx-cursor: hand;
+}
+
+.new-service-button:hover {
+    -fx-background-color: #36d45d; /* Slightly lighter green on hover */
+}
