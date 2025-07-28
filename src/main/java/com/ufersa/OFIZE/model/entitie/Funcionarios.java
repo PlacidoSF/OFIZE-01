@@ -1,10 +1,7 @@
+
 package com.ufersa.OFIZE.model.entitie;
 
-import javax.persistence.Entity;
-import javax.persistence.GeneratedValue;
-import javax.persistence.GenerationType;
-import javax.persistence.Id;
-import javax.persistence.Table;
+import javax.persistence.*;
 
 @Entity
 @Table(name="funcionarios")
@@ -20,11 +17,13 @@ public class Funcionarios{
     //Construtor vazio obrigatorio
     public Funcionarios(){
     }
+
     //Construtor
-    public Funcionarios(Long id, String usuario, String senha){
-        setIdFunc(id);
-        setUsuario(usuario);
-        setSenha(senha);
+    public Funcionarios(Long id, String usuario, String senha) {
+
+    }
+
+    private void setIdFunc(Long id) {
     }
 
     //Métodos Getters e Setters
@@ -80,3 +79,4 @@ public class Funcionarios{
     }
 
 }
+

@@ -12,6 +12,8 @@ import javax.persistence.EntityManagerFactory;
 import javax.persistence.Persistence;
 import java.util.List;
 
+
+
 import javafx.application.Application;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Parent;
@@ -19,22 +21,19 @@ import javafx.scene.Scene;
 import javafx.stage.Stage;
 
 import java.io.IOException;
-import java.net.URL;
+import java.util.Objects;
 
 public class Main extends Application {
 
     @Override
     public void start(Stage primaryStage) throws IOException {
-        // O caminho para o FXML deve ser absoluto a partir da raiz do classpath
-        URL fxmlLocation = getClass().getResource("/com.ufersa.OFIZE.view/Test.fxml");
-        if (fxmlLocation == null) {
-            System.err.println("Erro: Não foi possível encontrar o arquivo FXML. Verifique o caminho.");
-            return;
-        }
+        Parent root = FXMLLoader.load(Objects.requireNonNull(getClass().getResource("/com/ufersa/OFIZE/view/cadastrar_cliente.fxml")));
 
-        Parent root = FXMLLoader.load(fxmlLocation);
-        primaryStage.setTitle("Teste JavaFX");
-        primaryStage.setScene(new Scene(root, 400, 300));
+        Scene scene = new Scene(root, 800, 600);
+        //scene.getStylesheets().add(Objects.requireNonNull(getClass().getResource("/Standreyles/login-style.css")).toExternalForm());
+
+        primaryStage.setTitle("OFIZE - Login");
+        primaryStage.setScene(scene);
         primaryStage.show();
     }
 

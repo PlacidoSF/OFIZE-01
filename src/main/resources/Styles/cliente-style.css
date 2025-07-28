@@ -1,0 +1,101 @@
+/* Fundo principal da tela */
+.root {
+    -fx-background-color: #f0ebeb;
+}
+
+/* Estilo para o cabeçalho e rodapé pretos */
+.header-footer {
+    -fx-background-color: #1c1c1c;
+    -fx-padding: 10px 30px;
+    -fx-alignment: center-left;
+}
+
+
+/* Estilo base da fonte para o logo */
+.logo-font {
+    -fx-font-size: 24px;
+    -fx-font-family: "System Bold";
+}
+
+/* Cor para a parte "OFI" do logo */
+.logo-text-white {
+    -fx-fill: white;
+}
+
+/* Cor para a parte "ZÉ" do logo */
+.logo-text-red {
+    -fx-fill: #d12c2c;
+}
+
+
+/* Estilo para o VBox que forma o menu hamburguer */
+.hamburger-menu {
+    -fx-spacing: 5px;
+    -fx-cursor: hand;
+}
+
+/* Estilo para cada uma das 3 barras do menu hamburguer */
+.hamburger-bar {
+    -fx-pref-width: 30px;
+    -fx-pref-height: 4px;
+    -fx-background-color: white;
+    -fx-background-radius: 2px;
+}
+
+/* Estilo do VBox que contém o conteúdo principal */
+.content-area {
+    -fx-max-width: 800px;
+    -fx-padding: 40px;
+}
+
+/* Estilo para o título principal "Cadastrar Cliente" */
+.title {
+    -fx-font-size: 42px;
+    -fx-font-family: "System Bold";
+    -fx-text-fill: #1c1c1c;
+}
+
+/* Estilo para o subtítulo */
+.subtitle {
+    -fx-font-size: 16px;
+    -fx-font-family: "System";
+    -fx-text-fill: #888888;
+}
+
+/* Estilo para os campos de texto do formulário */
+.form-field {
+    -fx-background-color: white;
+    -fx-font-size: 14px;
+    -fx-background-radius: 8px;
+    -fx-border-radius: 8px; /* Cantos arredondados */
+    -fx-border-color: #e0e0e0;
+    -fx-padding: 12px;
+}
+
+/* Estilo para o botão verde de confirmação */
+.confirm-button {
+    -fx-background-color: #2fb551;
+    -fx-text-fill: white;
+    -fx-font-size: 16px;
+    -fx-font-weight: bold;
+    -fx-background-radius: 8;
+    -fx-padding: 12px 30px;
+    -fx-cursor: hand;
+}
+.confirm-button:hover {
+    -fx-background-color: #36d45d;
+}
+
+/* Estilo para o botão vermelho de cancelar */
+.cancel-button {
+    -fx-background-color: #d12c2c;
+    -fx-text-fill: white;
+    -fx-font-size: 14px;
+    -fx-font-weight: bold;
+    -fx-background-radius: 8;
+    -fx-padding: 8px 25px;
+    -fx-cursor: hand;
+}
+.cancel-button:hover {
+    -fx-background-color: #f03838;
+}

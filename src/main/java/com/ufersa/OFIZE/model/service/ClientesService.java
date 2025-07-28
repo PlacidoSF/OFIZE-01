@@ -1,68 +1,76 @@
 package com.ufersa.OFIZE.model.service;
 
-import com.ufersa.OFIZE.model.dao.ClientesDAO;
 import com.ufersa.OFIZE.model.entitie.Clientes;
+import java.util.List;
 
-public class ClientesService {
-    private final ClientesDAO dao = new ClientesDAO();
+public class ClientesService extends ClienteServiceAbstract {
 
     public ClientesService() {
+        super();
     }
 
-    /**
-     * Cadastra um novo cliente após validação
-     * @param cliente Objeto Cliente válido
-     * @throws IllegalArgumentException Se o cliente for inválido
-     */
     public void cadastrarCliente(Clientes cliente) {
-        if (isClienteValido(cliente)) {
-            dao.persist(cliente);
-        } else {
-            throw new IllegalArgumentException("Dados do cliente são inválidos");
+        if (!isClienteValido(cliente)) {
+            throw new IllegalArgumentException("Dados do cliente são inválidos.");
         }
+        if (clientesDAO.findByCpf(cliente.getCpf()) != null) {
+            throw new IllegalArgumentException("CPF já cadastrado no sistema.");
+        }
+        clientesDAO.persist(cliente);
     }
 
-    /**
-     * Busca um cliente pelo CPF
-     * @param cpf CPF do cliente
-     * @return Cliente encontrado ou null
-     */
-    public Clientes buscarCliente(String cpf) {
-        return dao.findById(cpf);
+    public Clientes buscarClientePorCpf(String cpf) {
+        if (cpf == null || cpf.isEmpty()) {
+            return null;
+        }
+        return clientesDAO.findByCpf(cpf);
     }
 
-    /**
-     * Atualiza os dados de um cliente existente
-     * @param cliente Objeto Cliente com dados atualizados
-     * @throws IllegalArgumentException Se o cliente não existir ou for inválido
-     */
     public void atualizarCliente(Clientes cliente) {
-        if (isClienteValido(cliente) && dao.findById(cliente.getCpf()) != null) {
-            dao.merge(cliente);
-        } else {
-            throw new IllegalArgumentException("Cliente inválido ou não encontrado");
+        if (!isClienteValido(cliente) || cliente.getId() == null) {
+            throw new IllegalArgumentException("Dados do cliente ou ID são inválidos para atualização.");
         }
+
+        if (clientesDAO.findById(cliente.getId()) == null) {
+            throw new IllegalArgumentException("Cliente não encontrado para o ID informado.");
+        }
+
+        Clientes clienteExistenteComCpf = clientesDAO.findByCpf(cliente.getCpf());
+        if (clienteExistenteComCpf != null && !clienteExistenteComCpf.getId().equals(cliente.getId())) {
+            throw new IllegalArgumentException("O CPF informado já pertence a outro cliente.");
+        }
+
+        clientesDAO.merge(cliente);
     }
 
-    /**
-     * Remove um cliente do sistema
-     * @param cliente Objeto Cliente a ser removido
-     * @throws IllegalArgumentException Se o cliente não existir
-     */
-    public void removerCliente(Clientes cliente) {
-        Clientes clienteExistente = dao.findById(cliente.getCpf());
+    public void removerClientePorCpf(String cpf) {
+        if (cpf == null || cpf.isEmpty()) {
+            throw new IllegalArgumentException("CPF inválido.");
+        }
+
+        Clientes clienteExistente = clientesDAO.findByCpf(cpf);
         if (clienteExistente != null) {
-            dao.remove(clienteExistente);
+            clientesDAO.remove(clienteExistente);
         } else {
-            throw new IllegalArgumentException("Cliente não encontrado");
+            throw new IllegalArgumentException("Cliente com o CPF informado não foi encontrado.");
         }
     }
 
-    /**
-     * Valida se um cliente tem todos os dados necessários
-     * @param cliente Objeto Cliente a ser validado
-     * @return true se válido, false caso contrário
-     */
+    public List<Clientes> pesquisarPorNome(String nome) {
+        if (nome == null || nome.trim().isEmpty()) {
+            return clientesDAO.findAll();
+        } else {
+            return clientesDAO.searchByName(nome);
+        }
+    }
+
+    public void removerCliente(Clientes cliente) {
+        if (cliente == null || cliente.getId() == null) {
+            throw new IllegalArgumentException("Cliente inválido para remoção.");
+        }
+        clientesDAO.remove(cliente);
+    }
+
     private boolean isClienteValido(Clientes cliente) {
         return cliente != null &&
                 cliente.getCpf() != null && !cliente.getCpf().isEmpty() &&

@@ -1,0 +1,64 @@
+/* Importa o estilo base */
+@import "cliente-style.css";
+
+/* Estilo da barra de pesquisa */
+.search-bar {
+    -fx-background-color: #e9e5e5;
+    -fx-background-radius: 20px;
+    -fx-padding: 5px 15px;
+    -fx-alignment: center-left;
+    -fx-max-width: 400px;
+}
+
+.search-field {
+    -fx-background-color: transparent;
+    -fx-font-size: 14px;
+}
+
+.search-content-area {
+    -fx-padding: 20px 80px;
+}
+
+/* --- ATUALIZAÇÃO DO CABEÇALHO DA LISTA --- */
+.list-header {
+    -fx-background-color: #e9e5e5;
+    -fx-padding: 14px 10px;
+    -fx-border-color: #cccccc;
+    -fx-border-width: 0 0 2px 0;
+}
+
+.list-header .label {
+    -fx-text-fill: black;
+    -fx-font-family: "System Bold";
+    -fx-font-size: 14px;
+}
+
+
+/* Estilo para cada linha de cliente */
+.client-row {
+    -fx-padding: 14px 10px;
+    -fx-border-color: #cccccc;
+    -fx-border-width: 0 0 1px 0;
+    -fx-alignment: center-left;
+}
+
+/* ... o resto do arquivo permanece igual ... */
+.client-data {
+    -fx-font-size: 14px;
+    -fx-text-fill: black;
+}
+.edit-button, .delete-button {
+    -fx-background-color: #e0e0e0;
+    -fx-background-radius: 5px;
+    -fx-padding: 5px;
+    -fx-cursor: hand;
+}
+.delete-button {
+    -fx-background-color: #d12c2c;
+}
+.edit-button:hover {
+    -fx-background-color: #d0d0d0;
+}
+.delete-button:hover {
+    -fx-background-color: #b02424;
+}

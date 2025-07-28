@@ -1,6 +1,8 @@
 package com.ufersa.OFIZE.model.entitie;
 
 import javax.persistence.Entity;
+import javax.persistence.GeneratedValue;
+import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.Table;
 
@@ -9,23 +11,18 @@ import javax.persistence.Table;
 public class Clientes {
 
     @Id
-    private String cpf;
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    private Long id; // Chave primária autoincrementável.
 
+    private String cpf;
     private String nome;
     private String endereco;
 
-    /**
-     * Construtor padrão obrigatório para JPA/Hibernate
-     */
+    // Construtor padrão para JPA.
     public Clientes() {
     }
 
-    /**
-     * Construtor para criação de novos clientes
-     * @param nome Nome completo do cliente
-     * @param endereco Endereço completo do cliente
-     * @param cpf CPF do cliente (chave primária)
-     */
+    // Construtor com parâmetros.
     public Clientes(String nome, String endereco, String cpf) {
         this.nome = nome;
         this.endereco = endereco;
@@ -33,6 +30,21 @@ public class Clientes {
     }
 
     // Getters e Setters
+    public Long getId() {
+        return id;
+    }
+
+    public void setId(Long id) {
+        this.id = id;
+    }
+
+    public String getCpf() {
+        return cpf;
+    }
+
+    public void setCpf(String cpf) {
+        this.cpf = cpf;
+    }
 
     public String getNome() {
         return nome;
@@ -50,20 +62,9 @@ public class Clientes {
         this.endereco = endereco;
     }
 
-    public String getCpf() {
-        return cpf;
-    }
-
-    public void setCpf(String cpf) {
-        this.cpf = cpf;
-    }
-
-    /**
-     * Representação em string do objeto Cliente
-     * @return String formatada com os dados do cliente
-     */
+    // Representação em string do objeto.
     @Override
     public String toString() {
-        return "Cliente [CPF: " + cpf + ", Nome: " + nome + ", Endereço: " + endereco + "]";
+        return "Cliente [ID: " + id + ", CPF: " + cpf + ", Nome: " + nome + ", Endereço: " + endereco + "]";
     }
 }

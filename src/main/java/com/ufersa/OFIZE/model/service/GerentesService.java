@@ -27,6 +27,10 @@ public class GerentesService{
         }
     }
 
+    private boolean ValidarGerente(Gerentes gerente) {
+        return false;
+    }
+
     //Atualiza um gerente, mas validando os dados primeiro
     public void atualizarGerente(Gerentes gerente) {
         if (ValidarGerente(gerente) && dao.findById(gerente.getId()) != null) {

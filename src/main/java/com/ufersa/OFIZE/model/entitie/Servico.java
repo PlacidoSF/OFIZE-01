@@ -24,22 +24,17 @@ public class Servico {
     @JoinColumn(name = "automovel_id")
     private Automoveis automovel;
 
-    // Construtor padrão (obrigatório para JPA)
+    // Construtor padrão do JPA.
     public Servico() {
-        this.status = false; // Status inicia como não finalizado
+        this.status = false;
     }
 
-    /**
-     * Construtor para criação de novos serviços
-     * @param nome Nome do serviço
-     * @param valor Valor do serviço
-     * @param automovel Automóvel associado ao serviço
-     */
+    // Construtor para novos serviços.
     public Servico(String nome, double valor, Automoveis automovel) {
         this.nome = nome;
         this.valor = valor;
         this.automovel = automovel;
-        this.status = false; // Status inicia como não finalizado
+        this.status = false;
     }
 
     // Getters e Setters
@@ -85,15 +80,12 @@ public class Servico {
         }
     }
 
-    /**
-     * Finaliza o serviço e registra o pagamento
-     * @return true se o serviço foi finalizado com sucesso
-     */
+    // Finaliza o serviço e registra o pagamento.
     public boolean finalizarERegistrarPagamento() {
         if(!this.status) {
             this.status = true;
             return true;
         }
-        return false; // Já estava finalizado
+        return false; // Retorna falso se já estava finalizado.
     }
 }

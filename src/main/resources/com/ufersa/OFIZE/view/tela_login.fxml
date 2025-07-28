@@ -1,0 +1,55 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.geometry.Insets?>
+<?import javafx.scene.control.Button?>
+<?import javafx.scene.control.Label?>
+<?import javafx.scene.control.PasswordField?>
+<?import javafx.scene.control.TextField?>
+<?import javafx.scene.image.Image?>
+<?import javafx.scene.image.ImageView?>
+<?import javafx.scene.layout.HBox?>
+<?import javafx.scene.layout.StackPane?>
+<?import javafx.scene.layout.VBox?>
+
+<StackPane xmlns="http://javafx.com/javafx/21" xmlns:fx="http://javafx.com/fxml/1"
+           fx:controller="com.ufersa.OFIZE.controller.LoginController"
+           styleClass="root"
+           stylesheets="@../../../../Styles/login-style.css">
+
+    <children>
+        <VBox alignment="CENTER" maxHeight="-Infinity" maxWidth="-Infinity" spacing="25.0" styleClass="login-container">
+            <children>
+                <Label styleClass="title-label" text="Log in" />
+                <VBox spacing="15.0">
+                    <children>
+                        <HBox styleClass="input-group">
+                            <children>
+                                <ImageView fitHeight="18.0" fitWidth="18.0" pickOnBounds="true" preserveRatio="true">
+                                    <image>
+                                        <Image url="/Imagens/user-icon.png" />
+                                    </image>
+                                </ImageView>
+                                <TextField promptText="Usuário" styleClass="input-field" HBox.hgrow="ALWAYS" />
+                            </children>
+                        </HBox>
+                        <HBox styleClass="input-group">
+                            <children>
+                                <ImageView fitHeight="18.0" fitWidth="18.0" pickOnBounds="true" preserveRatio="true">
+                                    <image>
+                                        <Image url="/Imagens/lock-icon.png" />
+                                    </image>
+                                </ImageView>
+                                <PasswordField promptText="Senha" styleClass="input-field" HBox.hgrow="ALWAYS" />
+                            </children>
+                        </HBox>
+                    </children>
+                </VBox>
+                <Button mnemonicParsing="false" styleClass="login-button" text="Log in" />
+            </children>
+            <padding>
+                <Insets bottom="40.0" left="50.0" right="50.0" top="40.0" />
+            </padding>
+        </VBox>
+    </children>
+
+</StackPane>
