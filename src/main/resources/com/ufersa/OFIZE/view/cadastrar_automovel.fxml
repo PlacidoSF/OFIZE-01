@@ -18,7 +18,7 @@
 
 <BorderPane fx:controller="com.ufersa.OFIZE.controller.CadastroAutomovelController"
             styleClass="root" xmlns="http://javafx.com/javafx/21" xmlns:fx="http://javafx.com/fxml/1"
-            stylesheets="@../../../../Styles/cadastro-style.css">
+            stylesheets="@../../../../Styles/entity-style.css">
 
     <top>
         <HBox styleClass="header-footer">

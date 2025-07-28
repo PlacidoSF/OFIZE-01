@@ -11,16 +11,14 @@ import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
-import javafx.scene.control.Alert;
-import javafx.scene.control.Button;
-import javafx.scene.control.ComboBox;
-import javafx.scene.control.TextField;
+import javafx.scene.control.*;
 import javafx.util.StringConverter;
 
 import java.io.IOException;
 import java.util.List;
+import java.util.Optional;
 
-public class CadastroAutomovelController {
+public class AlterarAutomovelController {
 
     @FXML private TextField marcaField;
     @FXML private TextField corField;
@@ -33,10 +31,23 @@ public class CadastroAutomovelController {
 
     private final AutomoveisService automoveisService = new AutomoveisService();
     private final ClientesService clientesService = new ClientesService();
+    private Automoveis automovelParaAlterar;
 
     @FXML
     public void initialize() {
         carregarProprietarios();
+    }
+
+    public void setAutomovelParaAlterar(Automoveis automovel) {
+        this.automovelParaAlterar = automovel;
+        if (automovel != null) {
+            marcaField.setText(automovel.getMarca());
+            corField.setText(automovel.getCor());
+            placaField.setText(automovel.getPlaca());
+            anoField.setText(String.valueOf(automovel.getAno()));
+            quilometragemField.setText(String.valueOf(automovel.getQuilometragem()));
+            proprietarioComboBox.setValue(automovel.getProprietario());
+        }
     }
 
     private void carregarProprietarios() {
@@ -49,7 +60,6 @@ public class CadastroAutomovelController {
             public String toString(Clientes cliente) {
                 return cliente != null ? cliente.getNome() : "";
             }
-
             @Override
             public Clientes fromString(String string) {
                 return null;
@@ -59,33 +69,38 @@ public class CadastroAutomovelController {
 
     @FXML
     void handleConfirmar(ActionEvent event) {
-        try {
-            String marca = marcaField.getText();
-            String cor = corField.getText();
-            String placa = placaField.getText();
-            int ano = Integer.parseInt(anoField.getText());
-            int quilometragem = Integer.parseInt(quilometragemField.getText());
-            Clientes proprietario = proprietarioComboBox.getValue();
+        Alert alert = new Alert(Alert.AlertType.CONFIRMATION);
+        alert.setTitle("Confirmação de Alteração");
+        alert.setHeaderText("Você tem certeza que deseja salvar as alterações?");
 
-            Automoveis novoAutomovel = new Automoveis(marca, cor, placa, ano, quilometragem, proprietario);
-            automoveisService.cadastrar(novoAutomovel);
+        Optional<ButtonType> result = alert.showAndWait();
+        if (result.isPresent() && result.get() == ButtonType.OK) {
+            try {
+                automovelParaAlterar.setMarca(marcaField.getText());
+                automovelParaAlterar.setCor(corField.getText());
+                automovelParaAlterar.setPlaca(placaField.getText());
+                automovelParaAlterar.setAno(Integer.parseInt(anoField.getText()));
+                automovelParaAlterar.setQuilometragem(Integer.parseInt(quilometragemField.getText()));
+                automovelParaAlterar.setProprietario(proprietarioComboBox.getValue());
 
-            showAlert(Alert.AlertType.INFORMATION, "Sucesso", "Automóvel cadastrado com sucesso!");
-            voltarParaPesquisaAutomovel();
+                automoveisService.atualizar(automovelParaAlterar);
+                showAlert(Alert.AlertType.INFORMATION, "Sucesso", "Automóvel alterado com sucesso!");
+                voltarParaPesquisa();
 
-        } catch (NumberFormatException e) {
-            showAlert(Alert.AlertType.ERROR, "Erro de Formato", "Os campos 'Ano' e 'Quilometragem' devem ser números válidos.");
-        } catch (IllegalArgumentException e) {
-            showAlert(Alert.AlertType.ERROR, "Erro de Validação", e.getMessage());
+            } catch (NumberFormatException e) {
+                showAlert(Alert.AlertType.ERROR, "Erro de Formato", "Os campos 'Ano' e 'Quilometragem' devem ser números.");
+            } catch (IllegalArgumentException e) {
+                showAlert(Alert.AlertType.ERROR, "Erro de Validação", e.getMessage());
+            }
         }
     }
 
     @FXML
     void handleCancelar(ActionEvent event) {
-        voltarParaPesquisaAutomovel();
+        voltarParaPesquisa();
     }
 
-    private void voltarParaPesquisaAutomovel() {
+    private void voltarParaPesquisa() {
         try {
             Parent root = FXMLLoader.load(getClass().getResource("/com/ufersa/OFIZE/view/pesquisar_automovel.fxml"));
             Scene scene = confirmarButton.getScene();

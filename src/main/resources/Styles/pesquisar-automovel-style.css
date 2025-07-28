@@ -1,13 +1,13 @@
 /* Importa o estilo base */
 @import "entity-style.css";
 
-/* Estilo da barra de pesquisa ATUALIZADO */
+/* Estilo da barra de pesquisa */
 .search-bar {
     -fx-background-color: #e9e5e5;
     -fx-background-radius: 20px;
     -fx-padding: 5px 15px;
     -fx-alignment: center-left;
-    -fx-pref-width: 300px; /*  */
+    -fx-pref-width: 350px; /* Largura preferida fixa */
 }
 
 .search-field {
