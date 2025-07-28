@@ -14,7 +14,7 @@
 <?import javafx.scene.control.Alert?>
 
 <AnchorPane fx:id="mainPane" prefHeight="600.0" prefWidth="800.0" styleClass="background-pane"
-            stylesheets="@/styles/dashboard.css"
+            stylesheets="@/Styles/dashboard.css"
             xmlns="http://javafx.com/javafx" xmlns:fx="http://javafx.com/fxml/1"
             fx:controller="com.ufersa.OFIZE.controller.OrcamentoController"> <children>
     <VBox alignment="TOP_CENTER" layoutX="50.0" layoutY="50.0" spacing="20.0" AnchorPane.bottomAnchor="50.0" AnchorPane.leftAnchor="50.0" AnchorPane.rightAnchor="50.0" AnchorPane.topAnchor="50.0">

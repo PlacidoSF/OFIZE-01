@@ -9,7 +9,7 @@
 
 <BorderPane styleClass="root" xmlns="http://javafx.com/javafx/21" xmlns:fx="http://javafx.com/fxml/1"
             fx:controller="com.ufersa.OFIZE.controller.PesquisarClienteController"
-            stylesheets="@../../../../styles/pesquisar-custom-style.css">
+            stylesheets="@../../../../Styles/pesquisar-custom-style.css">
     <top>
         <HBox styleClass="header-footer">
             <children>

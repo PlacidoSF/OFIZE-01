@@ -17,7 +17,7 @@
 
 <AnchorPane fx:id="rootPane" prefHeight="700.0" prefWidth="1000.0" xmlns="http://javafx.com/javafx/21" xmlns:fx="http://javafx.com/fxml/1"
             fx:controller="com.ufersa.OFIZE.controller.CadastrarServicoController"
-            stylesheets="@/styles/entity-style.css"> <BorderPane layoutX="0.0" layoutY="0.0" prefHeight="700.0" prefWidth="1000.0" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
+            stylesheets="@/Styles/entity-style.css"> <BorderPane layoutX="0.0" layoutY="0.0" prefHeight="700.0" prefWidth="1000.0" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
     <top>
         <HBox styleClass="header-footer" BorderPane.alignment="CENTER">
             <children>
