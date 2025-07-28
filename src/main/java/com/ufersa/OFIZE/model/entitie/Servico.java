@@ -30,11 +30,9 @@ public class Servico {
     }
 
     // Construtor para novos serviços.
-    public Servico(String nome, double valor, Automoveis automovel) {
+    public Servico(String nome, double valor) {
         this.nome = nome;
         this.valor = valor;
-        this.automovel = automovel;
-        this.status = false;
     }
 
     // Getters e Setters
@@ -66,26 +64,5 @@ public class Servico {
         }
     }
 
-    public boolean isStatus() {
-        return status;
-    }
 
-    public Automoveis getAutomovel() {
-        return automovel;
-    }
-
-    public void setAutomovel(Automoveis automovel) {
-        if(automovel != null) {
-            this.automovel = automovel;
-        }
-    }
-
-    // Finaliza o serviço e registra o pagamento.
-    public boolean finalizarERegistrarPagamento() {
-        if(!this.status) {
-            this.status = true;
-            return true;
-        }
-        return false; // Retorna falso se já estava finalizado.
-    }
 }

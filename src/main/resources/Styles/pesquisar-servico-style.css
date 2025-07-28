@@ -1,13 +1,13 @@
 /* Importa o estilo base */
-@import "entity-style.css";
+@import "entity-style.css"; /* Assumindo que cliente-style.css contém estilos como .root, .header-footer, etc. */
 
-/* Estilo da barra de pesquisa ATUALIZADO */
+/* Estilo da barra de pesquisa */
 .search-bar {
     -fx-background-color: #e9e5e5;
     -fx-background-radius: 20px;
-    -fx-padding: 5px 15px;
+    -fx-padding: 5px 60px;
     -fx-alignment: center-left;
-    -fx-pref-width: 300px; /*  */
+    -fx-max-width: 600px;
 }
 
 .search-field {
@@ -19,9 +19,10 @@
     -fx-padding: 20px 80px;
 }
 
+/* --- CABEÇALHO DA LISTA DE SERVIÇOS --- */
 .list-header {
     -fx-background-color: #e9e5e5;
-    -fx-padding: 10px;
+    -fx-padding: 14px 10px;
     -fx-border-color: #cccccc;
     -fx-border-width: 0 0 2px 0;
 }
@@ -32,14 +33,15 @@
     -fx-font-size: 14px;
 }
 
-.client-row {
+/* Estilo para cada linha de serviço */
+.service-row { /* Renamed from .client-row */
     -fx-padding: 14px 10px;
     -fx-border-color: #cccccc;
     -fx-border-width: 0 0 1px 0;
     -fx-alignment: center-left;
 }
 
-.client-data {
+.service-data { /* Renamed from .client-data */
     -fx-font-size: 14px;
     -fx-text-fill: black;
 }
@@ -50,19 +52,17 @@
     -fx-padding: 5px;
     -fx-cursor: hand;
 }
-
 .delete-button {
     -fx-background-color: #d12c2c;
 }
-
 .edit-button:hover {
     -fx-background-color: #d0d0d0;
 }
-
 .delete-button:hover {
     -fx-background-color: #b02424;
 }
 
+/* Style for the new service button */
 .new-service-button {
     -fx-background-color: #2fb551; /* Green color from your client's confirm button */
     -fx-text-fill: white;

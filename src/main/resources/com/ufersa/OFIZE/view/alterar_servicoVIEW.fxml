@@ -1,0 +1,83 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.geometry.Insets?>
+<?import javafx.scene.control.Button?>
+<?import javafx.scene.control.Label?>
+<?import javafx.scene.control.TextField?>
+<?import javafx.scene.image.Image?>
+<?import javafx.scene.image.ImageView?>
+<?import javafx.scene.layout.BorderPane?>
+<?import javafx.scene.layout.GridPane?>
+<?import javafx.scene.layout.HBox?>
+<?import javafx.scene.layout.Region?>
+<?import javafx.scene.layout.VBox?>
+<?import javafx.scene.text.Text?>
+<?import javafx.scene.text.TextFlow?>
+
+<BorderPane fx:controller="com.ufersa.OFIZE.controller.AlterarServicoController"
+            styleClass="root" xmlns="http://javafx.com/javafx/21" xmlns:fx="http://javafx.com/fxml/1"
+            stylesheets="@/Styles/entity-style.css"> <top>
+    <HBox styleClass="header-footer">
+        <children>
+            <HBox alignment="CENTER_LEFT">
+                <children>
+                    <TextFlow>
+                        <children>
+                            <Text text="OFI" styleClass="logo-font, logo-text-white" />
+                            <Text text="ZÉ" styleClass="logo-font, logo-text-red" />
+                        </children>
+                    </TextFlow>
+                    <ImageView fitHeight="24.0" fitWidth="24.0" pickOnBounds="true" preserveRatio="true">
+                        <image><Image url="/Imagens/ferramenta_1.png" /></image>
+                        <HBox.margin><Insets left="5.0" /></HBox.margin>
+                    </ImageView>
+                </children>
+            </HBox>
+            <Region HBox.hgrow="ALWAYS" />
+            <VBox alignment="CENTER" styleClass="hamburger-menu">
+                <children>
+                    <Region styleClass="hamburger-bar" /><Region styleClass="hamburger-bar" /><Region styleClass="hamburger-bar" />
+                </children>
+            </VBox>
+        </children>
+    </HBox>
+</top>
+
+    <center>
+        <BorderPane>
+            <center>
+                <VBox alignment="TOP_LEFT" spacing="30.0" styleClass="content-area">
+                    <children>
+                        <VBox spacing="5.0">
+                            <children>
+                                <Label styleClass="title" text="Alterar Serviço" />
+                                <Label styleClass="subtitle" text="Adicione as novas informações para alterar os dados do serviço." />
+                            </children>
+                        </VBox>
+                        <GridPane hgap="20.0" vgap="15.0">
+                            <children>
+                                <TextField fx:id="nomeField" promptText="Nome do Serviço" styleClass="form-field" GridPane.columnIndex="0" GridPane.rowIndex="0" />
+                                <TextField fx:id="valorField" promptText="Valor(R$)" styleClass="form-field" GridPane.columnIndex="1" GridPane.rowIndex="0" />
+                            </children>
+                        </GridPane>
+                        <Button fx:id="confirmarButton" onAction="#handleConfirmar" mnemonicParsing="false" styleClass="confirm-button" text="Confirmar" />
+                    </children>
+                </VBox>
+            </center>
+            <bottom>
+                <HBox alignment="CENTER">
+                    <children>
+                        <Button fx:id="cancelarButton" onAction="#handleCancelar" mnemonicParsing="false" styleClass="cancel-button" text="Cancelar" />
+                    </children>
+                    <padding>
+                        <Insets bottom="20.0" />
+                    </padding>
+                </HBox>
+            </bottom>
+        </BorderPane>
+    </center>
+
+    <bottom>
+        <HBox prefHeight="60.0" styleClass="header-footer" />
+    </bottom>
+</BorderPane>

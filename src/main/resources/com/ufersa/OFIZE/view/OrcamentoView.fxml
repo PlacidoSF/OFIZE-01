@@ -1,0 +1,78 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.scene.control.Button?>
+<?import javafx.scene.control.ComboBox?>
+<?import javafx.scene.control.DatePicker?>
+<?import javafx.scene.control.Label?>
+<?import javafx.scene.control.TextField?>
+<?import javafx.scene.layout.AnchorPane?>
+<?import javafx.scene.layout.HBox?>
+<?import javafx.scene.layout.VBox?>
+<?import javafx.scene.control.TableView?>
+<?import javafx.scene.control.TableColumn?>
+<?import javafx.geometry.Insets?>
+<?import javafx.scene.control.Alert?>
+
+<AnchorPane fx:id="mainPane" prefHeight="600.0" prefWidth="800.0" styleClass="background-pane"
+            stylesheets="@/Styles/dashboard.css"
+            xmlns="http://javafx.com/javafx" xmlns:fx="http://javafx.com/fxml/1"
+            fx:controller="com.ufersa.OFIZE.controller.OrcamentoController"> <children>
+    <VBox alignment="TOP_CENTER" layoutX="50.0" layoutY="50.0" spacing="20.0" AnchorPane.bottomAnchor="50.0" AnchorPane.leftAnchor="50.0" AnchorPane.rightAnchor="50.0" AnchorPane.topAnchor="50.0">
+        <Label styleClass="title-text" text="Cadastrar Orçamento" />
+        <Label styleClass="subtitle-text" text="Adicione as informações necessárias para cadastrar o orçamento." />
+
+        <HBox spacing="20.0" alignment="CENTER_LEFT">
+            <VBox spacing="5.0">
+                <Label text="Automóvel (Placa):" />
+                <ComboBox fx:id="automovelComboBox" prefWidth="250.0" promptText="Selecione o Automóvel" />
+            </VBox>
+            <VBox spacing="5.0">
+                <Label text="Data:" />
+                <DatePicker fx:id="dataDatePicker" prefWidth="150.0" promptText="dd/mm/aaaa" />
+            </VBox>
+        </HBox>
+
+        <VBox spacing="10.0">
+            <Label styleClass="section-title" text="Peças" />
+            <HBox spacing="10.0" alignment="CENTER_LEFT">
+                <ComboBox fx:id="pecasComboBox" prefWidth="200.0" promptText="Selecione a Peça" />
+                <TextField fx:id="quantidadePecasTextField" prefWidth="80.0" promptText="Quantidade" />
+                <Button onAction="#adicionarPecaAoOrcamento" styleClass="add-button" text="+" />
+            </HBox>
+            <TableView fx:id="pecasTableView" prefHeight="150.0" prefWidth="400.0">
+                <columns>
+                    <TableColumn fx:id="pecaNomeColumn" prefWidth="150.0" text="Peça" />
+                    <TableColumn fx:id="pecaQuantidadeColumn" prefWidth="80.0" text="Qtd." />
+                    <TableColumn fx:id="pecaPrecoUnitarioColumn" prefWidth="80.0" text="Preço Unit." />
+                    <TableColumn fx:id="pecaSubtotalColumn" prefWidth="90.0" text="Subtotal" />
+                    <TableColumn fx:id="pecaAcoesColumn" prefWidth="50.0" text="Ações" />
+                </columns>
+            </TableView>
+        </VBox>
+
+        <VBox spacing="10.0">
+            <Label styleClass="section-title" text="Serviços" />
+            <HBox spacing="10.0" alignment="CENTER_LEFT">
+                <ComboBox fx:id="servicosComboBox" prefWidth="200.0" promptText="Selecione o Serviço" />
+                <TextField fx:id="quantidadeServicosTextField" prefWidth="80.0" promptText="Quantidade" text="1" disable="true"/> <Button onAction="#adicionarServicoAoOrcamento" styleClass="add-button" text="+" />
+            </HBox>
+            <TableView fx:id="servicosTableView" prefHeight="150.0" prefWidth="400.0">
+                <columns>
+                    <TableColumn fx:id="servicoNomeColumn" prefWidth="200.0" text="Serviço" />
+                    <TableColumn fx:id="servicoQuantidadeColumn" prefWidth="80.0" text="Qtd." />
+                    <TableColumn fx:id="servicoPrecoUnitarioColumn" prefWidth="90.0" text="Valor Unit." />
+                    <TableColumn fx:id="servicoSubtotalColumn" prefWidth="100.0" text="Subtotal" />
+                    <TableColumn fx:id="servicoAcoesColumn" prefWidth="50.0" text="Ações" />
+                </columns>
+            </TableView>
+        </VBox>
+
+        <Label fx:id="totalOrcamentoLabel" styleClass="total-label" text="Total do Orçamento: R$ 0.00" />
+
+        <HBox spacing="20.0" alignment="CENTER">
+            <Button onAction="#confirmarCadastro" styleClass="confirm-button" text="Confirmar" />
+            <Button onAction="#cancelarCadastro" styleClass="cancel-button" text="Cancelar" />
+        </HBox>
+    </VBox>
+</children>
+</AnchorPane>
