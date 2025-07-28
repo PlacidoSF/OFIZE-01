@@ -45,7 +45,7 @@
                             <ImageView fitHeight="20.0" fitWidth="20.0" pickOnBounds="true" preserveRatio="true">
                                 <image><Image url="/Imagens/lupa.png" /></image>
                             </ImageView>
-                            <TextField fx:id="searchField" promptText="Informe o Nome do Serviço" styleClass="search-field" HBox.hgrow="ALWAYS">
+                            <TextField fx:id="searchField" promptText="Informe o Nome do Serviço " styleClass="search-field" HBox.hgrow="ALWAYS">
                                 <HBox.margin><Insets left="10.0" /></HBox.margin>
                             </TextField>
                         </children>

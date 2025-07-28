@@ -41,7 +41,7 @@ public class CadastrarServicoController {
         String valorStr = valorField.getText();
 
         if (nome.isEmpty() || valorStr.isEmpty()) {
-            showAlert(currentStage, Alert.AlertType.ERROR, "Erro de Validação", "Todos os campos são obrigatórios.");
+            showAlert(currentStage, Alert.AlertType.ERROR, "Erro de Validação ", "Todos os campos são obrigatórios.");
             return;
         }
 

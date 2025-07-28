@@ -140,7 +140,7 @@ public class ServicoViewController {
             populateServicesContainer(filteredServices);
         } catch (Exception e) {
             showAlert(ownerStage, Alert.AlertType.ERROR, "Erro ao pesquisar serviços",
-                    "Não foi possível pesquisar os serviços: " + e.getMessage());
+                    "Não foi possível pesquisar os serviços : " + e.getMessage());
             e.printStackTrace();
         }
     }

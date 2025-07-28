@@ -78,7 +78,7 @@ public class AlterarServicoController {
         } catch (IllegalArgumentException e) {
             showAlert(currentStage, Alert.AlertType.WARNING, "Erro de Validação", e.getMessage());
         } catch (Exception e) {
-            showAlert(currentStage, Alert.AlertType.ERROR, "Erro ao alterar serviço", "Não foi possível alterar o serviço: " + e.getMessage());
+            showAlert(currentStage, Alert.AlertType.ERROR, "Erro ao alterar serviço ", "Não foi possível alterar o serviço: " + e.getMessage());
             e.printStackTrace();
         }
     }
