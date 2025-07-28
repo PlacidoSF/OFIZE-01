@@ -9,7 +9,7 @@
 
 <BorderPane styleClass="root" xmlns="http://javafx.com/javafx/21" xmlns:fx="http://javafx.com/fxml/1"
             fx:controller="com.ufersa.OFIZE.controller.PesquisarClienteController"
-            stylesheets="@../../../../Styles/pesquisarcliente-style.css">
+            stylesheets="@../../../../styles/pesquisar-custom-style.css">
     <top>
         <HBox styleClass="header-footer">
             <children>
@@ -40,14 +40,23 @@
     <center>
         <VBox alignment="TOP_CENTER" spacing="20.0" styleClass="search-content-area">
             <children>
-                <HBox alignment="CENTER_LEFT" styleClass="search-bar">
+                <HBox alignment="CENTER_LEFT" spacing="20.0">
                     <children>
-                        <ImageView fitHeight="20.0" fitWidth="20.0" pickOnBounds="true" preserveRatio="true">
-                            <image><Image url="/Imagens/lupa.png" /></image>
-                        </ImageView>
-                        <TextField fx:id="searchField" promptText="Informe o Nome do Cliente" styleClass="search-field" HBox.hgrow="ALWAYS">
-                            <HBox.margin><Insets left="10.0" /></HBox.margin>
-                        </TextField>
+                        <HBox styleClass="search-bar">
+                            <children>
+                                <ImageView fitHeight="20.0" fitWidth="20.0" pickOnBounds="true" preserveRatio="true">
+                                    <image><Image url="/Imagens/lupa.png" /></image>
+                                </ImageView>
+                                <TextField fx:id="searchField" promptText="Informe o Nome do Cliente" styleClass="search-field" HBox.hgrow="ALWAYS">
+                                    <HBox.margin><Insets left="10.0" /></HBox.margin>
+                                </TextField>
+                            </children>
+                        </HBox>
+
+                        <Region HBox.hgrow="ALWAYS" />
+
+                        <Button fx:id="cadastrarClienteButton" onAction="#handleCadastrarCliente" mnemonicParsing="false"
+                                text="Cadastrar Cliente" styleClass="confirm-button" />
                     </children>
                 </HBox>
 
@@ -56,9 +65,7 @@
                         <Label text="Nome" prefWidth="250.0" />
                         <Label text="CPF" prefWidth="150.0" alignment="CENTER" />
                         <Label text="Endereço" prefWidth="300.0" />
-
                         <Region HBox.hgrow="ALWAYS" />
-
                         <Label text="Ações" prefWidth="100.0" alignment="CENTER" />
                     </children>
                 </HBox>

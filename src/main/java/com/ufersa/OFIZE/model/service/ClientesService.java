@@ -1,12 +1,20 @@
 package com.ufersa.OFIZE.model.service;
 
+import com.ufersa.OFIZE.model.dao.AutomoveisDAO;
+import com.ufersa.OFIZE.model.entitie.Automoveis;
 import com.ufersa.OFIZE.model.entitie.Clientes;
 import java.util.List;
 
 public class ClientesService extends ClienteServiceAbstract {
 
+    private final AutomoveisDAO automoveisDAO = new AutomoveisDAO();
+
     public ClientesService() {
         super();
+    }
+
+    public List<Clientes> buscarTodos() {
+        return clientesDAO.findAll();
     }
 
     public void cadastrarCliente(Clientes cliente) {
@@ -30,30 +38,14 @@ public class ClientesService extends ClienteServiceAbstract {
         if (!isClienteValido(cliente) || cliente.getId() == null) {
             throw new IllegalArgumentException("Dados do cliente ou ID são inválidos para atualização.");
         }
-
         if (clientesDAO.findById(cliente.getId()) == null) {
             throw new IllegalArgumentException("Cliente não encontrado para o ID informado.");
         }
-
         Clientes clienteExistenteComCpf = clientesDAO.findByCpf(cliente.getCpf());
         if (clienteExistenteComCpf != null && !clienteExistenteComCpf.getId().equals(cliente.getId())) {
             throw new IllegalArgumentException("O CPF informado já pertence a outro cliente.");
         }
-
         clientesDAO.merge(cliente);
-    }
-
-    public void removerClientePorCpf(String cpf) {
-        if (cpf == null || cpf.isEmpty()) {
-            throw new IllegalArgumentException("CPF inválido.");
-        }
-
-        Clientes clienteExistente = clientesDAO.findByCpf(cpf);
-        if (clienteExistente != null) {
-            clientesDAO.remove(clienteExistente);
-        } else {
-            throw new IllegalArgumentException("Cliente com o CPF informado não foi encontrado.");
-        }
     }
 
     public List<Clientes> pesquisarPorNome(String nome) {
@@ -68,7 +60,17 @@ public class ClientesService extends ClienteServiceAbstract {
         if (cliente == null || cliente.getId() == null) {
             throw new IllegalArgumentException("Cliente inválido para remoção.");
         }
+
+        List<Automoveis> automoveisDoCliente = automoveisDAO.findByClienteId(cliente.getId());
+        for (Automoveis auto : automoveisDoCliente) {
+            automoveisDAO.remove(auto);
+        }
+
         clientesDAO.remove(cliente);
+    }
+
+    public boolean clientePossuiAutomoveis(Long clienteId) {
+        return automoveisDAO.clientePossuiAutomoveis(clienteId);
     }
 
     private boolean isClienteValido(Clientes cliente) {

@@ -1,93 +1,85 @@
 package com.ufersa.OFIZE.model.service;
 
-import com.ufersa.OFIZE.model.dao.AutomoveisDAO;
-import com.ufersa.OFIZE.model.entitie.Automoveis;
+import com.ufersa.OFIZE.model.dao.ServicoDAO;
 import com.ufersa.OFIZE.model.entitie.Servico;
+
 import java.util.List;
 
-// Serviço concreto com as regras de negócio para Serviço.
-public class ServicoService extends ServicoServiceAbstract {
 
-    // DAO para Automoveis, necessário para validações.
-    private final AutomoveisDAO automoveisDAO = new AutomoveisDAO();
+public class ServicoService {
 
-    // Cadastra um novo serviço com validações.
-    public void cadastrarServico(Servico servico) {
-        if (!isServicoValido(servico)) {
-            throw new IllegalArgumentException("Dados do serviço são inválidos.");
+    private final ServicoDAO servicoDAO; // O DAO é privado e final, instanciado no construtor
+
+    public ServicoService() {
+        this.servicoDAO = new ServicoDAO(); // Inicializa o DAO
+    }
+
+
+    public void salvarServico(Servico servico) {
+        if (servico == null) {
+            throw new IllegalArgumentException("O objeto Serviço não pode ser nulo.");
         }
-        Automoveis automovelExistente = automoveisDAO.findById(servico.getAutomovel().getId());
-        if (automovelExistente == null) {
-            throw new IllegalArgumentException("Automóvel associado não cadastrado.");
+        if (servico.getNome() == null || servico.getNome().trim().isEmpty()) {
+            throw new IllegalArgumentException("O nome do serviço não pode ser vazio.");
         }
-        servico.setAutomovel(automovelExistente);
+        if (servico.getValor() <= 0) {
+            throw new IllegalArgumentException("O valor do serviço deve ser maior que zero.");
+        }
+
         servicoDAO.persist(servico);
     }
 
-    // Busca um serviço pelo ID contido no objeto.
-    public Servico buscarServico(Servico servico) {
-        return servicoDAO.findById(servico.getId());
+
+    public Servico buscarServicoPorId(Long id) {
+        if (id == null || id <= 0) {
+            throw new IllegalArgumentException("ID do serviço inválido.");
+        }
+        return servicoDAO.findById(id);
     }
 
-    // Atualiza um serviço existente com validações.
-    public void atualizarServico(Servico servicoAtualizado) {
-        if (servicoAtualizado.getId() == null) {
-            throw new IllegalArgumentException("ID do serviço não pode ser nulo para atualização.");
-        }
-        Servico servicoExistente = servicoDAO.findById(servicoAtualizado.getId());
-        if (servicoExistente == null) {
-            throw new IllegalArgumentException("Serviço não encontrado para o ID: " + servicoAtualizado.getId());
-        }
-        servicoExistente.setNome(servicoAtualizado.getNome());
-        servicoExistente.setValor(servicoAtualizado.getValor());
 
-        if (servicoAtualizado.getAutomovel() != null &&
-                !servicoAtualizado.getAutomovel().getId().equals(servicoExistente.getAutomovel().getId())) {
-            Automoveis novoAutomovel = automoveisDAO.findById(servicoAtualizado.getAutomovel().getId());
-            if (novoAutomovel == null) {
-                throw new IllegalArgumentException("Automóvel associado não encontrado.");
-            }
-            servicoExistente.setAutomovel(novoAutomovel);
-        }
-        if (!isServicoValido(servicoExistente)) {
-            throw new IllegalArgumentException("Dados do serviço são inválidos após atualização.");
-        }
-        servicoDAO.merge(servicoExistente);
+    public List<Servico> listarTodosServicos() {
+        return servicoDAO.findAll();
     }
 
-    // Finaliza um serviço e registra seu pagamento.
-    public boolean finalizarERegistrarPagamento(Servico servico) {
-        Servico servicoParaFinalizar = servicoDAO.findById(servico.getId());
-        if (servicoParaFinalizar == null) {
-            throw new IllegalArgumentException("Serviço não encontrado.");
+
+    public void atualizarServico(Servico servico) {
+        if (servico == null || servico.getId() == null) {
+            throw new IllegalArgumentException("Serviço ou ID do serviço não pode ser nulo para atualização.");
         }
-        if (servicoParaFinalizar.finalizarERegistrarPagamento()) {
-            servicoDAO.merge(servicoParaFinalizar);
-            return true;
+        if (servico.getNome() == null || servico.getNome().trim().isEmpty()) {
+            throw new IllegalArgumentException("O nome do serviço não pode ser vazio.");
         }
-        return false;
+        if (servico.getValor() <= 0) {
+            throw new IllegalArgumentException("O valor do serviço deve ser maior que zero.");
+        }
+
+
+        Servico existingServico = servicoDAO.findById(servico.getId());
+        if (existingServico == null) {
+            throw new IllegalArgumentException("Serviço com ID " + servico.getId() + " não encontrado para atualização.");
+        }
+
+        servicoDAO.merge(servico);
     }
 
-    // Busca todos os serviços de um proprietário pelo CPF.
-    public List<Servico> buscarServicosPorProprietarioCpf(String cpf) {
-        return servicoDAO.findByProprietarioCpf(cpf);
-    }
 
-    // Remove um serviço do sistema.
+
     public void removerServico(Servico servico) {
-        Servico servicoParaRemover = servicoDAO.findById(servico.getId());
-        if (servicoParaRemover == null) {
-            throw new IllegalArgumentException("Serviço não encontrado.");
+        if (servico == null || servico.getId() == null) {
+            throw new IllegalArgumentException("Serviço ou ID do serviço não pode ser nulo para remoção.");
         }
-        servicoDAO.remove(servicoParaRemover);
+
+        servicoDAO.remove(servico);
     }
 
-    // Valida os dados obrigatórios do serviço.
-    private boolean isServicoValido(Servico servico) {
-        return servico != null &&
-                servico.getNome() != null && !servico.getNome().isEmpty() &&
-                servico.getValor() > 0 &&
-                servico.getAutomovel() != null &&
-                servico.getAutomovel().getId() != null;
+
+    public List<Servico> buscarServicosPorNome(String nome) {
+        if (nome == null || nome.trim().isEmpty()) {
+
+            return servicoDAO.findAll();
+        }
+        return servicoDAO.findByNomeContaining(nome);
     }
+
 }

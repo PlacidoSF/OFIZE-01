@@ -8,28 +8,29 @@
     <persistence-unit name="ofize-pu" transaction-type="RESOURCE_LOCAL">
         <provider>org.hibernate.jpa.HibernatePersistenceProvider</provider>
 
-        <!-- Especifica suas entidades (opcional mas recomendado) -->
         <class>com.ufersa.OFIZE.model.entitie.Clientes</class>
+        <class>com.ufersa.OFIZE.model.entitie.Automoveis</class>
+        <class>com.ufersa.OFIZE.model.entitie.Servico</class>
+        <class>com.ufersa.OFIZE.model.entitie.Pecas</class>
+        <class>com.ufersa.OFIZE.model.entitie.Orcamento</class>
+        <class>com.ufersa.OFIZE.model.entitie.OrcamentoPeca</class>
+        <class>com.ufersa.OFIZE.model.entitie.OrcamentoServico</class>
+        <class>com.ufersa.OFIZE.model.entitie.Funcionarios</class>
+        <class>com.ufersa.OFIZE.model.entitie.Gerentes</class><properties>
+        <property name="jakarta.persistence.jdbc.url"
+                  value="jdbc:mysql://localhost:3306/ofize_db?createDatabaseIfNotExist=true&amp;useSSL=false"/>
 
-        <properties>
-            <!-- URL com parâmetro para criar banco automaticamente -->
-            <property name="jakarta.persistence.jdbc.url"
-                      value="jdbc:mysql://localhost:3306/ofize_db?createDatabaseIfNotExist=true&amp;useSSL=false"/>
+        <property name="jakarta.persistence.jdbc.user" value="root"/>
+        <property name="jakarta.persistence.jdbc.password" value=""/>
 
-            <property name="jakarta.persistence.jdbc.user" value="root"/>
-            <property name="jakarta.persistence.jdbc.password" value=""/>
+        <property name="hibernate.dialect" value="org.hibernate.dialect.MySQL8Dialect"/>
+        <property name="hibernate.hbm2ddl.auto" value="update"/>
+        <property name="hibernate.show_sql" value="true"/>
+        <property name="hibernate.format_sql" value="true"/>
 
-            <!-- Configurações do Hibernate -->
-            <property name="hibernate.dialect" value="org.hibernate.dialect.MySQL8Dialect"/>
-            <property name="hibernate.hbm2ddl.auto" value="update"/>
-            <property name="hibernate.show_sql" value="true"/>
-            <property name="hibernate.format_sql" value="true"/>
+        <property name="hibernate.generate_statistics" value="true"/>
 
-            <!-- Logging detalhado para debug -->
-            <property name="hibernate.generate_statistics" value="true"/>
-
-            <!-- Mensagens de log mais amigáveis -->
-            <property name="hibernate.id.new_generator_mappings" value="true"/>
-        </properties>
+        <property name="hibernate.id.new_generator_mappings" value="true"/>
+    </properties>
     </persistence-unit>
 </persistence>

@@ -16,97 +16,44 @@ public class Automoveis {
 
     private String marca;
     private String cor;
+    private String placa;
     private int ano;
     private int quilometragem;
-   
+
     @ManyToOne
     @JoinColumn(name = "proprietario_id")
     private Clientes proprietario;
 
-    public Automoveis() {} // Obrigatório para o Hibernate
+    public Automoveis() {}
 
-    public Automoveis(String marca, String cor, int ano, int quilometragem, Clientes proprietario) {
-        setMarca(marca);
-        setCor(cor);
-        setAno(ano);
-        setQuilometragem(quilometragem);
-        setProprietario(proprietario);
+    public Automoveis(String marca, String cor, String placa, int ano, int quilometragem, Clientes proprietario) {
+        this.marca = marca;
+        this.cor = cor;
+        this.placa = placa;
+        this.ano = ano;
+        this.quilometragem = quilometragem;
+        this.proprietario = proprietario;
     }
 
+    // Getters e Setters
+    public Long getId() { return id; }
+    public void setId(Long id) { this.id = id; }
 
-    // GETTERS AND SETTERS
-    // Marca
-    public String getMarca() {
-        return marca;
-    }
-    public void setMarca(String marca) {
-        if (marca != null && !marca.isEmpty()) { // CORREÇÃO AQUI
-            this.marca = marca;
-        } else {
-            this.marca = null;
-        }
-    }
+    public String getMarca() { return marca; }
+    public void setMarca(String marca) { this.marca = marca; }
 
-    //Cor
-    
-    public String getCor() {
-        return cor;
-    }
-    public void setCor(String cor) {
-        if (cor != null && !cor.isEmpty()) { // CORREÇÃO AQUI
-            this.cor = cor;
-        } else {
-            this.cor = null;
-        }
-    }
+    public String getCor() { return cor; }
+    public void setCor(String cor) { this.cor = cor; }
 
-    // Ano
+    public String getPlaca() { return placa; }
+    public void setPlaca(String placa) { this.placa = placa; }
 
-    public int getAno() {
-        return ano;
-    }
-    public void setAno(int ano) {
-        int anoAtual = java.time.LocalDate.now().getYear();
-        if (getAno() > 1885 && getAno() <= anoAtual) {
-            this.ano = ano;
-        } else {
-            this.ano = 0;
-        }
-    }
+    public int getAno() { return ano; }
+    public void setAno(int ano) { this.ano = ano; }
 
-    // Quilometragem
+    public int getQuilometragem() { return quilometragem; }
+    public void setQuilometragem(int quilometragem) { this.quilometragem = quilometragem; }
 
-    public double getQuilometragem() {
-        return quilometragem;
-    }
-    public void setQuilometragem(int quilometragem) {
-        if (quilometragem >= 0) {
-            this.quilometragem = quilometragem;
-        } else {
-            this.quilometragem = 0;
-        }
-    }
-
-    // Proprietario
-
-    public Clientes getProprietario() {
-        return proprietario;
-    }
-    public void setProprietario(Clientes proprietario) {
-        if (proprietario.getNome() != null && !proprietario.getNome().isEmpty()) {
-                this.proprietario = proprietario;
-      }else{
-        throw new IllegalArgumentException("Nome do proprietário é inválido");
-      }    }
-
-      // ID
-    public Long getId() {
-        return id;
-    }
-    
-    public void setId(Long id) {
-        this.id = id;
-    }
-
-
-    }
+    public Clientes getProprietario() { return proprietario; }
+    public void setProprietario(Clientes proprietario) { this.proprietario = proprietario; }
+}

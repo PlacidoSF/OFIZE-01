@@ -14,7 +14,6 @@ import javafx.scene.layout.HBox;
 import javafx.scene.layout.Priority;
 import javafx.scene.layout.Region;
 import javafx.scene.layout.VBox;
-import javafx.stage.Stage;
 
 import java.io.IOException;
 import java.util.List;
@@ -24,6 +23,7 @@ public class PesquisarClienteController {
 
     @FXML private TextField searchField;
     @FXML private VBox clientesContainer;
+    @FXML private Button cadastrarClienteButton;
 
     private final ClientesService clientesService = new ClientesService();
 
@@ -86,10 +86,19 @@ public class PesquisarClienteController {
     }
 
     private void deletarCliente(Clientes cliente) {
+        boolean possuiAutomoveis = clientesService.clientePossuiAutomoveis(cliente.getId());
+        String tituloAlerta = "Você realmente quer apagar este Cliente?";
+        String conteudoAlerta = "Cliente: " + cliente.getNome();
+
+        if (possuiAutomoveis) {
+            tituloAlerta = "Atenção: Cliente possui automóveis!";
+            conteudoAlerta = "Se continuar, o cliente E TODOS os seus automóveis serão apagados permanentemente. Deseja continuar?";
+        }
+
         Alert alert = new Alert(Alert.AlertType.CONFIRMATION);
         alert.setTitle("Confirmação de Exclusão");
-        alert.setHeaderText("Você realmente quer apagar este Cliente?");
-        alert.setContentText("Cliente: " + cliente.getNome());
+        alert.setHeaderText(tituloAlerta);
+        alert.setContentText(conteudoAlerta);
 
         ButtonType simButton = new ButtonType("Sim", ButtonBar.ButtonData.OK_DONE);
         ButtonType naoButton = new ButtonType("Não", ButtonBar.ButtonData.CANCEL_CLOSE);
@@ -97,8 +106,13 @@ public class PesquisarClienteController {
 
         Optional<ButtonType> result = alert.showAndWait();
         if (result.isPresent() && result.get() == simButton) {
-            clientesService.removerCliente(cliente);
-            buscarClientes(searchField.getText());
+            try {
+                clientesService.removerCliente(cliente);
+                buscarClientes(searchField.getText());
+            } catch (Exception e) {
+                Alert errorAlert = new Alert(Alert.AlertType.ERROR, "Erro ao deletar: " + e.getMessage());
+                errorAlert.showAndWait();
+            }
         }
     }
 
@@ -111,6 +125,17 @@ public class PesquisarClienteController {
             controller.setClienteParaAlterar(cliente);
 
             Scene scene = searchField.getScene();
+            scene.setRoot(root);
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+    }
+
+    @FXML
+    void handleCadastrarCliente() {
+        try {
+            Parent root = FXMLLoader.load(getClass().getResource("/com/ufersa/OFIZE/view/cadastrar_cliente.fxml"));
+            Scene scene = cadastrarClienteButton.getScene();
             scene.setRoot(root);
         } catch (IOException e) {
             e.printStackTrace();

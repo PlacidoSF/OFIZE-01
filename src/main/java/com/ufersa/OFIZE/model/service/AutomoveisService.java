@@ -1,76 +1,73 @@
 package com.ufersa.OFIZE.model.service;
 
+import com.ufersa.OFIZE.model.entitie.Automoveis;
 import java.util.List;
 
-import com.ufersa.OFIZE.model.dao.AutomoveisDAO;
-import com.ufersa.OFIZE.model.entitie.Automoveis;
+public class AutomoveisService extends AutomoveisServiceAbstract {
 
-public class AutomoveisService {
-
-    private AutomoveisDAO dao = new AutomoveisDAO();
-
-    public void cadastrar(Automoveis auto) {
-        try {
-            if (auto.getMarca() == null || auto.getMarca().isEmpty() ||
-                auto.getProprietario() == null || auto.getProprietario().getCpf() == null) {
-                System.err.println("Dados inválidos para cadastro do automóvel");
-                return;
-            }
-            dao.persist(auto);
-            System.out.println("Automóvel cadastrado com sucesso.");
-        } catch (Exception e) {
-            System.err.println("Erro ao cadastrar automóvel: " + e.getMessage());
-        }
+    public AutomoveisService() {
+        super();
     }
 
-    public void atualizar(Automoveis auto) {
-        try {
-            dao.merge(auto);
-            System.out.println("Automóvel atualizado com sucesso.");
-        } catch (Exception e) {
-            System.err.println("Erro ao atualizar automóvel: " + e.getMessage());
+    public void cadastrar(Automoveis automovel) {
+        if (!isAutomovelValido(automovel)) {
+            throw new IllegalArgumentException("Dados do automóvel são inválidos. Verifique todos os campos.");
         }
+        if (automoveisDAO.findByPlaca(automovel.getPlaca()) != null) {
+            throw new IllegalArgumentException("Placa já cadastrada no sistema.");
+        }
+        automoveisDAO.persist(automovel);
     }
 
-    public void deletar(Automoveis auto) {
-        try {
-            dao.remove(auto);
-            System.out.println("Automóvel deletado com sucesso.");
-        } catch (Exception e) {
-            System.err.println("Erro ao deletar automóvel: " + e.getMessage());
+    public void atualizar(Automoveis automovel) {
+        if (automovel.getId() == null) {
+            throw new IllegalArgumentException("ID do automóvel não pode ser nulo para atualização.");
         }
+        if (!isAutomovelValido(automovel)) {
+            throw new IllegalArgumentException("Dados do automóvel são inválidos para atualização.");
+        }
+
+        // Validação de placa única para atualização
+        Automoveis automovelExistente = automoveisDAO.findByPlaca(automovel.getPlaca());
+        if (automovelExistente != null && !automovelExistente.getId().equals(automovel.getId())) {
+            throw new IllegalArgumentException("A placa informada já pertence a outro automóvel.");
+        }
+
+        automoveisDAO.merge(automovel);
+    }
+
+    // ... resto da classe ...
+    public void deletar(Automoveis automovel) {
+        if (automovel == null || automovel.getId() == null) {
+            throw new IllegalArgumentException("Automóvel inválido para remoção.");
+        }
+        automoveisDAO.remove(automovel);
     }
 
     public Automoveis buscarPorId(Long id) {
-        try {
-            return dao.findById(id);
-        } catch (Exception e) {
-            System.err.println("Erro ao buscar automóvel por ID: " + e.getMessage());
-            return null;
-        }
+        return automoveisDAO.findById(id);
     }
 
     public List<Automoveis> buscarTodos() {
-        try {
-            return dao.findAll();
-        } catch (Exception e) {
-            System.err.println("Erro ao buscar todos os automóveis: " + e.getMessage());
-            return List.of();
-        }
+        return automoveisDAO.findAll();
     }
 
-    public List<Automoveis> pesquisar(String marca, String nomeProprietario) {
-        try {
-            if ((marca == null || marca.trim().isEmpty()) &&
-                (nomeProprietario == null || nomeProprietario.trim().isEmpty())) {
-                System.err.println("Informe pelo menos a marca ou o proprietário para pesquisa");
-                return List.of();
-            }
-            return dao.buscarPorMarcaOuProprietario(marca, nomeProprietario);
-        } catch (Exception e) {
-            System.err.println("Erro ao pesquisar automóveis: " + e.getMessage());
-            return List.of();
+    public List<Automoveis> pesquisar(String textoBusca) {
+        if (textoBusca == null || textoBusca.trim().isEmpty()) {
+            return automoveisDAO.findAll();
         }
+        return automoveisDAO.buscarPorMarcaOuProprietario(textoBusca);
     }
 
+    private boolean isAutomovelValido(Automoveis automovel) {
+        if (automovel == null) return false;
+        if (automovel.getMarca() == null || automovel.getMarca().trim().isEmpty()) return false;
+        if (automovel.getCor() == null || automovel.getCor().trim().isEmpty()) return false;
+        if (automovel.getPlaca() == null || automovel.getPlaca().trim().isEmpty()) return false;
+        if (automovel.getAno() <= 1885 || automovel.getAno() > java.time.LocalDate.now().getYear()) return false;
+        if (automovel.getQuilometragem() < 0) return false;
+        if (automovel.getProprietario() == null || automovel.getProprietario().getId() == null) return false;
+
+        return true;
+    }
 }

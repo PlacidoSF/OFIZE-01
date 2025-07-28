@@ -27,11 +27,10 @@ public class Main extends Application {
 
     @Override
     public void start(Stage primaryStage) throws IOException {
-        Parent root = FXMLLoader.load(Objects.requireNonNull(getClass().getResource("/com/ufersa/OFIZE/view/cadastrar_cliente.fxml")));
+        Parent root = FXMLLoader.load(Objects.requireNonNull(getClass().getResource("/com/ufersa/OFIZE/view/ServicoView.fxml")));
 
-        Scene scene = new Scene(root, 800, 600);
+        Scene scene = new Scene(root);
         //scene.getStylesheets().add(Objects.requireNonNull(getClass().getResource("/Standreyles/login-style.css")).toExternalForm());
-
         primaryStage.setTitle("OFIZE - Login");
         primaryStage.setScene(scene);
         primaryStage.show();
