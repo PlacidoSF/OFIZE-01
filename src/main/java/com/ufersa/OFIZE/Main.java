@@ -15,7 +15,7 @@ public class Main extends Application {
         // ATUALIZADO: Chama a classe de inicialização para criar o gerente, se necessário.
         DataInitializer.criarGerentePadraoSeNaoExistir();
 
-        Parent root = FXMLLoader.load(Objects.requireNonNull(getClass().getResource("/com/ufersa/OFIZE/view/pesquisar_automovel.fxml")));
+        Parent root = FXMLLoader.load(Objects.requireNonNull(getClass().getResource("/com/ufersa/OFIZE/view/tela_login.fxml")));
         Scene scene = new Scene(root, 800, 600);
         primaryStage.setTitle("OFIZE - Login");
         primaryStage.setScene(scene);

@@ -2,6 +2,7 @@ package com.ufersa.OFIZE.controller;
 
 import com.ufersa.OFIZE.model.entitie.Funcionarios;
 import com.ufersa.OFIZE.model.service.FuncionariosService;
+import com.ufersa.OFIZE.model.service.*;
 import javafx.application.Platform;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;

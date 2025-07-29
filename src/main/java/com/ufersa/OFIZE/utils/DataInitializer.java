@@ -1,4 +1,5 @@
 package com.ufersa.OFIZE.utils;
+import com.ufersa.OFIZE.model.service.*;
 
 public class DataInitializer {
 
