@@ -5,35 +5,28 @@ import com.ufersa.OFIZE.model.entitie.Pecas;
 import javax.persistence.EntityManager;
 import javax.persistence.EntityManagerFactory;
 import javax.persistence.Persistence;
-import javax.persistence.TypedQuery; // Importar para usar queries tipadas
+import javax.persistence.TypedQuery;
 import java.util.List;
 
 public class PecasDao {
 
-    // Define o nome da unidade de persistência que você configurou no seu persistence.xml
-    private static final String PERSISTENCE_UNIT_NAME = "OFIZE_PU"; // Substitua pelo nome real da sua PU
-
-    // EntityManagerFactory deve ser criado uma única vez por aplicação
+    private static final String PERSISTENCE_UNIT_NAME = "ofize-pu";
     private static EntityManagerFactory emf;
 
-    // Bloco estático para inicializar o EntityManagerFactory
     static {
         try {
             emf = Persistence.createEntityManagerFactory(PERSISTENCE_UNIT_NAME);
         } catch (Exception e) {
             System.err.println("Erro ao inicializar EntityManagerFactory: " + e.getMessage());
             e.printStackTrace();
-            // Lançar RuntimeException para falha crítica na inicialização
             throw new RuntimeException("Falha na inicialização do sistema de persistência.", e);
         }
     }
 
-    // Método para obter um EntityManager. Ele deve ser criado por Thread/requisição e fechado.
     protected EntityManager getEntityManager() {
         return emf.createEntityManager();
     }
 
-    // Método para persistir (salvar pela primeira vez) uma Peça
     public void persist(Pecas pecas) {
         EntityManager em = getEntityManager();
         try {
@@ -54,7 +47,6 @@ public class PecasDao {
         }
     }
 
-    // Método para atualizar (merge) uma Peça existente
     public Pecas merge(Pecas pecas) {
         EntityManager em = getEntityManager();
         Pecas updatedPecas = null;
@@ -62,7 +54,8 @@ public class PecasDao {
             em.getTransaction().begin();
             updatedPecas = em.merge(pecas);
             em.getTransaction().commit();
-        } catch (Exception e) {
+        }
+        catch (Exception e) {
             if (em.getTransaction().isActive()) {
                 em.getTransaction().rollback();
             }
@@ -77,13 +70,10 @@ public class PecasDao {
         return updatedPecas;
     }
 
-    // Método para remover uma Peça
     public void remove(Pecas pecas) {
         EntityManager em = getEntityManager();
         try {
             em.getTransaction().begin();
-            // Para remover, a entidade precisa estar no estado managed.
-            // Se a entidade veio de outra transação ou foi "detached", precisamos encontrá-la.
             Pecas pecasManaged = em.find(Pecas.class, pecas.getId());
             if (pecasManaged != null) {
                 em.remove(pecasManaged);
@@ -105,7 +95,6 @@ public class PecasDao {
         }
     }
 
-    // Método para buscar uma Peça pelo ID
     public Pecas findById(Long id) {
         EntityManager em = getEntityManager();
         try {
@@ -117,7 +106,6 @@ public class PecasDao {
         }
     }
 
-    // Método para buscar todas as Peças
     public List<Pecas> findAll() {
         EntityManager em = getEntityManager();
         try {
@@ -130,28 +118,46 @@ public class PecasDao {
         }
     }
 
-    // Método para buscar peças por nome OU fabricante (usado pelo PecasService)
+    // *** VERSÃO CORRIGIDA DO MÉTODO DE PESQUISA POR NOME OU FABRICANTE ***
     public List<Pecas> buscarPorNomeOufabricante(String nome, String fabricante) {
         EntityManager em = getEntityManager();
         try {
-            StringBuilder jpql = new StringBuilder("SELECT p FROM Pecas p WHERE 1=1");
-            boolean hasNome = nome != null && !nome.trim().isEmpty();
-            boolean hasFabricante = fabricante != null && !fabricante.trim().isEmpty();
+            StringBuilder jpql = new StringBuilder("SELECT p FROM Pecas p WHERE ");
+            boolean firstCondition = true; // Ajuda a gerenciar AND/OR
 
-            if (hasNome) {
-                jpql.append(" AND LOWER(p.nome) LIKE :nome");
+            String trimmedNome = (nome != null) ? nome.trim().toLowerCase() : "";
+            String trimmedFabricante = (fabricante != null) ? fabricante.trim().toLowerCase() : "";
+
+            if (!trimmedNome.isEmpty()) {
+                jpql.append("LOWER(p.nome) LIKE :nome");
+                firstCondition = false;
             }
-            if (hasFabricante) {
-                jpql.append(" AND LOWER(p.fabricante) LIKE :fabricante");
+
+            if (!trimmedFabricante.isEmpty()) {
+                if (!firstCondition) { // Se já adicionamos a condição de nome, use OR
+                    jpql.append(" OR ");
+                }
+                jpql.append("LOWER(p.fabricante) LIKE :fabricante");
+                firstCondition = false; // Não é mais a primeira condição
+            }
+
+            // Se nenhum critério foi fornecido (o que PecasService já trata com findAll,
+            // mas é bom ter uma fallback ou condição para evitar query vazia "WHERE ")
+            if (firstCondition) {
+                // Isso deve ser tratado pelo PecasService que chama findAll()
+                // Mas, como fallback ou se essa função for chamada diretamente com ambos vazios,
+                // podemos adicionar uma condição que sempre é verdadeira ou retornar uma lista vazia.
+                // Idealmente, esta parte nunca será alcançada se PecasService.pesquisar() estiver correto.
+                jpql.append("1=1"); // Adiciona uma condição sempre verdadeira se não houver critérios
             }
 
             TypedQuery<Pecas> query = em.createQuery(jpql.toString(), Pecas.class);
 
-            if (hasNome) {
-                query.setParameter("nome", "%" + nome.toLowerCase() + "%");
+            if (!trimmedNome.isEmpty()) {
+                query.setParameter("nome", "%" + trimmedNome + "%");
             }
-            if (hasFabricante) {
-                query.setParameter("fabricante", "%" + fabricante.toLowerCase() + "%");
+            if (!trimmedFabricante.isEmpty()) {
+                query.setParameter("fabricante", "%" + trimmedFabricante + "%");
             }
 
             return query.getResultList();

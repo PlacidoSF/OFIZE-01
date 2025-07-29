@@ -1,24 +1,15 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
 <?import javafx.geometry.Insets?>
-<?import javafx.scene.control.Button?>
-<?import javafx.scene.control.ComboBox?>
-<?import javafx.scene.control.DatePicker?>
-<?import javafx.scene.control.Label?>
-<?import javafx.scene.control.ScrollPane?>
-<?import javafx.scene.control.TextField?>
-<?import javafx.scene.image.Image?>
-<?import javafx.scene.image.ImageView?>
-<?import javafx.scene.layout.BorderPane?>
-<?import javafx.scene.layout.HBox?>
-<?import javafx.scene.layout.Region?>
-<?import javafx.scene.layout.VBox?>
+<?import javafx.scene.control.*?>
+<?import javafx.scene.image.*?>
+<?import javafx.scene.layout.*?>
 <?import javafx.scene.text.Text?>
 <?import javafx.scene.text.TextFlow?>
 
 <BorderPane styleClass="root" xmlns="http://javafx.com/javafx/21" xmlns:fx="http://javafx.com/fxml/1"
-            fx:controller="com.ufersa.OFIZE.controller.OrcamentoController"
-            stylesheets="@../../../../Styles/pesquisar-automovel-style.css">
+            fx:controller="com.ufersa.OFIZE.controller.PecasViewController"
+            stylesheets="@/Styles/pesquisar-custom-style.css">
     <top>
         <HBox styleClass="header-footer">
             <children>
@@ -49,48 +40,40 @@
     <center>
         <VBox alignment="TOP_CENTER" spacing="20.0" styleClass="search-content-area">
             <children>
-                <HBox alignment="CENTER_LEFT" spacing="20.0">
+                <HBox alignment="CENTER_LEFT" spacing="10.0">
                     <children>
-                        <HBox styleClass="search-bar" HBox.hgrow="ALWAYS">
+                        <HBox alignment="CENTER_LEFT" styleClass="search-bar">
                             <children>
                                 <ImageView fitHeight="20.0" fitWidth="20.0" pickOnBounds="true" preserveRatio="true">
                                     <image><Image url="/Imagens/lupa.png" /></image>
                                 </ImageView>
-                                <TextField fx:id="searchVeiculoField" promptText="Pesquisar por Veículo (Marca/Placa)" styleClass="search-field" HBox.hgrow="ALWAYS">
+                                <TextField fx:id="searchField" promptText="Informe o Nome ou Fabricante da Peça" styleClass="search-field" HBox.hgrow="ALWAYS">
                                     <HBox.margin><Insets left="10.0" /></HBox.margin>
                                 </TextField>
                             </children>
                         </HBox>
-                        <ComboBox fx:id="clienteComboBox" promptText="Filtrar por Cliente" prefWidth="200.0" styleClass="form-field" />
-                    </children>
-                </HBox>
 
-                <HBox alignment="CENTER_LEFT" spacing="10.0">
-                    <children>
-                        <Label text="Data Início:" />
-                        <DatePicker fx:id="dataInicioPicker"  styleClass="form-field"/>
-                        <Label text="Data Fim:" />
-                        <DatePicker fx:id="dataFimPicker" styleClass="form-field"/>
                         <Region HBox.hgrow="ALWAYS" />
-                        <Button fx:id="cadastrarOrcamentoButton" onAction="#handleCadastrarOrcamento" mnemonicParsing="false"
-                                text="Cadastrar Orçamento" styleClass="confirm-button" />
+                        <Button fx:id="newPecaButton" text="Cadastrar Peça" styleClass="confirm-button" onAction="#handleNewPeca" />
                     </children>
                 </HBox>
 
                 <HBox alignment="CENTER_LEFT" styleClass="list-header">
                     <children>
-                        <Label text="Data" prefWidth="100.0" />
-                        <Label text="Veículo" prefWidth="200.0" />
-                        <Label text="Cliente" prefWidth="250.0" />
-                        <Label text="Valor Total (R$)" prefWidth="120.0" alignment="CENTER" />
-                        <Label text="Status" prefWidth="120.0" alignment="CENTER" /> <Label text="Pago" prefWidth="120.0" alignment="CENTER" />   <Region HBox.hgrow="ALWAYS" />
+                        <Label text="Nome da Peça" prefWidth="200.0" />
+                        <Label text="Fabricante" prefWidth="150.0" />
+                        <Label text="Preço" prefWidth="100.0" alignment="CENTER" />
+                        <Label text="Quantidade" prefWidth="100.0" alignment="CENTER" />
+
+                        <Region HBox.hgrow="ALWAYS" />
+
                         <Label text="Ações" prefWidth="100.0" alignment="CENTER" />
                     </children>
                 </HBox>
 
                 <ScrollPane fitToWidth="true" hbarPolicy="NEVER" style="-fx-background-color: transparent;" VBox.vgrow="ALWAYS">
                     <content>
-                        <VBox fx:id="orcamentosContainer" />
+                        <VBox fx:id="pecasContainer" />
                     </content>
                 </ScrollPane>
             </children>

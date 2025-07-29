@@ -1,7 +1,7 @@
 package com.ufersa.OFIZE.model.service;
 
 import java.util.List;
-import com.ufersa.OFIZE.model.dao.PecasDao;
+import com.ufersa.OFIZE.model.dao.PecasDao; // Assumindo que PecasDAO está em dao
 import com.ufersa.OFIZE.model.entitie.Pecas;
 
 public class PecasService{
@@ -13,10 +13,10 @@ public class PecasService{
 
     //Confirma se todos os dados de peça são válidos
     private boolean ValidarPeca(Pecas peca) {
-        return peca != null && peca.getId() != null &&
-                peca.getId() > 0 && peca.getPreco() > 0 &&
+        boolean isIdValid = (peca.getId() == null || peca.getId() > 0);
+        return peca != null && isIdValid && peca.getPreco() > 0 &&
                 peca.getNome() != null && !peca.getNome().isEmpty() &&
-                peca.getFabricante() != null && !peca.getFabricante().isEmpty();
+                peca.getFabricante() != null && !peca.getFabricante().isEmpty() && peca.getQuantidade() > 0;
     }
 
     //Cadastra uma nova peça, mas validando os dados primeiro
@@ -57,14 +57,18 @@ public class PecasService{
         return dao.findAll();
     }
 
-    //
+    // Pesquisa peças por nome ou fabricante. Se ambos forem vazios, retorna todas as peças.
     public List<Pecas> pesquisar(String nome, String fabricante) {
-        if ((nome == null || nome.trim().isEmpty()) &&
-                (fabricante == null || fabricante.trim().isEmpty())) {
-            System.err.println("Informe pelo menos o nome da peça ou seu fabricante para pesquisar");
-            return List.of();
-        }
-            return dao.buscarPorNomeOufabricante(nome, fabricante);
+        // Normaliza os inputs para garantir que null e strings vazias sejam tratadas uniformemente
+        String trimmedNome = (nome == null) ? "" : nome.trim();
+        String trimmedFabricante = (fabricante == null) ? "" : fabricante.trim();
+
+        // Se ambos os campos de pesquisa estiverem vazios, retorne todas as peças
+        if (trimmedNome.isEmpty() && trimmedFabricante.isEmpty()) {
+            return dao.findAll(); // <--- CHAME dao.findAll() AQUI
         }
 
+        // Caso contrário, execute a busca específica no DAO
+        return dao.buscarPorNomeOufabricante(trimmedNome, trimmedFabricante);
+    }
 }

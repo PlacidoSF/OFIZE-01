@@ -62,3 +62,15 @@
 .delete-button:hover {
     -fx-background-color: #b02424;
 }
+
+/* NOVO ESTILO: Para os botões de alternância de status/pagamento */
+.toggle-button {
+    -fx-background-color: #008000; /* Um tom de verde */
+    -fx-background-radius: 5px;
+    -fx-padding: 5px;
+    -fx-cursor: hand;
+}
+
+.toggle-button:hover {
+    -fx-background-color: #1e9646; /* Um tom de verde mais escuro para o hover */
+}

@@ -9,73 +9,63 @@
 
 <BorderPane styleClass="root" xmlns="http://javafx.com/javafx/21" xmlns:fx="http://javafx.com/fxml/1"
             fx:controller="com.ufersa.OFIZE.controller.ServicoViewController"
-            stylesheets="@/Styles/pesquisar-servico-style.css"> <top>
-    <HBox styleClass="header-footer">
-        <children>
-            <HBox alignment="CENTER_LEFT">
-                <children>
-                    <TextFlow>
-                        <children>
-                            <Text text="OFI" styleClass="logo-font, logo-text-white" />
-                            <Text text="ZÉ" styleClass="logo-font, logo-text-red" />
-                        </children>
-                    </TextFlow>
-                    <ImageView fitHeight="24.0" fitWidth="24.0" pickOnBounds="true" preserveRatio="true">
-                        <image><Image url="/Imagens/ferramenta_1.png" /></image>
-                        <HBox.margin><Insets left="5.0" /></HBox.margin>
-                    </ImageView>
-                </children>
-            </HBox>
-            <Region HBox.hgrow="ALWAYS" />
-            <VBox alignment="CENTER" styleClass="hamburger-menu">
-                <children>
-                    <Region styleClass="hamburger-bar" /><Region styleClass="hamburger-bar" /><Region styleClass="hamburger-bar" />
-                </children>
-            </VBox>
-        </children>
+            stylesheets="@/Styles/pesquisar-custom-style.css"> <top>
+    <HBox styleClass="header-footer"> <children>
+        <HBox alignment="CENTER_LEFT">
+            <children>
+                <TextFlow>
+                    <children>
+                        <Text text="OFI" styleClass="logo-font, logo-text-white" /> <Text text="ZÉ" styleClass="logo-font, logo-text-red" /> </children>
+                </TextFlow>
+                <ImageView fitHeight="24.0" fitWidth="24.0" pickOnBounds="true" preserveRatio="true">
+                    <image><Image url="/Imagens/ferramenta_1.png" /></image>
+                    <HBox.margin><Insets left="5.0" /></HBox.margin>
+                </ImageView>
+            </children>
+        </HBox>
+        <Region HBox.hgrow="ALWAYS" />
+        <VBox alignment="CENTER" styleClass="hamburger-menu"> <children>
+            <Region styleClass="hamburger-bar" /><Region styleClass="hamburger-bar" /><Region styleClass="hamburger-bar" /> </children>
+        </VBox>
+    </children>
     </HBox>
 </top>
 
     <center>
-        <VBox alignment="TOP_CENTER" spacing="20.0" styleClass="search-content-area">
-            <children>
-                <HBox alignment="CENTER_LEFT" spacing="10.0"> <children>
-                    <HBox alignment="CENTER_LEFT" styleClass="search-bar">
-                        <children>
-                            <ImageView fitHeight="20.0" fitWidth="20.0" pickOnBounds="true" preserveRatio="true">
-                                <image><Image url="/Imagens/lupa.png" /></image>
-                            </ImageView>
-                            <TextField fx:id="searchField" promptText="Informe o Nome do Serviço " styleClass="search-field" HBox.hgrow="ALWAYS">
-                                <HBox.margin><Insets left="10.0" /></HBox.margin>
-                            </TextField>
-                        </children>
-                    </HBox>
-
-                    <Region HBox.hgrow="ALWAYS" /> <Button fx:id="newServiceButton" text="+Novo Serviço" styleClass="new-service-button" onAction="#handleNewService" />
+        <VBox alignment="TOP_CENTER" spacing="20.0" styleClass="search-content-area"> <children>
+            <HBox alignment="CENTER_LEFT" spacing="10.0"> <children>
+                <HBox alignment="CENTER_LEFT" styleClass="search-bar"> <children>
+                    <ImageView fitHeight="20.0" fitWidth="20.0" pickOnBounds="true" preserveRatio="true">
+                        <image><Image url="/Imagens/lupa.png" /></image>
+                    </ImageView>
+                    <TextField fx:id="searchField" promptText="Informe o Nome do Serviço " styleClass="search-field" HBox.hgrow="ALWAYS"> <HBox.margin><Insets left="10.0" /></HBox.margin>
+                    </TextField>
                 </children>
                 </HBox>
 
-                <HBox alignment="CENTER_LEFT" styleClass="list-header">
-                    <children>
-                        <Label text="Nome do Serviço" prefWidth="300.0" />
-                        <Label text="Valor" prefWidth="150.0" alignment="CENTER" />
+                <Region HBox.hgrow="ALWAYS" />
+                <Button fx:id="newServiceButton" text="Cadastrar Serviço" styleClass="confirm-button" onAction="#handleNewService" /> </children>
+            </HBox>
 
-                        <Region HBox.hgrow="ALWAYS" />
+            <HBox alignment="CENTER_LEFT" styleClass="list-header"> <children>
+                <Label text="Nome do Serviço" prefWidth="300.0" />
+                <Label text="Valor" prefWidth="150.0" alignment="CENTER" />
 
-                        <Label text="Ações" prefWidth="100.0" alignment="CENTER" />
-                    </children>
-                </HBox>
+                <Region HBox.hgrow="ALWAYS" />
 
-                <ScrollPane fitToWidth="true" hbarPolicy="NEVER" style="-fx-background-color: transparent;" VBox.vgrow="ALWAYS">
-                    <content>
-                        <VBox fx:id="servicosContainer" />
-                    </content>
-                </ScrollPane>
+                <Label text="Ações" prefWidth="100.0" alignment="CENTER" />
             </children>
+            </HBox>
+
+            <ScrollPane fitToWidth="true" hbarPolicy="NEVER" style="-fx-background-color: transparent;" VBox.vgrow="ALWAYS">
+                <content>
+                    <VBox fx:id="servicosContainer" />
+                </content>
+            </ScrollPane>
+        </children>
         </VBox>
     </center>
 
     <bottom>
-        <HBox prefHeight="60.0" styleClass="header-footer" />
-    </bottom>
+        <HBox prefHeight="60.0" styleClass="header-footer" /> </bottom>
 </BorderPane>

@@ -16,16 +16,19 @@ public class Pecas {
     private String nome;
     private double preco;
     private String fabricante;
+    private int quantidade;
 
     //Construtor vazio
     public Pecas(){
     }
 
     //Construtor
-    public Pecas(String nome, double preco, String fabricante){
+    public Pecas(String nome, double preco, String fabricante, int quantidade){
         setNome(nome);
         setPreco(preco);
         setFabricante(fabricante);
+        setQuantidade(quantidade);
+
     }
 
     //Métodos Getters e Setters
@@ -79,4 +82,15 @@ public class Pecas {
         return fabricante;
     }
 
+    public int getQuantidade() {
+        return quantidade;
+    }
+
+    public void setQuantidade(int quantidade) {
+        if (quantidade >= 0){
+            this.quantidade = quantidade;
+        }else{
+            throw new IllegalArgumentException("Quantidade deve ser positiva.");
+        }
+    }
 }

@@ -1,13 +1,13 @@
 /* Importa o estilo base */
 @import "entity-style.css";
 
-/* Estilo da barra de pesquisa ATUALIZADO */
+/* Estilo da barra de pesquisa */
 .search-bar {
     -fx-background-color: #e9e5e5;
     -fx-background-radius: 20px;
     -fx-padding: 5px 15px;
     -fx-alignment: center-left;
-    -fx-pref-width: 300px; /*  */
+    -fx-pref-width: 350px; /* Largura preferida fixa */
 }
 
 .search-field {
@@ -61,18 +61,4 @@
 
 .delete-button:hover {
     -fx-background-color: #b02424;
-}
-
-.new-service-button {
-    -fx-background-color: #2fb551; /* Green color from your client's confirm button */
-    -fx-text-fill: white;
-    -fx-font-size: 14px; /* Adjust font size as needed */
-    -fx-font-weight: bold;
-    -fx-background-radius: 8; /* Rounded corners */
-    -fx-padding: 8px 15px; /* Adjust padding as needed */
-    -fx-cursor: hand;
-}
-
-.new-service-button:hover {
-    -fx-background-color: #36d45d; /* Slightly lighter green on hover */
 }
