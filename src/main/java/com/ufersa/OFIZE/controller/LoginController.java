@@ -1,7 +1,6 @@
 package com.ufersa.OFIZE.controller;
 
 import com.ufersa.OFIZE.model.service.FuncionariosService;
-import com.ufersa.OFIZE.model.service.GerentesService;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
