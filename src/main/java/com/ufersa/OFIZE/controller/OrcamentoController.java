@@ -1,368 +1,302 @@
-// src/main/java/com/ufersa.OFIZE.model.controller/OrcamentoController.java
-/*package com.ufersa.OFIZE.controller;
+package com.ufersa.OFIZE.controller;
 
-import com.ufersa.OFIZE.model.entitie.Automoveis;
+import com.ufersa.OFIZE.model.entitie.Clientes;
 import com.ufersa.OFIZE.model.entitie.Orcamento;
-import com.ufersa.OFIZE.model.entitie.OrcamentoPeca;
-import com.ufersa.OFIZE.model.entitie.OrcamentoServico;
-import com.ufersa.OFIZE.model.entitie.Pecas;
-import com.ufersa.OFIZE.model.entitie.Servico;
-
-import com.ufersa.OFIZE.model.service.AutomoveisService;
-import com.ufersa.OFIZE.model.service.PecasService;
-import com.ufersa.OFIZE.model.service.ServicoService;
+import com.ufersa.OFIZE.model.service.ClientesService;
 import com.ufersa.OFIZE.model.service.OrcamentoService;
-
 import javafx.collections.FXCollections;
-import javafx.collections.ObservableList;
 import javafx.fxml.FXML;
+import javafx.fxml.FXMLLoader;
+import javafx.geometry.Pos;
+import javafx.scene.Parent;
+import javafx.scene.Scene;
 import javafx.scene.control.*;
-import javafx.scene.control.cell.PropertyValueFactory;
-import javafx.scene.layout.AnchorPane;
+import javafx.scene.image.Image;
+import javafx.scene.image.ImageView;
+import javafx.scene.layout.HBox;
+import javafx.scene.layout.Region;
+import javafx.scene.layout.VBox;
+import javafx.stage.Stage;
 import javafx.util.StringConverter;
+import javafx.event.ActionEvent; // Importar ActionEvent
 
+import java.io.IOException;
+import java.io.InputStream;
 import java.time.LocalDate;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
+import java.util.Optional;
 import java.util.stream.Collectors;
 
 public class OrcamentoController {
 
     @FXML
-    private AnchorPane mainPane;
+    private TextField searchVeiculoField;
     @FXML
-    private ComboBox<Automoveis> automovelComboBox;
+    private ComboBox<Clientes> clienteComboBox;
     @FXML
-    private DatePicker dataDatePicker;
-
-    // Peças
+    private DatePicker dataInicioPicker;
     @FXML
-    private ComboBox<Pecas> pecasComboBox;
+    private DatePicker dataFimPicker;
     @FXML
-    private TextField quantidadePecasTextField;
-    @FXML
-    private TableView<OrcamentoPecaDisplay> pecasTableView;
-    @FXML
-    private TableColumn<OrcamentoPecaDisplay, String> pecaNomeColumn;
-    @FXML
-    private TableColumn<OrcamentoPecaDisplay, Integer> pecaQuantidadeColumn;
-    @FXML
-    private TableColumn<OrcamentoPecaDisplay, String> pecaPrecoUnitarioColumn;
-    @FXML
-    private TableColumn<OrcamentoPecaDisplay, String> pecaSubtotalColumn;
-    @FXML
-    private TableColumn<OrcamentoPecaDisplay, Button> pecaAcoesColumn;
-
-
-    // Serviços
-    @FXML
-    private ComboBox<Servico> servicosComboBox;
-    @FXML
-    private TextField quantidadeServicosTextField;
-    @FXML
-    private TableView<OrcamentoServicoDisplay> servicosTableView;
-    @FXML
-    private TableColumn<OrcamentoServicoDisplay, String> servicoNomeColumn;
-    @FXML
-    private TableColumn<OrcamentoServicoDisplay, Integer> servicoQuantidadeColumn;
-    @FXML
-    private TableColumn<OrcamentoServicoDisplay, String> servicoPrecoUnitarioColumn;
-    @FXML
-    private TableColumn<OrcamentoServicoDisplay, String> servicoSubtotalColumn;
-    @FXML
-    private TableColumn<OrcamentoServicoDisplay, Button> servicoAcoesColumn;
+    private Button cadastrarOrcamentoButton;
 
     @FXML
-    private Label totalOrcamentoLabel;
+    private VBox orcamentosContainer;
 
-    // Serviços (Camada de Negócio)
     private OrcamentoService orcamentoService;
-    private AutomoveisService automovelService;
-    private PecasService pecasService;
-    private ServicoService servicoService;
-
-    // Listas para a TableView (agora baseadas nas classes Display)
-    private ObservableList<OrcamentoPecaDisplay> listaPecasOrcamento = FXCollections.observableArrayList();
-    private ObservableList<OrcamentoServicoDisplay> listaServicosOrcamento = FXCollections.observableArrayList();
-
-    // Mapas para controle de unicidade/quantidade (opcional, pode ser feito iterando nas listas)
-    private Map<Long, OrcamentoPecaDisplay> pecasNoOrcamentoMap = new HashMap<>();
-    private Map<Long, OrcamentoServicoDisplay> servicosNoOrcamentoMap = new HashMap<>();
-
+    private ClientesService clientesService;
 
     @FXML
     public void initialize() {
         orcamentoService = new OrcamentoService();
-        automovelService = new AutomoveisService();
-        pecasService = new PecasService();
-        servicoService = new ServicoService();
+        clientesService = new ClientesService();
 
-        dataDatePicker.setValue(LocalDate.now());
+        carregarClientesComboBox();
+        handlePesquisarOrcamentos();
 
-        // --- Configuração dos ComboBoxes ---
-        // Automóveis
-        List<Automoveis> automoveis = automovelService.buscarTodos();
-        automovelComboBox.setItems(FXCollections.observableArrayList(automoveis));
-        automovelComboBox.setConverter(new StringConverter<Automoveis>() {
+        searchVeiculoField.textProperty().addListener((obs, oldText, newText) -> handlePesquisarOrcamentos());
+        clienteComboBox.valueProperty().addListener((obs, oldCliente, newCliente) -> handlePesquisarOrcamentos());
+        dataInicioPicker.valueProperty().addListener((obs, oldDate, newDate) -> handlePesquisarOrcamentos());
+        dataFimPicker.valueProperty().addListener((obs, oldDate, newDate) -> handlePesquisarOrcamentos());
+    }
+
+    private void carregarClientesComboBox() {
+        List<Clientes> clientes = clientesService.buscarTodos();
+        clienteComboBox.setItems(FXCollections.observableArrayList(clientes));
+        clienteComboBox.setConverter(new StringConverter<Clientes>() {
             @Override
-            public String toString(Automoveis automovel) {
-                return automovel != null ? automovel.getPlaca() + " - " + automovel.getMarca() : "";
+            public String toString(Clientes cliente) {
+                return cliente != null ? cliente.getNome() + " (CPF: " + cliente.getCpf() + ")" : "Todos os Clientes";
             }
+
             @Override
-            public Automoveis fromString(String string) { return null; }
+            public Clientes fromString(String string) {
+                return null;
+            }
         });
+        clienteComboBox.getItems().add(0, null);
+        clienteComboBox.setPromptText("Filtrar por Cliente (Todos)");
+    }
 
-        // Peças
-        List<Pecas> todasPecas = pecasService.buscarTodas();
-        pecasComboBox.setItems(FXCollections.observableArrayList(todasPecas));
-        pecasComboBox.setConverter(new StringConverter<Pecas>() {
-            @Override
-            public String toString(Pecas pecas) {
-                return pecas != null ? pecas.getNome() + " (R$" + String.format("%.2f", pecas.getPreco()) + ")" : "";
+    @FXML
+    private void handlePesquisarOrcamentos() {
+        orcamentosContainer.getChildren().clear();
+
+        String termoVeiculo = searchVeiculoField.getText();
+        Clientes clienteSelecionado = clienteComboBox.getSelectionModel().getSelectedItem();
+        LocalDate dataInicio = dataInicioPicker.getValue();
+        LocalDate dataFim = dataFimPicker.getValue();
+
+        List<Orcamento> resultados = orcamentoService.buscarTodos();
+
+        if (resultados != null) {
+            if (termoVeiculo != null && !termoVeiculo.trim().isEmpty()) {
+                String termoLowerCase = termoVeiculo.toLowerCase();
+                resultados = resultados.stream()
+                        .filter(o -> o.getVeiculo() != null && o.getVeiculo().toLowerCase().contains(termoLowerCase))
+                        .collect(Collectors.toList());
             }
-            @Override
-            public Pecas fromString(String string) { return null; }
-        });
 
-        // Serviços
-        List<Servico> todosServicos = servicoService.listarTodosServicos();
-        servicosComboBox.setItems(FXCollections.observableArrayList(todosServicos));
-        servicosComboBox.setConverter(new StringConverter<Servico>() {
-            @Override
-            public String toString(Servico servico) {
-                return servico != null ? servico.getNome() + " (R$" + String.format("%.2f", servico.getValor()) + ")" : "";
+            if (clienteSelecionado != null) {
+                resultados = resultados.stream()
+                        .filter(o -> o.getCliente() != null && o.getCliente().getId().equals(clienteSelecionado.getId()))
+                        .collect(Collectors.toList());
             }
-            @Override
-            public Servico fromString(String string) { return null; }
-        });
 
-        // --- Configuração das TableView ---
-        // Tabela de Peças
-        pecaNomeColumn.setCellValueFactory(new PropertyValueFactory<>("nomePeca"));
-        pecaQuantidadeColumn.setCellValueFactory(new PropertyValueFactory<>("quantidade"));
-        pecaPrecoUnitarioColumn.setCellValueFactory(cellData -> new javafx.beans.property.SimpleStringProperty(String.format("%.2f", cellData.getValue().getValorUnitario())));
-        pecaSubtotalColumn.setCellValueFactory(cellData -> new javafx.beans.property.SimpleStringProperty(String.format("%.2f", cellData.getValue().getSubtotal())));
-
-        pecaAcoesColumn.setCellFactory(param -> new TableCell<OrcamentoPecaDisplay, Button>() {
-            final Button deleteButton = new Button("Remover");
-            {
-                deleteButton.setOnAction(event -> {
-                    OrcamentoPecaDisplay item = getTableView().getItems().get(getIndex());
-                    removerPecaDoOrcamento(item);
-                });
-            }
-            @Override
-            protected void updateItem(Button item, boolean empty) {
-                super.updateItem(item, empty);
-                if (empty) {
-                    setGraphic(null);
-                    setText(null);
+            if (dataInicio != null && dataFim != null) {
+                if (dataInicio.isAfter(dataFim)) {
+                    showAlert(Alert.AlertType.WARNING, "Datas Inválidas", "A data de início não pode ser posterior à data de fim.");
+                    return;
                 } else {
-                    setGraphic(deleteButton);
-                    setText(null);
+                    resultados = resultados.stream()
+                            .filter(o -> o.getData() != null && !o.getData().isBefore(dataInicio) && !o.getData().isAfter(dataFim))
+                            .collect(Collectors.toList());
                 }
+            } else if (dataInicio != null) {
+                resultados = resultados.stream()
+                        .filter(o -> o.getData() != null && !o.getData().isBefore(dataInicio))
+                        .collect(Collectors.toList());
+            } else if (dataFim != null) {
+                resultados = resultados.stream()
+                        .filter(o -> o.getData() != null && !o.getData().isAfter(dataFim))
+                        .collect(Collectors.toList());
             }
+
+            for (Orcamento orcamento : resultados) {
+                orcamentosContainer.getChildren().add(createOrcamentoRow(orcamento));
+            }
+        }
+    }
+
+    private HBox createOrcamentoRow(Orcamento orcamento) {
+        HBox row = new HBox(10);
+        row.getStyleClass().add("client-row");
+        row.setAlignment(Pos.CENTER_LEFT);
+
+        Label dataLabel = new Label(orcamento.getData() != null ? orcamento.getData().toString() : "N/A");
+        dataLabel.setPrefWidth(100.0);
+        dataLabel.getStyleClass().add("client-data");
+
+        Label veiculoLabel = new Label(orcamento.getVeiculo());
+        veiculoLabel.setPrefWidth(200.0);
+        veiculoLabel.getStyleClass().add("client-data");
+
+        Label clienteLabel = new Label(orcamento.getCliente() != null ? orcamento.getCliente().getNome() : "N/A");
+        clienteLabel.setPrefWidth(250.0);
+        clienteLabel.getStyleClass().add("client-data");
+
+        Label valorTotalLabel = new Label(String.format("R$ %.2f", orcamento.getValorTotal()));
+        valorTotalLabel.setPrefWidth(120.0);
+        valorTotalLabel.getStyleClass().add("client-data");
+        valorTotalLabel.setAlignment(Pos.CENTER);
+
+
+        HBox statusBox = new HBox(5);
+        statusBox.setAlignment(Pos.CENTER_LEFT);
+        statusBox.setPrefWidth(120.0);
+        Label statusLabel = new Label(orcamento.isStatus() ? "Concluído" : "Pendente");
+        Button statusToggleButton = new Button();
+        statusToggleButton.getStyleClass().add("toggle-button");
+        ImageView checkIconStatus = createIcon("/Imagens/check.png", 15, 15);
+        statusToggleButton.setGraphic(checkIconStatus);
+        statusToggleButton.setOnAction(event -> {
+            orcamento.setStatus(!orcamento.isStatus());
+            orcamentoService.salvarOrcamento(orcamento);
+            handlePesquisarOrcamentos();
+            showAlert(Alert.AlertType.INFORMATION, "Status Alterado",
+                    "O status do orçamento ID " + orcamento.getId() + " foi alterado para " +
+                            (orcamento.isStatus() ? "Concluído" : "Pendente") + ".");
         });
-        pecasTableView.setItems(listaPecasOrcamento);
+        statusBox.getChildren().addAll(statusLabel, statusToggleButton);
+        statusLabel.setPrefWidth(80.0);
+        statusToggleButton.setPrefWidth(30.0);
 
-        // Tabela de Serviços
-        servicoNomeColumn.setCellValueFactory(new PropertyValueFactory<>("nomeServico"));
-        servicoQuantidadeColumn.setCellValueFactory(new PropertyValueFactory<>("quantidade"));
-        servicoPrecoUnitarioColumn.setCellValueFactory(cellData -> new javafx.beans.property.SimpleStringProperty(String.format("%.2f", cellData.getValue().getValorUnitario())));
-        servicoSubtotalColumn.setCellValueFactory(cellData -> new javafx.beans.property.SimpleStringProperty(String.format("%.2f", cellData.getValue().getSubtotal())));
-
-        servicoAcoesColumn.setCellFactory(param -> new TableCell<OrcamentoServicoDisplay, Button>() {
-            final Button deleteButton = new Button("Remover");
-            {
-                deleteButton.setOnAction(event -> {
-                    OrcamentoServicoDisplay item = getTableView().getItems().get(getIndex());
-                    removerServicoDoOrcamento(item);
-                });
-            }
-            @Override
-            protected void updateItem(Button item, boolean empty) {
-                super.updateItem(item, empty);
-                if (empty) {
-                    setGraphic(null);
-                    setText(null);
-                } else {
-                    setGraphic(deleteButton);
-                    setText(null);
-                }
-            }
+        HBox pagoBox = new HBox(5);
+        pagoBox.setAlignment(Pos.CENTER_LEFT);
+        pagoBox.setPrefWidth(120.0);
+        Label pagoLabel = new Label(orcamento.isPago() ? "Concluído" : "Pendente");
+        Button pagoToggleButton = new Button();
+        pagoToggleButton.getStyleClass().add("toggle-button");
+        ImageView checkIconPago = createIcon("/Imagens/check.png", 15, 15);
+        pagoToggleButton.setGraphic(checkIconPago);
+        pagoToggleButton.setOnAction(event -> {
+            orcamento.setPago(!orcamento.isPago());
+            orcamentoService.salvarOrcamento(orcamento);
+            handlePesquisarOrcamentos();
+            showAlert(Alert.AlertType.INFORMATION, "Pagamento Alterado",
+                    "O status de pagamento do orçamento ID " + orcamento.getId() + " foi alterado para " +
+                            (orcamento.isPago() ? "Concluído" : "Pendente") + ".");
         });
-        servicosTableView.setItems(listaServicosOrcamento);
+        pagoBox.getChildren().addAll(pagoLabel, pagoToggleButton);
+        pagoLabel.setPrefWidth(80.0);
+        pagoToggleButton.setPrefWidth(30.0);
 
-        quantidadeServicosTextField.setText("1");
-        atualizarTotalOrcamento();
-    }
+        Region spacer = new Region();
+        HBox.setHgrow(spacer, javafx.scene.layout.Priority.ALWAYS);
 
-    @FXML
-    private void adicionarPecaAoOrcamento() {
-        Pecas pecaSelecionada = pecasComboBox.getSelectionModel().getSelectedItem();
-        String quantidadeText = quantidadePecasTextField.getText();
+        HBox actionButtons = new HBox(5);
+        actionButtons.setAlignment(Pos.CENTER);
+        actionButtons.setPrefWidth(100.0);
 
-        if (pecaSelecionada == null) {
-            showAlert(Alert.AlertType.WARNING, "Seleção Inválida", "Por favor, selecione uma peça.");
-            return;
+        Button alterarButton = new Button();
+        ImageView alterarIcon = createIcon("/Imagens/alterar.png", 20, 20);
+        alterarButton.setGraphic(alterarIcon);
+        alterarButton.getStyleClass().add("edit-button");
+        alterarButton.setOnAction(event -> handleAlterarOrcamento(orcamento, event)); // Modificado para passar o ActionEvent
+
+        Button deletarButton = new Button();
+        ImageView deletarIcon = createIcon("/Imagens/deletar.png", 20, 20);
+        deletarButton.setGraphic(deletarIcon);
+        deletarButton.getStyleClass().add("delete-button");
+        deletarButton.setOnAction(event -> handleDeletarOrcamento(orcamento));
+
+        // NOVO: Desabilitar botões se o orçamento estiver concluído e pago
+        if (orcamento.isStatus() && orcamento.isPago()) {
+            alterarButton.setDisable(true);
+            deletarButton.setDisable(true);
         }
 
-        int quantidade;
-        try {
-            quantidade = Integer.parseInt(quantidadeText);
-            if (quantidade <= 0) {
-                throw new NumberFormatException();
+        actionButtons.getChildren().addAll(alterarButton, deletarButton);
+
+        row.getChildren().addAll(dataLabel, veiculoLabel, clienteLabel, valorTotalLabel, statusBox, pagoBox, spacer, actionButtons);
+        return row;
+    }
+
+    private ImageView createIcon(String imagePath, int width, int height) {
+        try (InputStream is = getClass().getResourceAsStream(imagePath)) {
+            if (is == null) {
+                System.err.println("Recurso de imagem não encontrado: " + imagePath);
+                return new ImageView();
             }
-        } catch (NumberFormatException e) {
-            showAlert(Alert.AlertType.WARNING, "Quantidade Inválida", "Por favor, insira uma quantidade válida (número inteiro positivo).");
-            return;
-        }
-
-        OrcamentoPecaDisplay itemExistente = pecasNoOrcamentoMap.get(pecaSelecionada.getId());
-
-        if (itemExistente != null) {
-            itemExistente.setQuantidade(itemExistente.getQuantidade() + quantidade);
-            showAlert(Alert.AlertType.INFORMATION, "Peça já adicionada", "Quantidade da peça '" + pecaSelecionada.getNome() + "' atualizada para " + itemExistente.getQuantidade() + ".");
-            pecasTableView.refresh();
-        } else {
-            OrcamentoPecaDisplay novoItem = new OrcamentoPecaDisplay(pecaSelecionada, quantidade, pecaSelecionada.getPreco());
-            listaPecasOrcamento.add(novoItem);
-            pecasNoOrcamentoMap.put(pecaSelecionada.getId(), novoItem);
-        }
-
-        quantidadePecasTextField.clear();
-        pecasComboBox.getSelectionModel().clearSelection();
-        atualizarTotalOrcamento();
-    }
-
-    private void removerPecaDoOrcamento(OrcamentoPecaDisplay item) {
-        listaPecasOrcamento.remove(item);
-        pecasNoOrcamentoMap.remove(item.getPecas().getId());
-        atualizarTotalOrcamento();
-    }
-
-    @FXML
-    private void adicionarServicoAoOrcamento() {
-        Servico servicoSelecionado = servicosComboBox.getSelectionModel().getSelectedItem();
-        String quantidadeText = quantidadeServicosTextField.getText();
-
-        if (servicoSelecionado == null) {
-            showAlert(Alert.AlertType.WARNING, "Seleção Inválida", "Por favor, selecione um serviço.");
-            return;
-        }
-
-        int quantidade;
-        try {
-            quantidade = Integer.parseInt(quantidadeText);
-            if (quantidade <= 0) {
-                throw new NumberFormatException();
-            }
-        } catch (NumberFormatException e) {
-            showAlert(Alert.AlertType.WARNING, "Quantidade Inválida", "Por favor, insira uma quantidade válida (número inteiro positivo).");
-            return;
-        }
-
-        OrcamentoServicoDisplay itemExistente = servicosNoOrcamentoMap.get(servicoSelecionado.getId());
-
-        if (itemExistente != null) {
-            itemExistente.setQuantidade(itemExistente.getQuantidade() + quantidade);
-            showAlert(Alert.AlertType.INFORMATION, "Serviço já adicionado", "Quantidade do serviço '" + servicoSelecionado.getNome() + "' atualizada para " + itemExistente.getQuantidade() + ".");
-            servicosTableView.refresh();
-        } else {
-            OrcamentoServicoDisplay novoItem = new OrcamentoServicoDisplay(servicoSelecionado, quantidade, servicoSelecionado.getValor());
-            listaServicosOrcamento.add(novoItem);
-            servicosNoOrcamentoMap.put(servicoSelecionado.getId(), novoItem);
-        }
-
-        quantidadeServicosTextField.setText("1");
-        servicosComboBox.getSelectionModel().clearSelection();
-        atualizarTotalOrcamento();
-    }
-
-    private void removerServicoDoOrcamento(OrcamentoServicoDisplay item) {
-        listaServicosOrcamento.remove(item);
-        servicosNoOrcamentoMap.remove(item.getServico().getId());
-        atualizarTotalOrcamento();
-    }
-
-    private void atualizarTotalOrcamento() {
-        double total = 0.0;
-        for (OrcamentoPecaDisplay item : listaPecasOrcamento) {
-            total += item.getSubtotal();
-        }
-        for (OrcamentoServicoDisplay item : listaServicosOrcamento) {
-            total += item.getSubtotal();
-        }
-        totalOrcamentoLabel.setText("Total do Orçamento: R$ " + String.format("%.2f", total));
-    }
-
-    @FXML
-    private void confirmarCadastro() {
-        Automoveis automovelSelecionado = automovelComboBox.getSelectionModel().getSelectedItem();
-        LocalDate dataSelecionada = dataDatePicker.getValue();
-
-        if (automovelSelecionado == null) {
-            showAlert(Alert.AlertType.WARNING, "Dados Inválidos", "Por favor, selecione um automóvel.");
-            return;
-        }
-        if (dataSelecionada == null) {
-            showAlert(Alert.AlertType.WARNING, "Dados Inválidos", "Por favor, selecione uma data para o orçamento.");
-            return;
-        }
-        if (listaPecasOrcamento.isEmpty() && listaServicosOrcamento.isEmpty()) {
-            showAlert(Alert.AlertType.WARNING, "Orçamento Vazio", "Adicione pelo menos uma peça ou um serviço ao orçamento.");
-            return;
-        }
-
-        Orcamento novoOrcamento = new Orcamento();
-        novoOrcamento.setAutomovel(automovelSelecionado);
-        novoOrcamento.setDataOrcamento(dataSelecionada);
-        // O cliente do orçamento será o proprietário do automóvel (assumindo que Automoveis tem getProprietario())
-        // novoOrcamento.setCliente(automovelSelecionado.getProprietario());
-        novoOrcamento.setStatusPago(false);
-
-        // Converte OrcamentoPecaDisplay para OrcamentoPeca
-        List<OrcamentoPeca> itensPecasParaSalvar = listaPecasOrcamento.stream()
-                .map(opd -> new OrcamentoPeca(novoOrcamento, opd.getPecas(), opd.getQuantidade(), opd.getValorUnitario()))
-                .collect(Collectors.toList());
-
-        // Converte OrcamentoServicoDisplay para OrcamentoServico
-        List<OrcamentoServico> itensServicosParaSalvar = listaServicosOrcamento.stream()
-                .map(osd -> new OrcamentoServico(novoOrcamento, osd.getServico(), osd.getQuantidade(), osd.getValorUnitario()))
-                .collect(Collectors.toList());
-
-        try {
-            orcamentoService.salvarOrcamento(novoOrcamento, itensPecasParaSalvar, itensServicosParaSalvar);
-            showAlert(Alert.AlertType.INFORMATION, "Sucesso", "Orçamento cadastrado com sucesso!");
-            limparFormulario();
-        } catch (IllegalArgumentException e) {
-            showAlert(Alert.AlertType.WARNING, "Erro de Validação", e.getMessage());
-        }
-        catch (RuntimeException e) {
-            showAlert(Alert.AlertType.ERROR, "Erro ao Salvar", "Não foi possível cadastrar o orçamento: " + e.getMessage());
+            Image image = new Image(is);
+            ImageView imageView = new ImageView(image);
+            imageView.setFitWidth(width);
+            imageView.setFitHeight(height);
+            return imageView;
+        } catch (Exception e) {
             e.printStackTrace();
+            System.err.println("Erro ao carregar imagem: " + imagePath);
+            return new ImageView();
         }
     }
 
     @FXML
-    private void cancelarCadastro() {
-        limparFormulario();
-        showAlert(Alert.AlertType.INFORMATION, "Cancelado", "Cadastro de orçamento cancelado.");
+    private void handleCadastrarOrcamento(ActionEvent event) { // Adicionado ActionEvent
+        try {
+            FXMLLoader loader = new FXMLLoader(getClass().getResource("/com/ufersa/OFIZE/view/cadastrar_orcamento.fxml"));
+            Parent root = loader.load();
+
+            Stage stage = (Stage) ((Button) event.getSource()).getScene().getWindow(); // Obtem a Stage do evento
+            Scene scene = new Scene(root);
+            stage.setScene(scene);
+            stage.setTitle("Cadastrar Novo Orçamento");
+            stage.setMaximized(true); // Maximiza a nova tela
+            stage.show();
+        } catch (IOException e) {
+            e.printStackTrace();
+            showAlert(Alert.AlertType.ERROR, "Erro", "Não foi possível carregar a tela de cadastro de orçamento.");
+        }
     }
 
-    private void limparFormulario() {
-        automovelComboBox.getSelectionModel().clearSelection();
-        dataDatePicker.setValue(LocalDate.now());
-        pecasComboBox.getSelectionModel().clearSelection();
-        quantidadePecasTextField.clear();
-        servicosComboBox.getSelectionModel().clearSelection();
-        quantidadeServicosTextField.setText("1");
-        listaPecasOrcamento.clear();
-        listaServicosOrcamento.clear();
-        pecasNoOrcamentoMap.clear();
-        servicosNoOrcamentoMap.clear();
-        atualizarTotalOrcamento();
+    private void handleAlterarOrcamento(Orcamento orcamento, ActionEvent event) { // Adicionado ActionEvent
+        try {
+            FXMLLoader loader = new FXMLLoader(getClass().getResource("/com/ufersa/OFIZE/view/alterar_orcamento.fxml")); // Nome do FXML corrigido para o padrão
+            Parent root = loader.load();
+
+            AlterarOrcamentoController controller = loader.getController();
+            if (controller != null) {
+                controller.setOrcamentoParaAlterar(orcamento);
+            }
+
+            // Obtém a Stage da janela atual através do evento
+            Stage stage = (Stage) ((Button) event.getSource()).getScene().getWindow();
+            Scene scene = new Scene(root);
+            stage.setScene(scene);
+            stage.setTitle("Alterar Orçamento");
+            stage.setMaximized(true); // <--- LINHA CRÍTICA ADICIONADA: MAXIMIZA A JANELA
+            stage.show();
+        } catch (IOException e) {
+            e.printStackTrace();
+            showAlert(Alert.AlertType.ERROR, "Erro", "Não foi possível carregar a tela de alteração de orçamento.");
+        }
+    }
+
+    private void handleDeletarOrcamento(Orcamento orcamento) {
+        Alert alert = new Alert(Alert.AlertType.CONFIRMATION);
+        alert.setTitle("Confirmação de Exclusão");
+        alert.setHeaderText("Você realmente quer apagar este Orçamento?");
+        alert.setContentText("ID: " + orcamento.getId() + " - Veículo: " + orcamento.getVeiculo());
+
+        ButtonType simButton = new ButtonType("Sim", ButtonBar.ButtonData.OK_DONE);
+        ButtonType naoButton = new ButtonType("Não", ButtonBar.ButtonData.CANCEL_CLOSE);
+        alert.getButtonTypes().setAll(simButton, naoButton);
+
+        Optional<ButtonType> result = alert.showAndWait();
+        if (result.isPresent() && result.get() == simButton) {
+            orcamentoService.deletarOrcamento(orcamento.getId());
+            showAlert(Alert.AlertType.INFORMATION, "Sucesso", "Orçamento deletado com sucesso.");
+            handlePesquisarOrcamentos();
+        }
     }
 
     private void showAlert(Alert.AlertType type, String title, String message) {
@@ -372,57 +306,4 @@ public class OrcamentoController {
         alert.setContentText(message);
         alert.showAndWait();
     }
-
-    // --- Classes Helper para TableView ---
-    public static class OrcamentoPecaDisplay {
-        private final Pecas pecas;
-        private javafx.beans.property.IntegerProperty quantidade;
-        private javafx.beans.property.StringProperty nomePeca;
-        private double valorUnitario;
-
-        public OrcamentoPecaDisplay(Pecas pecas, int quantidade, double valorUnitario) {
-            this.pecas = pecas;
-            this.quantidade = new javafx.beans.property.SimpleIntegerProperty(quantidade);
-            this.nomePeca = new javafx.beans.property.SimpleStringProperty(pecas.getNome());
-            this.valorUnitario = valorUnitario;
-        }
-
-        public Pecas getPecas() { return pecas; }
-        public int getQuantidade() { return quantidade.get(); }
-        public javafx.beans.property.IntegerProperty quantidadeProperty() { return quantidade; }
-        public void setQuantidade(int quantidade) { this.quantidade.set(quantidade); }
-
-        public String getNomePeca() { return nomePeca.get(); }
-        public javafx.beans.property.StringProperty nomePecaProperty() { return nomePeca; }
-
-        public double getValorUnitario() { return valorUnitario; }
-
-        public double getSubtotal() { return this.valorUnitario * quantidade.get(); }
-    }
-
-    public static class OrcamentoServicoDisplay {
-        private final Servico servico;
-        private javafx.beans.property.IntegerProperty quantidade;
-        private javafx.beans.property.StringProperty nomeServico;
-        private double valorUnitario;
-
-        public OrcamentoServicoDisplay(Servico servico, int quantidade, double valorUnitario) {
-            this.servico = servico;
-            this.quantidade = new javafx.beans.property.SimpleIntegerProperty(quantidade);
-            this.nomeServico = new javafx.beans.property.SimpleStringProperty(servico.getNome());
-            this.valorUnitario = valorUnitario;
-        }
-
-        public Servico getServico() { return servico; }
-        public int getQuantidade() { return quantidade.get(); }
-        public javafx.beans.property.IntegerProperty quantidadeProperty() { return quantidade; }
-        public void setQuantidade(int quantidade) { this.quantidade.set(quantidade); }
-
-        public String getNomeServico() { return nomeServico.get(); }
-        public javafx.beans.property.StringProperty nomeServicoProperty() { return nomeServico; }
-
-        public double getValorUnitario() { return valorUnitario; }
-
-        public double getSubtotal() { return this.valorUnitario * quantidade.get(); }
-    }
-}*/
+}

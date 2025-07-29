@@ -4,33 +4,27 @@ import com.ufersa.OFIZE.model.entitie.Servico;
 import javax.persistence.EntityManager;
 import javax.persistence.EntityManagerFactory;
 import javax.persistence.Persistence;
-import javax.persistence.TypedQuery; // Importar para usar queries tipadas
+import javax.persistence.TypedQuery;
 import java.util.List;
 
-// Classe DAO concreta para a entidade Servico.
+
 public class ServicoDAO {
-
-    // Define o nome da unidade de persistência que você configurou no seu persistence.xml
-    private static final String PERSISTENCE_UNIT_NAME = "ofize-pu"; // *** CONFIRME SE ESTE NOME BATE COM SEU persistence.xml ***
-
-    // EntityManagerFactory deve ser criado uma única vez por aplicação.
-    // Usamos 'static' para garantir que ele é inicializado apenas uma vez.
+    private static final String PERSISTENCE_UNIT_NAME = "ofize-pu"; // *** CONFIRME SE ESTE NOME BATE COM SEU persistenc
     private static EntityManagerFactory emf;
 
-    // Bloco estático para inicializar o EntityManagerFactory.
-    // Ele será executado quando a classe for carregada pela primeira vez.
+
     static {
         try {
             emf = Persistence.createEntityManagerFactory(PERSISTENCE_UNIT_NAME);
         } catch (Exception e) {
             System.err.println("Erro ao inicializar EntityManagerFactory para ServicoDAO: " + e.getMessage());
             e.printStackTrace();
-            // Lançar RuntimeException para falha crítica na inicialização do sistema de persistência.
+
             throw new RuntimeException("Falha na inicialização do sistema de persistência para Serviços.", e);
         }
     }
 
-    // Método para obter um EntityManager. Ele deve ser criado por cada operação e fechado.
+    // Método para obter um EntityManager.
     protected EntityManager getEntityManager() {
         return emf.createEntityManager();
     }
@@ -63,7 +57,7 @@ public class ServicoDAO {
             return em.find(Servico.class, id);
         } finally {
             if (em != null) {
-                em.close(); // *** FECHAR O ENTITYMANAGER ***
+                em.close();
             }
         }
     }
@@ -82,7 +76,6 @@ public class ServicoDAO {
     }
 
     // Atualiza um serviço existente.
-    // *** CORREÇÃO AQUI: MUDAR 'void' PARA 'Servico' ***
     public Servico merge(Servico servico) {
         EntityManager em = getEntityManager();
         Servico updatedServico = null; // Inicializar a variável

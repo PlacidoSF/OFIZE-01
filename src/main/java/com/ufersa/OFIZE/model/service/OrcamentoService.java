@@ -29,6 +29,16 @@ public class OrcamentoService {
         }
     }
 
+    // NOVO MÉTODO: buscarTodos()
+    public List<Orcamento> buscarTodos() {
+        try {
+            return dao.buscarTodos(); // Assume que OrcamentoDAO tem um método buscarTodos()
+        } catch (Exception e) {
+            System.err.println("Erro ao buscar todos os orçamentos: " + e.getMessage());
+            return List.of(); // Retorna uma lista vazia em caso de erro
+        }
+    }
+
     public void atualizarOrcamento(Orcamento orcamento) {
         try {
             dao.atualizar(orcamento);
@@ -49,6 +59,10 @@ public class OrcamentoService {
 
     public List<Orcamento> pesquisarOrcamentos(String veiculo, Clientes cliente, LocalDate inicio, LocalDate fim) {
         try {
+            // Este método, por enquanto, pode ser redundante se o filtro é feito no controller.
+            // O ideal seria que ele chamasse um método mais específico no DAO que recebesse esses parâmetros,
+            // ou que o DAO sempre buscasse todos e o serviço/controller filtrassem.
+            // Para a lógica atual do PesquisarOrcamentoController, o buscarTodos() é o mais usado.
             return dao.buscarPorVeiculoClienteOuPeriodo(veiculo, cliente, inicio, fim);
         } catch (Exception e) {
             System.err.println("Erro ao pesquisar orçamentos: " + e.getMessage());

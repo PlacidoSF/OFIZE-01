@@ -104,9 +104,8 @@ public class AlterarServicoController {
             stage.setTitle("Pesquisar Serviços");
 
             // *** Configurações de Tela Cheia ***
-            stage.setFullScreen(true);
-            stage.setFullScreenExitHint("Pressione ESC para sair da tela cheia"); // Dica para o usuário
-            stage.setFullScreenExitKeyCombination(KeyCombination.valueOf("ESC")); // Combinação de tecla para sair
+            stage.setMaximized(true);
+
 
             stage.show();
 
