@@ -1,12 +1,12 @@
 package com.ufersa.OFIZE.model.service;
 
 import java.util.List;
-import com.ufersa.OFIZE.model.dao.PecasDAO;
+import com.ufersa.OFIZE.model.dao.PecasDao;
 import com.ufersa.OFIZE.model.entitie.Pecas;
 
 public class PecasService{
 
-    private final PecasDAO dao = new PecasDAO();
+    private final PecasDao dao = new PecasDao();
 
     public PecasService(){
     }

@@ -8,7 +8,7 @@ import javax.persistence.Persistence;
 import javax.persistence.TypedQuery; // Importar para usar queries tipadas
 import java.util.List;
 
-public class PecasDAO {
+public class PecasDao {
 
     // Define o nome da unidade de persistência que você configurou no seu persistence.xml
     private static final String PERSISTENCE_UNIT_NAME = "OFIZE_PU"; // Substitua pelo nome real da sua PU
