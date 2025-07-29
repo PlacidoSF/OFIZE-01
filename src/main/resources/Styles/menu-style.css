@@ -1,0 +1,22 @@
+
+@import "entity-style.css";
+
+.menu-button {
+    -fx-background-color: transparent;
+    -fx-text-fill: white;
+    -fx-font-size: 16px;
+    -fx-font-family: "System Bold";
+    -fx-cursor: hand;
+    -fx-padding: 10px 15px;
+}
+
+.menu-button:hover {
+    -fx-text-fill: #d12c2c;
+}
+
+
+.welcome-text {
+    -fx-font-size: 160px;
+    -fx-font-family: "System Bold";
+    -fx-text-fill: black;
+}

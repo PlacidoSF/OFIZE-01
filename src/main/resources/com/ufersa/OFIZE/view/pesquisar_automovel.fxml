@@ -35,7 +35,7 @@
                     </children>
                 </HBox>
                 <Region HBox.hgrow="ALWAYS" />
-                <VBox alignment="CENTER" styleClass="hamburger-menu">
+                <VBox fx:id="menuHamburguer" alignment="CENTER" styleClass="hamburger-menu">
                     <children>
                         <Region styleClass="hamburger-bar" /><Region styleClass="hamburger-bar" /><Region styleClass="hamburger-bar" />
                     </children>

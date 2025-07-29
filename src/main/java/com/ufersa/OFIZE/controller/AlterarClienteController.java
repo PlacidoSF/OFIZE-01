@@ -11,7 +11,6 @@ import javafx.scene.control.Alert;
 import javafx.scene.control.Button;
 import javafx.scene.control.ButtonType;
 import javafx.scene.control.TextField;
-import javafx.stage.Stage;
 
 import java.io.IOException;
 import java.util.Optional;
@@ -27,10 +26,8 @@ public class AlterarClienteController {
     private final ClientesService clientesService = new ClientesService();
     private Clientes clienteParaAlterar;
 
-    // Este método será chamado pelo controller de pesquisa para passar os dados do cliente
     public void setClienteParaAlterar(Clientes cliente) {
         this.clienteParaAlterar = cliente;
-        // Preenche os campos da tela com os dados atuais do cliente
         if (cliente != null) {
             nomeField.setText(cliente.getNome());
             cpfField.setText(cliente.getCpf());
@@ -50,19 +47,16 @@ public class AlterarClienteController {
 
         Optional<ButtonType> result = confirmationAlert.showAndWait();
         if (result.isPresent() && result.get() == simButton) {
-            // Atualiza o objeto cliente com os novos dados dos campos
             clienteParaAlterar.setNome(nomeField.getText());
             clienteParaAlterar.setCpf(cpfField.getText());
             clienteParaAlterar.setEndereco(enderecoField.getText());
 
             try {
-                // Tenta atualizar usando o serviço (que já tem as validações de CPF)
                 clientesService.atualizarCliente(clienteParaAlterar);
                 showAlert(Alert.AlertType.INFORMATION, "Sucesso", "Dados do cliente alterados com sucesso!");
                 voltarParaPesquisa();
 
             } catch (IllegalArgumentException e) {
-                // Mostra um erro se a validação do serviço falhar (ex: CPF duplicado)
                 showAlert(Alert.AlertType.ERROR, "Erro de Validação", e.getMessage());
             }
         }
@@ -76,8 +70,8 @@ public class AlterarClienteController {
     private void voltarParaPesquisa() {
         try {
             Parent root = FXMLLoader.load(getClass().getResource("/com/ufersa/OFIZE/view/pesquisar_cliente.fxml"));
-            Scene scene = confirmarButton.getScene(); // Pega a cena atual
-            scene.setRoot(root); // Substitui o conteúdo da cena
+            Scene scene = confirmarButton.getScene();
+            scene.setRoot(root);
         } catch (IOException e) {
             e.printStackTrace();
         }

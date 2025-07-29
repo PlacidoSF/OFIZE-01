@@ -60,12 +60,10 @@ public class ClientesService extends ClienteServiceAbstract {
         if (cliente == null || cliente.getId() == null) {
             throw new IllegalArgumentException("Cliente inválido para remoção.");
         }
-
         List<Automoveis> automoveisDoCliente = automoveisDAO.findByClienteId(cliente.getId());
         for (Automoveis auto : automoveisDoCliente) {
             automoveisDAO.remove(auto);
         }
-
         clientesDAO.remove(cliente);
     }
 

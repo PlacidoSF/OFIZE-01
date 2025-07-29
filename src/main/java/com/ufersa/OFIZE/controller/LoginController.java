@@ -1,7 +1,7 @@
 package com.ufersa.OFIZE.controller;
 
 import com.ufersa.OFIZE.model.service.FuncionariosService;
-import com.ufersa.OFIZE.model.service.*;
+import com.ufersa.OFIZE.model.service.GerentesService;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
@@ -29,12 +29,9 @@ public class LoginController {
         String usuario = usuarioField.getText();
         String senha = senhaField.getText();
 
-        // Tenta logar como gerente primeiro, depois como funcionário
         if (gerentesService.login(usuario, senha) != null || funcionariosService.login(usuario, senha) != null) {
             showAlert(Alert.AlertType.INFORMATION, "Sucesso", "Login realizado com sucesso!");
-
-            // Redireciona para a tela de pesquisar cliente
-            navigateTo("/com/ufersa/OFIZE/view/pesquisar_cliente.fxml");
+            navigateTo("/com/ufersa/OFIZE/view/menu.fxml");
         } else {
             showAlert(Alert.AlertType.ERROR, "Erro", "Usuário ou senha inválidos.");
         }

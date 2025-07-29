@@ -1,0 +1,61 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.geometry.Insets?>
+<?import javafx.scene.control.Button?>
+<?import javafx.scene.control.Label?>
+<?import javafx.scene.image.Image?>
+<?import javafx.scene.image.ImageView?>
+<?import javafx.scene.layout.BorderPane?>
+<?import javafx.scene.layout.HBox?>
+<?import javafx.scene.layout.Region?>
+<?import javafx.scene.layout.VBox?>
+<?import javafx.scene.text.Text?>
+<?import javafx.scene.text.TextFlow?>
+
+<BorderPane styleClass="root" xmlns="http://javafx.com/javafx/21" xmlns:fx="http://javafx.com/fxml/1"
+            fx:controller="com.ufersa.OFIZE.controller.MenuController"
+            stylesheets="@../../../../Styles/menu-style.css">
+    <top>
+        <HBox styleClass="header-footer">
+            <children>
+                <HBox alignment="CENTER_LEFT">
+                    <children>
+                        <TextFlow>
+                            <children>
+                                <Text text="OFI" styleClass="logo-font, logo-text-white" />
+                                <Text text="ZÉ" styleClass="logo-font, logo-text-red" />
+                            </children>
+                        </TextFlow>
+                        <ImageView fitHeight="24.0" fitWidth="24.0" pickOnBounds="true" preserveRatio="true">
+                            <image><Image url="/Imagens/ferramenta_1.png" /></image>
+                            <HBox.margin><Insets left="5.0" /></HBox.margin>
+                        </ImageView>
+                    </children>
+                </HBox>
+                <Region HBox.hgrow="ALWAYS" />
+                <HBox alignment="CENTER" spacing="10.0">
+                    <children>
+                        <Button fx:id="financasButton" onAction="#handleNavegar" styleClass="menu-button" text="FINANÇAS" />
+                        <Button fx:id="automoveisButton" onAction="#handleNavegar" styleClass="menu-button" text="AUTOMÓVEIS" />
+                        <Button fx:id="clientesButton" onAction="#handleNavegar" styleClass="menu-button" text="CLIENTES" />
+                        <Button fx:id="pecasButton" onAction="#handleNavegar" styleClass="menu-button" text="PEÇAS" />
+                        <Button fx:id="orcamentosButton" onAction="#handleNavegar" styleClass="menu-button" text="ORÇAMENTOS" />
+                        <Button fx:id="servicosButton" onAction="#handleNavegar" styleClass="menu-button" text="SERVIÇOS" />
+                    </children>
+                </HBox>
+                <Region HBox.hgrow="ALWAYS" />
+                <VBox fx:id="logoutMenu" alignment="CENTER" styleClass="hamburger-menu">
+                    <children>
+                        <Region styleClass="hamburger-bar" /><Region styleClass="hamburger-bar" /><Region styleClass="hamburger-bar" />
+                    </children>
+                </VBox>
+            </children>
+        </HBox>
+    </top>
+    <center>
+        <Label styleClass="welcome-text" text="BEM-VINDO" />
+    </center>
+    <bottom>
+        <HBox prefHeight="60.0" styleClass="header-footer" />
+    </bottom>
+</BorderPane>

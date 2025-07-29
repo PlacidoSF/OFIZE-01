@@ -10,6 +10,7 @@ import javafx.scene.Scene;
 import javafx.scene.control.*;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
+import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.Priority;
 import javafx.scene.layout.Region;
@@ -24,6 +25,7 @@ public class PesquisarClienteController {
     @FXML private TextField searchField;
     @FXML private VBox clientesContainer;
     @FXML private Button cadastrarClienteButton;
+    @FXML private VBox menuHamburguer;
 
     private final ClientesService clientesService = new ClientesService();
 
@@ -32,7 +34,18 @@ public class PesquisarClienteController {
         searchField.textProperty().addListener((observable, oldValue, newValue) -> {
             buscarClientes(newValue);
         });
+        menuHamburguer.setOnMouseClicked(this::handleVoltarAoMenu);
         buscarClientes("");
+    }
+
+    private void handleVoltarAoMenu(MouseEvent event) {
+        try {
+            Parent root = FXMLLoader.load(getClass().getResource("/com/ufersa/OFIZE/view/menu.fxml"));
+            Scene scene = menuHamburguer.getScene();
+            scene.setRoot(root);
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
     }
 
     private void buscarClientes(String nome) {
