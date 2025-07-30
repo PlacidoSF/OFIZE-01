@@ -1,15 +1,13 @@
 package com.ufersa.OFIZE.model.dao;
 
 import com.ufersa.OFIZE.model.entitie.Automoveis;
+import com.ufersa.OFIZE.utils.PersistenceManager;
 import javax.persistence.EntityManager;
-import javax.persistence.EntityManagerFactory;
-import javax.persistence.Persistence;
 import java.util.List;
 
 public abstract class AutomoveisDAOAbstract {
 
-    protected final EntityManagerFactory emf = Persistence.createEntityManagerFactory("ofize-pu");
-    protected final EntityManager em = emf.createEntityManager();
+    protected final EntityManager em = PersistenceManager.getInstance().getEntityManager();
 
     public void persist(Automoveis automovel) {
         em.getTransaction().begin();

@@ -1,14 +1,13 @@
 package com.ufersa.OFIZE.model.dao;
 
 import com.ufersa.OFIZE.model.entitie.Funcionarios;
+import com.ufersa.OFIZE.utils.PersistenceManager;
 import javax.persistence.EntityManager;
-import javax.persistence.EntityManagerFactory;
-import javax.persistence.Persistence;
 import java.util.List;
 
 public abstract class FuncionarioDAOAbstract {
-    protected final EntityManagerFactory emf = Persistence.createEntityManagerFactory("ofize-pu");
-    protected final EntityManager em = emf.createEntityManager();
+
+    protected final EntityManager em = PersistenceManager.getInstance().getEntityManager();
 
     public void persist(Funcionarios funcionario) {
         em.getTransaction().begin();
@@ -19,6 +18,4 @@ public abstract class FuncionarioDAOAbstract {
     public List<Funcionarios> findAll() {
         return em.createQuery("FROM Funcionarios", Funcionarios.class).getResultList();
     }
-
-    // Outros métodos genéricos como merge, remove, etc. podem ser adicionados aqui.
 }

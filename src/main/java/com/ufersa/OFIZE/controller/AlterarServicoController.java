@@ -11,8 +11,6 @@ import javafx.scene.control.Alert;
 import javafx.scene.control.Button;
 import javafx.scene.control.TextField;
 import javafx.stage.Stage;
-import javafx.scene.input.KeyCombination; // Importar KeyCombination
-
 import java.io.IOException;
 
 public class AlterarServicoController {
@@ -35,14 +33,11 @@ public class AlterarServicoController {
 
     public void setServico(Servico servico) {
         this.servicoParaAlterar = servico;
-        // Assegure-se de que os campos não são nulos antes de tentar definir o texto
-        // initialize() é chamado antes de setServico() quando o FXML é carregado.
-        // Então, nomeField e valorField já estarão injetados aqui.
         if (servico != null) {
-            if (nomeField != null) { // Adicionado verificação extra para robustez
+            if (nomeField != null) {
                 nomeField.setText(servico.getNome());
             }
-            if (valorField != null) { // Adicionado verificação extra para robustez
+            if (valorField != null) {
                 valorField.setText(String.valueOf(servico.getValor()));
             }
         }
@@ -50,13 +45,10 @@ public class AlterarServicoController {
 
     @FXML
     public void initialize() {
-        // Lógica de inicialização específica da UI aqui, se houver.
-        // Campos FXML como nomeField e valorField já estão injetados neste ponto.
     }
 
     @FXML
     private void handleConfirmar(ActionEvent event) {
-        // Obtenha a Stage atual para ser o owner dos alertas
         Stage currentStage = (Stage) ((Button) event.getSource()).getScene().getWindow();
 
         if (servicoParaAlterar == null) {
@@ -88,44 +80,34 @@ public class AlterarServicoController {
         returnToServicoListView(event);
     }
 
+    // MÉTODO ATUALIZADO
     private void returnToServicoListView(ActionEvent event) {
         try {
-            // Obtenha a Stage atual para a transição
-            Stage stage = (Stage) ((Button) event.getSource()).getScene().getWindow();
-
-            // Carregue o FXML da tela de Serviços. CONFIRME O NOME EXATO DO ARQUIVO FXML.
-            // Se for 'servico_view.fxml', ajuste aqui.
-            FXMLLoader loader = new FXMLLoader(getClass().getResource("/com/ufersa/OFIZE/view/ServicoView.fxml")); // Ex: alterado para 'servico_view.fxml'
+            FXMLLoader loader = new FXMLLoader(getClass().getResource("/com/ufersa/OFIZE/view/ServicoView.fxml"));
             Parent servicoListView = loader.load();
 
-            // Configure a nova cena
-            Scene scene = new Scene(servicoListView);
-            stage.setScene(scene);
+            // Pega a cena ATUAL em vez de criar uma nova
+            Scene scene = ((Button) event.getSource()).getScene();
+            // Apenas troca o conteúdo da cena, preservando o tamanho da janela
+            scene.setRoot(servicoListView);
+
+            // Opcional: Garante que o título da janela seja o correto
+            Stage stage = (Stage) scene.getWindow();
             stage.setTitle("Pesquisar Serviços");
 
-            // *** Configurações de Tela Cheia ***
-            stage.setMaximized(true);
-
-
-            stage.show();
-
         } catch (IOException e) {
-            // Se houver erro ao carregar a tela, ainda mostre o alerta na stage atual.
             Stage currentStage = (Stage) ((Button) event.getSource()).getScene().getWindow();
             showAlert(currentStage, Alert.AlertType.ERROR, "Erro de Navegação", "Não foi possível retornar à tela de pesquisa de serviços.");
             e.printStackTrace();
         }
     }
 
-    // *** MÉTODO showAlert MODIFICADO ***
-    // Agora aceita a Stage owner como primeiro parâmetro
     private void showAlert(Stage owner, Alert.AlertType type, String title, String message) {
         Alert alert = new Alert(type);
         alert.setTitle(title);
         alert.setHeaderText(null);
         alert.setContentText(message);
 
-        // Define o owner do alerta para a Stage principal, para que ele apareça sobre ela
         if (owner != null) {
             alert.initOwner(owner);
         } else {
