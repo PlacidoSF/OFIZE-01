@@ -1,11 +1,10 @@
 package com.ufersa.OFIZE.model.service;
 
+import com.ufersa.OFIZE.exceptions.DadoDuplicadoException;
 import com.ufersa.OFIZE.model.entitie.Funcionarios;
-import com.ufersa.OFIZE.model.entitie.Gerentes;
 
 public class FuncionariosService extends FuncionarioServiceAbstract {
 
-    // Adicionamos um GerentesService para validar o username "admin"
     private final GerentesService gerentesService = new GerentesService();
 
     public void cadastrarFuncionario(Funcionarios funcn) {
@@ -16,8 +15,8 @@ public class FuncionariosService extends FuncionarioServiceAbstract {
         if ("admin".equalsIgnoreCase(funcn.getUsuario())) {
             throw new IllegalArgumentException("O nome de usuário 'admin' é reservado para o gerente.");
         }
-        if (funcionariosDAO.findByUsuario(funcn.getUsuario()) != null) {
-            throw new IllegalArgumentException("Este nome de usuário já está em uso.");
+        if (funcionariosDAO.findByUsuario(funcn.getUsuario()) != null || gerentesService.login(funcn.getUsuario(), "") != null) {
+            throw new DadoDuplicadoException("Este nome de usuário já está em uso.");
         }
 
         funcionariosDAO.persist(funcn);

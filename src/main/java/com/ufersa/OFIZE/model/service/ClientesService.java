@@ -1,5 +1,6 @@
 package com.ufersa.OFIZE.model.service;
 
+import com.ufersa.OFIZE.exceptions.DadoDuplicadoException;
 import com.ufersa.OFIZE.model.dao.AutomoveisDAO;
 import com.ufersa.OFIZE.model.entitie.Automoveis;
 import com.ufersa.OFIZE.model.entitie.Clientes;
@@ -22,7 +23,7 @@ public class ClientesService extends ClienteServiceAbstract {
             throw new IllegalArgumentException("Dados do cliente são inválidos.");
         }
         if (clientesDAO.findByCpf(cliente.getCpf()) != null) {
-            throw new IllegalArgumentException("CPF já cadastrado no sistema.");
+            throw new DadoDuplicadoException("CPF já cadastrado no sistema.");
         }
         clientesDAO.persist(cliente);
     }
@@ -43,7 +44,7 @@ public class ClientesService extends ClienteServiceAbstract {
         }
         Clientes clienteExistenteComCpf = clientesDAO.findByCpf(cliente.getCpf());
         if (clienteExistenteComCpf != null && !clienteExistenteComCpf.getId().equals(cliente.getId())) {
-            throw new IllegalArgumentException("O CPF informado já pertence a outro cliente.");
+            throw new DadoDuplicadoException("O CPF informado já pertence a outro cliente.");
         }
         clientesDAO.merge(cliente);
     }

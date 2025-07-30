@@ -1,5 +1,6 @@
 package com.ufersa.OFIZE.controller;
 
+import com.ufersa.OFIZE.exceptions.DadoDuplicadoException;
 import com.ufersa.OFIZE.model.entitie.Clientes;
 import com.ufersa.OFIZE.model.service.ClientesService;
 import javafx.event.ActionEvent;
@@ -35,6 +36,8 @@ public class CadastroClienteController {
             showAlert(Alert.AlertType.INFORMATION, "Sucesso", "Cliente cadastrado com sucesso!");
             voltarParaPesquisa();
 
+        } catch (DadoDuplicadoException e) {
+            showAlert(Alert.AlertType.WARNING, "Dado Duplicado", e.getMessage());
         } catch (IllegalArgumentException e) {
             showAlert(Alert.AlertType.ERROR, "Erro de Validação", e.getMessage());
         }
