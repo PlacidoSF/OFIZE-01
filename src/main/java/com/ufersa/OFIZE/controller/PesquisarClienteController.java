@@ -48,11 +48,19 @@ public class PesquisarClienteController {
         }
     }
 
+    // MÉTODO ATUALIZADO
     private void buscarClientes(String nome) {
         clientesContainer.getChildren().clear();
         List<Clientes> clientesEncontrados = clientesService.pesquisarPorNome(nome);
-        for (Clientes cliente : clientesEncontrados) {
-            clientesContainer.getChildren().add(criarLinhaCliente(cliente));
+
+        // Lógica para exibir mensagem quando a lista está vazia
+        if (clientesEncontrados.isEmpty()) {
+            Label noResultsLabel = new Label("Nenhum cliente encontrado.");
+            clientesContainer.getChildren().add(noResultsLabel); // Sem estilo extra
+        } else {
+            for (Clientes cliente : clientesEncontrados) {
+                clientesContainer.getChildren().add(criarLinhaCliente(cliente));
+            }
         }
     }
 

@@ -1,7 +1,7 @@
 package com.ufersa.OFIZE.controller;
 
-import com.ufersa.OFIZE.Main; // Importe a classe Main para acessar o usuário logado
-import com.ufersa.OFIZE.model.entitie.Gerentes; // Importe a entidade Gerentes
+import com.ufersa.OFIZE.Main;
+import com.ufersa.OFIZE.model.entitie.Gerentes;
 import com.ufersa.OFIZE.model.entitie.Servico;
 import com.ufersa.OFIZE.model.service.ServicoService;
 import javafx.fxml.FXML;
@@ -20,30 +20,22 @@ import javafx.scene.layout.Region;
 import javafx.event.ActionEvent;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
+import javafx.scene.input.MouseEvent;
 import javafx.stage.Stage;
-import javafx.scene.layout.AnchorPane;
 
-import javafx.fxml.Initializable; // Importe Initializable
+import javafx.fxml.Initializable;
 import java.io.IOException;
-import java.net.URL; // Importe URL
+import java.net.URL;
 import java.util.List;
 import java.util.Objects;
-import java.util.ResourceBundle; // Importe ResourceBundle
+import java.util.ResourceBundle;
 
 public class ServicoViewController implements Initializable {
 
-    @FXML
-    private TextField searchField;
-    @FXML
-    private VBox servicosContainer;
-    @FXML
-    private Button newServiceButton; // Botão de Cadastrar Serviço
-    @FXML
-    private Button btnCadastrar; // Adicionado para referência no FXML, se existir
-    @FXML
-    private Button btnAlterar;   // Adicionado para referência no FXML
-    @FXML
-    private Button btnExcluir;   // Adicionado para referência no FXML
+    @FXML private TextField searchField;
+    @FXML private VBox servicosContainer;
+    @FXML private Button newServiceButton;
+    @FXML private VBox menuHamburguer; // Novo campo
 
     private ServicoService servicoService;
     private List<Servico> allServicos;
@@ -54,38 +46,36 @@ public class ServicoViewController implements Initializable {
 
     @Override
     public void initialize(URL url, ResourceBundle rb) {
-        // Inicialize o serviço e carregue os serviços
-        loadServicos(""); // Carrega todos os serviços inicialmente
+        loadServicos("");
+        searchField.textProperty().addListener((observable, oldValue, newValue) -> loadServicos(newValue));
 
-        // Adiciona listener ao campo de busca
-        searchField.textProperty().addListener((observable, oldValue, newValue) -> {
-            loadServicos(newValue);
-        });
+        // Adiciona a ação de clique para voltar ao menu
+        menuHamburguer.setOnMouseClicked(this::handleVoltarAoMenu);
 
-        // Lógica para desabilitar botões se não for gerente
         if (Main.getUsuarioLogado() == null || !(Main.getUsuarioLogado() instanceof Gerentes)) {
-            // Desabilita o botão de cadastrar
             if (newServiceButton != null) {
                 newServiceButton.setDisable(true);
-            }
-            // Se você tiver botões de alterar e excluir na tela principal (listagem), desabilite-os também.
-            if (btnAlterar != null) {
-                btnAlterar.setDisable(true);
-            }
-            if (btnExcluir != null) {
-                btnExcluir.setDisable(true);
             }
         }
     }
 
-    private void loadServicos(String searchTerm) {
-        servicosContainer.getChildren().clear(); // Limpa a lista antes de carregar novamente
+    // NOVO MÉTODO
+    private void handleVoltarAoMenu(MouseEvent event) {
+        try {
+            Parent root = FXMLLoader.load(getClass().getResource("/com/ufersa/OFIZE/view/menu.fxml"));
+            Scene scene = menuHamburguer.getScene();
+            scene.setRoot(root);
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+    }
 
-        // **MODIFICAÇÃO AQUI: Use o método pesquisarServicosPorNome do ServicoService**
+    private void loadServicos(String searchTerm) {
+        servicosContainer.getChildren().clear();
         if (searchTerm == null || searchTerm.trim().isEmpty()) {
-            allServicos = servicoService.listarTodosServicos(); // Se o termo de busca estiver vazio, mostre todos
+            allServicos = servicoService.listarTodosServicos();
         } else {
-            allServicos = servicoService.buscarServicosPorNome(searchTerm); // Chame o novo método de busca por nome
+            allServicos = servicoService.buscarServicosPorNome(searchTerm);
         }
 
         if (allServicos.isEmpty()) {
@@ -100,7 +90,7 @@ public class ServicoViewController implements Initializable {
     }
 
     private HBox createServicoItem(Servico servico) {
-        HBox hbox = new HBox(10); // Espaçamento entre os elementos
+        HBox hbox = new HBox(10);
         hbox.setStyle("-fx-padding: 10px; -fx-border-color: #e0e0e0; -fx-border-width: 0 0 1 0;");
         hbox.setAlignment(javafx.geometry.Pos.CENTER_LEFT);
 
@@ -112,7 +102,7 @@ public class ServicoViewController implements Initializable {
         valorLabel.setAlignment(javafx.geometry.Pos.CENTER);
 
         Region spacer = new Region();
-        HBox.setHgrow(spacer, Priority.ALWAYS); // Preenche o espaço restante
+        HBox.setHgrow(spacer, Priority.ALWAYS);
 
         Button editButton = new Button();
         ImageView editIcon = new ImageView(new Image(Objects.requireNonNull(getClass().getResourceAsStream("/Imagens/alterar.png"))));
@@ -130,7 +120,6 @@ public class ServicoViewController implements Initializable {
         deleteButton.getStyleClass().add("delete-button");
         deleteButton.setOnAction(event -> handleDeleteServico(servico));
 
-        // Desabilita os botões de editar e deletar para não gerentes, mesmo dentro da lista
         if (Main.getUsuarioLogado() == null || !(Main.getUsuarioLogado() instanceof Gerentes)) {
             editButton.setDisable(true);
             deleteButton.setDisable(true);
@@ -142,24 +131,19 @@ public class ServicoViewController implements Initializable {
 
     @FXML
     private void handleNewService(ActionEvent event) {
-        // Verificação de permissão como camada extra de segurança
         if (Main.getUsuarioLogado() == null || !(Main.getUsuarioLogado() instanceof Gerentes)) {
-            showAlert((Stage)((Button) event.getSource()).getScene().getWindow(), Alert.AlertType.ERROR, "Acesso Negado", "Apenas gerentes podem cadastrar serviços.");
+            showAlert(null, Alert.AlertType.ERROR, "Acesso Negado", "Apenas gerentes podem cadastrar serviços.");
             return;
         }
 
-        Stage currentStage = (Stage) ((Button) event.getSource()).getScene().getWindow();
         try {
             FXMLLoader loader = new FXMLLoader(getClass().getResource("/com/ufersa/OFIZE/view/cadastrar_servico.fxml"));
-            AnchorPane cadastrarServicoView = loader.load();
-
-            Scene scene = currentStage.getScene();
+            Parent cadastrarServicoView = loader.load();
+            Scene scene = ((Button) event.getSource()).getScene();
             scene.setRoot(cadastrarServicoView);
-
-            currentStage.setTitle("Cadastrar Serviço");
-
+            ((Stage) scene.getWindow()).setTitle("Cadastrar Serviço");
         } catch (IOException e) {
-            showAlert(currentStage, Alert.AlertType.ERROR, "Erro ao abrir tela", "Não foi possível carregar a tela de cadastro de serviço: " + e.getMessage());
+            showAlert(null, Alert.AlertType.ERROR, "Erro ao abrir tela", "Não foi possível carregar a tela de cadastro de serviço: " + e.getMessage());
             e.printStackTrace();
         }
     }
@@ -171,24 +155,13 @@ public class ServicoViewController implements Initializable {
         }
 
         try {
-
-            Stage currentStage = (Stage) servicosContainer.getScene().getWindow();
-
-
             FXMLLoader loader = new FXMLLoader(getClass().getResource("/com/ufersa/OFIZE/view/alterar_servicoVIEW.fxml"));
             Parent alterarServicoView = loader.load();
-
-
             AlterarServicoController controller = loader.getController();
-
-
             controller.setServico(servico);
-
-
-            Scene scene = currentStage.getScene();
+            Scene scene = servicosContainer.getScene();
             scene.setRoot(alterarServicoView);
-            currentStage.setTitle("Alterar Serviço"); // Defina um título apropriado para a nova tela
-
+            ((Stage) scene.getWindow()).setTitle("Alterar Serviço");
         } catch (IOException e) {
             showAlert(null, Alert.AlertType.ERROR, "Erro ao abrir tela", "Não foi possível carregar a tela de alteração de serviço: " + e.getMessage());
             e.printStackTrace();
@@ -196,7 +169,6 @@ public class ServicoViewController implements Initializable {
     }
 
     private void handleDeleteServico(Servico servico) {
-        // Verificação de permissão como camada extra de segurança
         if (Main.getUsuarioLogado() == null || !(Main.getUsuarioLogado() instanceof Gerentes)) {
             showAlert(null, Alert.AlertType.ERROR, "Acesso Negado", "Apenas gerentes podem excluir serviços.");
             return;
@@ -210,9 +182,8 @@ public class ServicoViewController implements Initializable {
         confirmAlert.showAndWait().ifPresent(response -> {
             if (response == ButtonType.OK) {
                 try {
-                    // CORREÇÃO: Usar o nome correto do método no ServicoService
                     servicoService.removerServico(servico);
-                    loadServicos(""); // Recarrega a lista após exclusão
+                    loadServicos("");
                     showAlert(null, Alert.AlertType.INFORMATION, "Sucesso", "Serviço excluído com sucesso!");
                 } catch (Exception e) {
                     showAlert(null, Alert.AlertType.ERROR, "Erro", "Erro ao excluir serviço: " + e.getMessage());
@@ -222,17 +193,13 @@ public class ServicoViewController implements Initializable {
         });
     }
 
-    // Método auxiliar para exibir alertas
     private void showAlert(Stage owner, Alert.AlertType type, String title, String message) {
         Alert alert = new Alert(type);
         alert.setTitle(title);
         alert.setHeaderText(null);
         alert.setContentText(message);
-
         if (owner != null) {
             alert.initOwner(owner);
-        } else {
-            System.err.println("AVISO: A janela proprietária do alerta é nula. O alerta pode não ser exibido corretamente.");
         }
         alert.showAndWait();
     }

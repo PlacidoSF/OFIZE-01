@@ -37,7 +37,7 @@
                     </children>
                 </HBox>
                 <Region HBox.hgrow="ALWAYS" />
-                <VBox alignment="CENTER" styleClass="hamburger-menu">
+                <VBox fx:id="menuHamburguer" alignment="CENTER" styleClass="hamburger-menu">
                     <children>
                         <Region styleClass="hamburger-bar" /><Region styleClass="hamburger-bar" /><Region styleClass="hamburger-bar" />
                     </children>
@@ -83,7 +83,9 @@
                         <Label text="Veículo" prefWidth="200.0" />
                         <Label text="Cliente" prefWidth="250.0" />
                         <Label text="Valor Total (R$)" prefWidth="120.0" alignment="CENTER" />
-                        <Label text="Status" prefWidth="120.0" alignment="CENTER" /> <Label text="Pago" prefWidth="120.0" alignment="CENTER" />   <Region HBox.hgrow="ALWAYS" />
+                        <Label text="Status" prefWidth="120.0" alignment="CENTER" />
+                        <Label text="Pago" prefWidth="120.0" alignment="CENTER" />
+                        <Region HBox.hgrow="ALWAYS" />
                         <Label text="Ações" prefWidth="100.0" alignment="CENTER" />
                     </children>
                 </HBox>

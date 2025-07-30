@@ -10,13 +10,10 @@ import javafx.fxml.FXMLLoader;
 import javafx.fxml.Initializable;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
-import javafx.scene.control.Alert;
-import javafx.scene.control.Button;
-import javafx.scene.control.ButtonType;
-import javafx.scene.control.Label;
-import javafx.scene.control.TextField;
+import javafx.scene.control.*;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
+import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.Priority;
 import javafx.scene.layout.Region;
@@ -31,19 +28,10 @@ import java.util.ResourceBundle;
 
 public class PecasViewController implements Initializable {
 
-    @FXML
-    private TextField searchField;
-    @FXML
-    private VBox pecasContainer;
-    @FXML
-    private Button newPecaButton;
-    @FXML
-    private Button btnCadastrar;
-    @FXML
-    private Button btnAlterar;
-    @FXML
-    private Button btnExcluir;
-
+    @FXML private TextField searchField;
+    @FXML private VBox pecasContainer;
+    @FXML private Button newPecaButton;
+    @FXML private VBox menuHamburguer;
 
     private PecasService pecasService;
     private List<Pecas> allPecas;
@@ -55,32 +43,32 @@ public class PecasViewController implements Initializable {
     @Override
     public void initialize(URL url, ResourceBundle rb) {
         loadPecas("");
+        searchField.textProperty().addListener((observable, oldValue, newValue) -> loadPecas(newValue));
 
-        searchField.textProperty().addListener((observable, oldValue, newValue) -> {
-            loadPecas(newValue);
-        });
+        menuHamburguer.setOnMouseClicked(this::handleVoltarAoMenu);
 
         if (Main.getUsuarioLogado() == null || !(Main.getUsuarioLogado() instanceof Gerentes)) {
             if (newPecaButton != null) {
                 newPecaButton.setDisable(true);
             }
-            if (btnAlterar != null) {
-                btnAlterar.setDisable(true);
-            }
-            if (btnExcluir != null) {
-                btnExcluir.setDisable(true);
-            }
         }
     }
 
+    private void handleVoltarAoMenu(MouseEvent event) {
+        try {
+            Parent root = FXMLLoader.load(getClass().getResource("/com/ufersa/OFIZE/view/menu.fxml"));
+            Scene scene = menuHamburguer.getScene();
+            scene.setRoot(root);
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+    }
 
     private void loadPecas(String searchTerm) {
         pecasContainer.getChildren().clear();
-        // ALTERAÇÃO AQUI: Use o termo de pesquisa
         if (searchTerm == null || searchTerm.trim().isEmpty()) {
-            allPecas = pecasService.buscarTodas(); // Se o termo de busca estiver vazio, mostre todas
+            allPecas = pecasService.buscarTodas();
         } else {
-
             allPecas = pecasService.pesquisar(searchTerm, searchTerm);
         }
 
@@ -102,18 +90,14 @@ public class PecasViewController implements Initializable {
 
         Label nomeLabel = new Label(peca.getNome());
         nomeLabel.setPrefWidth(200);
-
         Label fabricanteLabel = new Label(peca.getFabricante());
         fabricanteLabel.setPrefWidth(150);
-
         Label precoLabel = new Label(String.format("R$ %.2f", peca.getPreco()));
         precoLabel.setPrefWidth(100);
         precoLabel.setAlignment(javafx.geometry.Pos.CENTER);
-
         Label quantidadeLabel = new Label(String.valueOf(peca.getQuantidade()));
         quantidadeLabel.setPrefWidth(100);
         quantidadeLabel.setAlignment(javafx.geometry.Pos.CENTER);
-
 
         Region spacer = new Region();
         HBox.setHgrow(spacer, Priority.ALWAYS);
@@ -146,22 +130,18 @@ public class PecasViewController implements Initializable {
     @FXML
     private void handleNewPeca(ActionEvent event) {
         if (Main.getUsuarioLogado() == null || !(Main.getUsuarioLogado() instanceof Gerentes)) {
-            showAlert((Stage)((Button) event.getSource()).getScene().getWindow(), Alert.AlertType.ERROR, "Acesso Negado", "Apenas gerentes podem cadastrar peças.");
+            showAlert(null, Alert.AlertType.ERROR, "Acesso Negado", "Apenas gerentes podem cadastrar peças.");
             return;
         }
 
-        Stage currentStage = (Stage) ((Button) event.getSource()).getScene().getWindow();
         try {
             FXMLLoader loader = new FXMLLoader(getClass().getResource("/com/ufersa/OFIZE/view/CadastrarPecas.fxml"));
             Parent cadastrarPecaView = loader.load();
-
-            Scene scene = currentStage.getScene();
+            Scene scene = ((Button) event.getSource()).getScene();
             scene.setRoot(cadastrarPecaView);
-
-            currentStage.setTitle("Cadastrar Peça");
-
+            ((Stage) scene.getWindow()).setTitle("Cadastrar Peça");
         } catch (IOException e) {
-            showAlert(currentStage, Alert.AlertType.ERROR, "Erro ao abrir tela", "Não foi possível carregar a tela de cadastro de peça: " + e.getMessage());
+            showAlert(null, Alert.AlertType.ERROR, "Erro ao abrir tela", "Não foi possível carregar a tela de cadastro de peça: " + e.getMessage());
             e.printStackTrace();
         }
     }
@@ -173,19 +153,13 @@ public class PecasViewController implements Initializable {
         }
 
         try {
-            Stage currentStage = (Stage) pecasContainer.getScene().getWindow();
-
             FXMLLoader loader = new FXMLLoader(getClass().getResource("/com/ufersa/OFIZE/view/alterar_pecaVIEW.fxml"));
             Parent alterarPecasView = loader.load();
-
             AlterarPecasController controller = loader.getController();
-
             controller.setPeca(peca);
-
-            Scene scene = currentStage.getScene();
+            Scene scene = pecasContainer.getScene();
             scene.setRoot(alterarPecasView);
-            currentStage.setTitle("Alterar Peça");
-
+            ((Stage) scene.getWindow()).setTitle("Alterar Peça");
         } catch (IOException e) {
             showAlert(null, Alert.AlertType.ERROR, "Erro ao abrir tela", "Não foi possível carregar a tela de alteração de peça: " + e.getMessage());
             e.printStackTrace();
@@ -222,11 +196,8 @@ public class PecasViewController implements Initializable {
         alert.setTitle(title);
         alert.setHeaderText(null);
         alert.setContentText(message);
-
         if (owner != null) {
             alert.initOwner(owner);
-        } else {
-            System.err.println("AVISO: A janela proprietária do alerta é nula. O alerta pode não ser exibido corretamente.");
         }
         alert.showAndWait();
     }

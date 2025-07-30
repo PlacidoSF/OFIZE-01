@@ -13,12 +13,13 @@ import javafx.scene.Scene;
 import javafx.scene.control.*;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
+import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.Region;
 import javafx.scene.layout.VBox;
 import javafx.stage.Stage;
 import javafx.util.StringConverter;
-import javafx.event.ActionEvent; // Importar ActionEvent
+import javafx.event.ActionEvent;
 
 import java.io.IOException;
 import java.io.InputStream;
@@ -39,9 +40,10 @@ public class OrcamentoController {
     private DatePicker dataFimPicker;
     @FXML
     private Button cadastrarOrcamentoButton;
-
     @FXML
     private VBox orcamentosContainer;
+    @FXML
+    private VBox menuHamburguer; // NOVO CAMPO
 
     private OrcamentoService orcamentoService;
     private ClientesService clientesService;
@@ -58,6 +60,20 @@ public class OrcamentoController {
         clienteComboBox.valueProperty().addListener((obs, oldCliente, newCliente) -> handlePesquisarOrcamentos());
         dataInicioPicker.valueProperty().addListener((obs, oldDate, newDate) -> handlePesquisarOrcamentos());
         dataFimPicker.valueProperty().addListener((obs, oldDate, newDate) -> handlePesquisarOrcamentos());
+
+        // LÓGICA ADICIONADA: Adiciona a ação de clique para voltar ao menu
+        menuHamburguer.setOnMouseClicked(this::handleVoltarAoMenu);
+    }
+
+    // NOVO MÉTODO
+    private void handleVoltarAoMenu(MouseEvent event) {
+        try {
+            Parent root = FXMLLoader.load(getClass().getResource("/com/ufersa/OFIZE/view/menu.fxml"));
+            Scene scene = menuHamburguer.getScene();
+            scene.setRoot(root);
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
     }
 
     private void carregarClientesComboBox() {
@@ -202,7 +218,7 @@ public class OrcamentoController {
         ImageView alterarIcon = createIcon("/Imagens/alterar.png", 20, 20);
         alterarButton.setGraphic(alterarIcon);
         alterarButton.getStyleClass().add("edit-button");
-        alterarButton.setOnAction(event -> handleAlterarOrcamento(orcamento, event)); // Modificado para passar o ActionEvent
+        alterarButton.setOnAction(event -> handleAlterarOrcamento(orcamento, event));
 
         Button deletarButton = new Button();
         ImageView deletarIcon = createIcon("/Imagens/deletar.png", 20, 20);
@@ -210,7 +226,6 @@ public class OrcamentoController {
         deletarButton.getStyleClass().add("delete-button");
         deletarButton.setOnAction(event -> handleDeletarOrcamento(orcamento));
 
-        // NOVO: Desabilitar botões se o orçamento estiver concluído e pago
         if (orcamento.isStatus() && orcamento.isPago()) {
             alterarButton.setDisable(true);
             deletarButton.setDisable(true);
@@ -241,16 +256,15 @@ public class OrcamentoController {
     }
 
     @FXML
-    private void handleCadastrarOrcamento(ActionEvent event) { // Adicionado ActionEvent
+    private void handleCadastrarOrcamento(ActionEvent event) {
         try {
             FXMLLoader loader = new FXMLLoader(getClass().getResource("/com/ufersa/OFIZE/view/cadastrar_orcamento.fxml"));
             Parent root = loader.load();
-
-            Stage stage = (Stage) ((Button) event.getSource()).getScene().getWindow(); // Obtem a Stage do evento
+            Stage stage = (Stage) ((Button) event.getSource()).getScene().getWindow();
             Scene scene = new Scene(root);
             stage.setScene(scene);
             stage.setTitle("Cadastrar Novo Orçamento");
-            stage.setMaximized(true); // Maximiza a nova tela
+            stage.setMaximized(true);
             stage.show();
         } catch (IOException e) {
             e.printStackTrace();
@@ -258,9 +272,9 @@ public class OrcamentoController {
         }
     }
 
-    private void handleAlterarOrcamento(Orcamento orcamento, ActionEvent event) { // Adicionado ActionEvent
+    private void handleAlterarOrcamento(Orcamento orcamento, ActionEvent event) {
         try {
-            FXMLLoader loader = new FXMLLoader(getClass().getResource("/com/ufersa/OFIZE/view/alterar_orcamento.fxml")); // Nome do FXML corrigido para o padrão
+            FXMLLoader loader = new FXMLLoader(getClass().getResource("/com/ufersa/OFIZE/view/alterar_orcamento.fxml"));
             Parent root = loader.load();
 
             AlterarOrcamentoController controller = loader.getController();
@@ -268,12 +282,11 @@ public class OrcamentoController {
                 controller.setOrcamentoParaAlterar(orcamento);
             }
 
-            // Obtém a Stage da janela atual através do evento
             Stage stage = (Stage) ((Button) event.getSource()).getScene().getWindow();
             Scene scene = new Scene(root);
             stage.setScene(scene);
             stage.setTitle("Alterar Orçamento");
-            stage.setMaximized(true); // <--- LINHA CRÍTICA ADICIONADA: MAXIMIZA A JANELA
+            stage.setMaximized(true);
             stage.show();
         } catch (IOException e) {
             e.printStackTrace();

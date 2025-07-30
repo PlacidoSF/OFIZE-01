@@ -48,11 +48,18 @@ public class PesquisarAutomovelController {
         }
     }
 
+    // MÉTODO ATUALIZADO
     private void buscarAutomoveis(String textoBusca) {
         automoveisContainer.getChildren().clear();
         List<Automoveis> automoveisEncontrados = automoveisService.pesquisar(textoBusca);
-        for (Automoveis automovel : automoveisEncontrados) {
-            automoveisContainer.getChildren().add(criarLinhaAutomovel(automovel));
+
+        if (automoveisEncontrados.isEmpty()) {
+            Label noResultsLabel = new Label("Nenhum automóvel encontrado.");
+            automoveisContainer.getChildren().add(noResultsLabel); // Sem estilo extra
+        } else {
+            for (Automoveis automovel : automoveisEncontrados) {
+                automoveisContainer.getChildren().add(criarLinhaAutomovel(automovel));
+            }
         }
     }
 

@@ -1,10 +1,10 @@
 package com.ufersa.OFIZE.controller;
 
 import com.ufersa.OFIZE.Main;
-import com.ufersa.OFIZE.model.entitie.Funcionarios; // Importar Funcionarios
-import com.ufersa.OFIZE.model.entitie.Gerentes;     // Importar Gerentes
+import com.ufersa.OFIZE.model.entitie.Funcionarios;
+import com.ufersa.OFIZE.model.entitie.Gerentes;
 import com.ufersa.OFIZE.model.service.FuncionariosService;
-import com.ufersa.OFIZE.model.service.GerentesService; // Importar GerentesService
+import com.ufersa.OFIZE.model.service.GerentesService;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
@@ -32,21 +32,21 @@ public class LoginController {
         String usuario = usuarioField.getText();
         String senha = senhaField.getText();
 
-        // Tenta logar como gerente primeiro
         Gerentes gerenteLogado = gerentesService.login(usuario, senha);
+        Funcionarios funcionarioLogado = null;
+
         if (gerenteLogado != null) {
-            Main.setUsuarioLogado(gerenteLogado); // <--- ADICIONE ESTA LINHA
-            showAlert(Alert.AlertType.INFORMATION, "Sucesso", "Login realizado com sucesso!");
-            navigateTo("/com/ufersa/OFIZE/view/ServicoView.fxml");
-            return; // Importante para não tentar logar como funcionário se já é gerente
+            Main.setUsuarioLogado(gerenteLogado);
+        } else {
+            funcionarioLogado = funcionariosService.login(usuario, senha);
+            if (funcionarioLogado != null) {
+                Main.setUsuarioLogado(funcionarioLogado);
+            }
         }
 
-        // Se não for gerente, tenta como funcionário
-        Funcionarios funcionarioLogado = funcionariosService.login(usuario, senha);
-        if (funcionarioLogado != null) {
-            Main.setUsuarioLogado(funcionarioLogado); // <--- ADICIONE ESTA LINHA
+        if (gerenteLogado != null || funcionarioLogado != null) {
             showAlert(Alert.AlertType.INFORMATION, "Sucesso", "Login realizado com sucesso!");
-            navigateTo("/com/ufersa/OFIZE/view/OrcamentoView.fxml");
+            navigateTo("/com/ufersa/OFIZE/view/menu.fxml");
         } else {
             showAlert(Alert.AlertType.ERROR, "Erro", "Usuário ou senha inválidos.");
         }

@@ -28,7 +28,7 @@
                     </children>
                 </HBox>
                 <Region HBox.hgrow="ALWAYS" />
-                <VBox alignment="CENTER" styleClass="hamburger-menu">
+                <VBox fx:id="menuHamburguer" alignment="CENTER" styleClass="hamburger-menu">
                     <children>
                         <Region styleClass="hamburger-bar" /><Region styleClass="hamburger-bar" /><Region styleClass="hamburger-bar" />
                     </children>
@@ -52,7 +52,6 @@
                                 </TextField>
                             </children>
                         </HBox>
-
                         <Region HBox.hgrow="ALWAYS" />
                         <Button fx:id="newPecaButton" text="Cadastrar Peça" styleClass="confirm-button" onAction="#handleNewPeca" />
                     </children>
@@ -64,9 +63,7 @@
                         <Label text="Fabricante" prefWidth="150.0" />
                         <Label text="Preço" prefWidth="100.0" alignment="CENTER" />
                         <Label text="Quantidade" prefWidth="100.0" alignment="CENTER" />
-
                         <Region HBox.hgrow="ALWAYS" />
-
                         <Label text="Ações" prefWidth="100.0" alignment="CENTER" />
                     </children>
                 </HBox>

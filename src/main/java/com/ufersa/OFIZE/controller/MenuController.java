@@ -1,5 +1,6 @@
 package com.ufersa.OFIZE.controller;
 
+import com.ufersa.OFIZE.Main;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
@@ -24,6 +25,7 @@ public class MenuController {
     @FXML
     public void initialize() {
         logoutMenu.setOnMouseClicked(this::handleLogout);
+        // Lógica de desabilitar botões foi removida, como solicitado.
     }
 
     @FXML
@@ -35,6 +37,12 @@ public class MenuController {
             fxmlPath = "/com/ufersa/OFIZE/view/pesquisar_cliente.fxml";
         } else if (source == automoveisButton) {
             fxmlPath = "/com/ufersa/OFIZE/view/pesquisar_automovel.fxml";
+        } else if (source == pecasButton) {
+            fxmlPath = "/com/ufersa/OFIZE/view/PecasView.fxml";
+        } else if (source == servicosButton) {
+            fxmlPath = "/com/ufersa/OFIZE/view/ServicoView.fxml";
+        } else if (source == orcamentosButton) {
+            fxmlPath = "/com/ufersa/OFIZE/view/OrcamentoView.fxml";
         }
 
         if (fxmlPath != null) {
@@ -43,6 +51,7 @@ public class MenuController {
     }
 
     void handleLogout(MouseEvent event) {
+        Main.setUsuarioLogado(null); // Limpa a sessão ao fazer logout
         navigateTo("/com/ufersa/OFIZE/view/tela_login.fxml", logoutMenu);
     }
 
