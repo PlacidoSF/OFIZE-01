@@ -50,13 +50,15 @@ import java.util.stream.Collectors;
 public class AlterarOrcamentoController {
 
     @FXML
-    private ComboBox<Automoveis> automovelComboBox; // ALTERADO: De TextField para ComboBox<Automoveis>
+    private BorderPane mainPane;
+    @FXML
+    private ComboBox<Automoveis> automovelComboBox;
     @FXML
     private ComboBox<Clientes> clienteComboBox;
     @FXML
     private DatePicker dataPicker;
     @FXML
-    private TextField valorVeiculoField; // Mantido, pois é o valor monetário do veículo
+    private TextField valorVeiculoField;
 
     @FXML
     private Button confirmarButton;
@@ -112,6 +114,9 @@ public class AlterarOrcamentoController {
     private ObservableList<OrcamentoServicoDisplay> listaServicosOrcamento = FXCollections.observableArrayList();
     private Map<Long, OrcamentoPecaDisplay> pecasNoOrcamentoMap = new HashMap<>();
     private Map<Long, OrcamentoServicoDisplay> servicosNoOrcamentoMap = new HashMap<>();
+
+    // NOVO: Mapa para armazenar as quantidades originais das peças no orçamento carregado
+    private Map<Long, Integer> originalPecasQuantitiesSnapshot = new HashMap<>();
 
 
     public AlterarOrcamentoController() {
@@ -235,11 +240,15 @@ public class AlterarOrcamentoController {
 
             listaPecasOrcamento.clear();
             pecasNoOrcamentoMap.clear();
+            originalPecasQuantitiesSnapshot.clear(); // Limpa o snapshot anterior a cada carregamento
+
             if (orcamentoToAlter.getOrcamentoPecas() != null) {
                 for (OrcamentoPeca op : orcamentoToAlter.getOrcamentoPecas()) {
                     OrcamentoPecaDisplay displayItem = new OrcamentoPecaDisplay(op.getPeca(), op.getQuantidade(), op.getValorUnitario());
                     listaPecasOrcamento.add(displayItem);
                     pecasNoOrcamentoMap.put(op.getPeca().getId(), displayItem);
+                    // NOVO: Armazena a quantidade original desta peça
+                    originalPecasQuantitiesSnapshot.put(op.getPeca().getId(), op.getQuantidade());
                 }
             }
 
@@ -287,7 +296,7 @@ public class AlterarOrcamentoController {
     }
 
     private void carregarPecasComboBox() {
-        List<Pecas> pecas = pecasService.buscarTodasPecas();
+        List<Pecas> pecas = pecasService.buscarTodasPecas(); // Nome do método corrigido
         pecasComboBox.setItems(FXCollections.observableArrayList(pecas));
         pecasComboBox.setConverter(new StringConverter<Pecas>() {
             @Override
@@ -320,16 +329,16 @@ public class AlterarOrcamentoController {
 
         pecaAcoesColumn.setCellFactory(param -> new TableCell<OrcamentoPecaDisplay, Void>() {
             private final Button removeButton = new Button("Remover");
-            private final Button editButton = new Button("Editar");
+            // REMOVIDO: private final Button editButton = new Button("Editar");
 
             {
                 removeButton.getStyleClass().add("cancel-button");
                 removeButton.setPadding(new Insets(3, 5, 3, 5));
 
-                editButton.getStyleClass().add("edit-button");
-                editButton.setPadding(new Insets(3, 5, 3, 5));
+                // REMOVIDO: editButton.getStyleClass().add("edit-button");
+                // REMOVIDO: editButton.setPadding(new Insets(3, 5, 3, 5));
 
-                HBox pane = new HBox(5, editButton, removeButton);
+                HBox pane = new HBox(5, removeButton); // REMOVIDO: editButton
                 pane.setAlignment(Pos.CENTER);
 
                 removeButton.setOnAction(event -> {
@@ -337,71 +346,10 @@ public class AlterarOrcamentoController {
                     listaPecasOrcamento.remove(item);
                     pecasNoOrcamentoMap.remove(item.getPeca().getId());
                     calcularTotalOrcamento();
-
-                    // NOVO: Devolver a quantidade de peças para o estoque ao remover
-                    try {
-                        Pecas pecaEmEstoque = pecasService.buscarPeca(item.getPeca().getId()); // Busca a peça atualizada
-                        if (pecaEmEstoque != null) {
-                            pecaEmEstoque.setQuantidade(pecaEmEstoque.getQuantidade() + item.getQuantidade());
-                            pecasService.atualizarPeca(pecaEmEstoque);
-                            showAlert(Alert.AlertType.INFORMATION, "Estoque Atualizado", "Quantidade de '" + item.getNomePeca() + "' restaurada no estoque.");
-                        }
-                    } catch (Exception e) {
-                        showAlert(Alert.AlertType.ERROR, "Erro no Estoque", "Erro ao restaurar peça no estoque: " + e.getMessage());
-                        e.printStackTrace();
-                    }
+                    // Nenhuma atualização de estoque aqui no controller
                 });
 
-                editButton.setOnAction(event -> {
-                    OrcamentoPecaDisplay item = getTableView().getItems().get(getIndex());
-                    int oldQty = item.getQuantidade(); // Guarda a quantidade atual
-                    TextInputDialog dialog = new TextInputDialog(String.valueOf(oldQty));
-                    dialog.setTitle("Editar Quantidade da Peça");
-                    dialog.setHeaderText("Altere a quantidade para '" + item.getNomePeca() + "'");
-                    dialog.setContentText("Nova Quantidade:");
-
-                    Optional<String> result = dialog.showAndWait();
-                    result.ifPresent(newQtyStr -> {
-                        try {
-                            int newQty = Integer.parseInt(newQtyStr);
-                            if (newQty <= 0) {
-                                showAlert(Alert.AlertType.WARNING, "Quantidade Inválida", "A quantidade deve ser maior que zero.");
-                                return;
-                            }
-
-                            Pecas pecaReal = pecasService.buscarPeca(item.getPeca().getId()); // Busca a peça atualizada
-                            if (pecaReal == null) {
-                                showAlert(Alert.AlertType.ERROR, "Erro", "Peça não encontrada no estoque para atualização.");
-                                return;
-                            }
-
-                            int diferenca = newQty - oldQty;
-
-                            if (diferenca > 0) { // Aumentou a quantidade no orçamento
-                                if (pecaReal.getQuantidade() < diferenca) {
-                                    showAlert(Alert.AlertType.ERROR, "Estoque Insuficiente", "Não há estoque suficiente para aumentar a quantidade em " + diferenca + ".");
-                                    return;
-                                }
-                                pecaReal.setQuantidade(pecaReal.getQuantidade() - diferenca);
-                            } else if (diferenca < 0) { // Diminuiu a quantidade no orçamento
-                                pecaReal.setQuantidade(pecaReal.getQuantidade() + Math.abs(diferenca));
-                            }
-                            // Se diferença for 0, não faz nada com o estoque
-
-                            pecasService.atualizarPeca(pecaReal); // Salva a peça com a nova quantidade no estoque
-                            item.setQuantidade(newQty); // Atualiza a quantidade na lista do orçamento
-                            pecasTableView.refresh();
-                            calcularTotalOrcamento();
-                            showAlert(Alert.AlertType.INFORMATION, "Estoque Atualizado", "Quantidade de '" + item.getNomePeca() + "' ajustada no estoque.");
-
-                        } catch (NumberFormatException e) {
-                            showAlert(Alert.AlertType.ERROR, "Erro", "Por favor, insira um número válido.");
-                        } catch (Exception e) {
-                            showAlert(Alert.AlertType.ERROR, "Erro no Estoque", "Ocorreu um erro ao atualizar o estoque: " + e.getMessage());
-                            e.printStackTrace();
-                        }
-                    });
-                });
+                // REMOVIDO: editButton.setOnAction(event -> { ... }); // Removida a lógica de edição da célula
             }
 
             @Override
@@ -410,7 +358,7 @@ public class AlterarOrcamentoController {
                 if (empty) {
                     setGraphic(null);
                 } else {
-                    setGraphic(new HBox(5, editButton, removeButton));
+                    setGraphic(new HBox(5, removeButton)); // REMOVIDO: editButton
                 }
             }
         });
@@ -423,14 +371,14 @@ public class AlterarOrcamentoController {
         servicoPrecoUnitarioColumn.setCellValueFactory(cellData -> new javafx.beans.property.SimpleStringProperty(String.format("%.2f", cellData.getValue().getValorUnitario())));
         servicoSubtotalColumn.setCellValueFactory(cellData -> new javafx.beans.property.SimpleStringProperty(String.format("%.2f", cellData.getValue().getSubtotal())));
 
-        servicoAcoesColumn.setCellFactory(param -> new TableCell<OrcamentoServicoDisplay, Void>() { // Alterado para Void
+        servicoAcoesColumn.setCellFactory(param -> new TableCell<OrcamentoServicoDisplay, Void>() {
             private final Button removeButton = new Button("Remover");
 
             {
                 removeButton.getStyleClass().add("cancel-button");
                 removeButton.setPadding(new Insets(3, 5, 3, 5));
 
-                HBox pane = new HBox(5, removeButton); // HBox para agrupar botões
+                HBox pane = new HBox(5, removeButton);
                 pane.setAlignment(Pos.CENTER);
 
                 removeButton.setOnAction(event -> {
@@ -480,30 +428,23 @@ public class AlterarOrcamentoController {
             return;
         }
 
-        if (pecaReal.getQuantidade() < quantidade) {
-            showAlert(Alert.AlertType.ERROR, "Estoque Insuficiente", "Não há estoque suficiente para a peça selecionada.");
+        // Soma a quantidade já existente no orçamento para a peça
+        int currentQuantityInOrcamento = pecasNoOrcamentoMap.containsKey(pecaReal.getId()) ? pecasNoOrcamentoMap.get(pecaReal.getId()).getQuantidade() : 0;
+        int totalQuantityRequested = currentQuantityInOrcamento + quantidade;
+
+        if (pecaReal.getQuantidade() < totalQuantityRequested) { // Verifica se a SOMA excede o estoque
+            showAlert(Alert.AlertType.ERROR, "Estoque Insuficiente", "Não há estoque suficiente para a peça selecionada. Em estoque: " + pecaReal.getQuantidade() + ". Quantidade já no orçamento: " + currentQuantityInOrcamento + ".");
             return;
         }
 
         OrcamentoPecaDisplay existingItem = pecasNoOrcamentoMap.get(pecaReal.getId());
         if (existingItem != null) {
-            int novaQuantidadeTotal = existingItem.getQuantidade() + quantidade;
-            existingItem.setQuantidade(novaQuantidadeTotal);
+            existingItem.setQuantidade(totalQuantityRequested); // Atualiza com a quantidade total
             pecasTableView.refresh();
         } else {
             OrcamentoPecaDisplay newDisplayItem = new OrcamentoPecaDisplay(pecaReal, quantidade, pecaReal.getPreco());
             listaPecasOrcamento.add(newDisplayItem);
             pecasNoOrcamentoMap.put(pecaReal.getId(), newDisplayItem);
-        }
-
-        // NOVO: Diminuir a quantidade da peça no estoque ao adicionar ao orçamento
-        try {
-            pecaReal.setQuantidade(pecaReal.getQuantidade() - quantidade);
-            pecasService.atualizarPeca(pecaReal);
-            showAlert(Alert.AlertType.INFORMATION, "Estoque Atualizado", "Quantidade de '" + pecaReal.getNome() + "' deduzida do estoque.");
-        } catch (Exception e) {
-            showAlert(Alert.AlertType.ERROR, "Erro no Estoque", "Erro ao deduzir peça do estoque: " + e.getMessage());
-            e.printStackTrace();
         }
 
         calcularTotalOrcamento();
@@ -608,6 +549,61 @@ public class AlterarOrcamentoController {
                 valorVeiculo = 0.0;
             }
 
+            // Lógica para aplicar as alterações de estoque de peças
+            // Esta lógica garante que o estoque seja atualizado de acordo com as diferenças
+            // entre o orçamento original e o orçamento atualizado.
+            // É crucial que esta parte seja executada dentro de uma transação no seu Service/DAO.
+            try {
+                // Crie um mapa das quantidades atuais para fácil acesso
+                Map<Long, Integer> currentPecasQuantities = new HashMap<>();
+                for (OrcamentoPecaDisplay displayItem : listaPecasOrcamento) {
+                    currentPecasQuantities.put(displayItem.getPeca().getId(), displayItem.getQuantidade());
+                }
+
+                // 1. Processar peças que estavam no orçamento original
+                for (Map.Entry<Long, Integer> entry : originalPecasQuantitiesSnapshot.entrySet()) {
+                    Long pecaId = entry.getKey();
+                    Integer originalQuantity = entry.getValue();
+                    Integer currentQuantity = currentPecasQuantities.get(pecaId);
+
+                    Pecas pecaEmEstoque = pecasService.buscarPeca(pecaId); // Busca a peça para ter a quantidade atual do DB
+                    if (pecaEmEstoque == null) {
+                        System.err.println("Erro: Peça com ID " + pecaId + " não encontrada no estoque durante a confirmação.");
+                        // Considere lançar uma exceção ou exibir um erro fatal aqui
+                        continue;
+                    }
+
+                    if (currentQuantity == null) { // Peça foi removida completamente do orçamento
+                        // Incrementa o estoque com a quantidade original
+                        pecasService.incrementarQuantidade(pecaId, originalQuantity);
+                    } else { // Peça ainda está no orçamento, pode ter tido a quantidade alterada
+                        int diff = currentQuantity - originalQuantity;
+                        if (diff > 0) { // Quantidade da peça no orçamento aumentou -> decrementa o estoque
+                            pecasService.decrementarQuantidade(pecaId, diff);
+                        } else if (diff < 0) { // Quantidade da peça no orçamento diminuiu -> incrementa o estoque
+                            pecasService.incrementarQuantidade(pecaId, Math.abs(diff));
+                        }
+                        // Se diff é 0, não houve mudança, não faz nada.
+                    }
+                }
+
+                // 2. Processar peças que foram *novamente adicionadas* ao orçamento (e não estavam no original)
+                for (OrcamentoPecaDisplay displayItem : listaPecasOrcamento) {
+                    Long pecaId = displayItem.getPeca().getId();
+                    if (!originalPecasQuantitiesSnapshot.containsKey(pecaId)) { // É uma peça que não estava no orçamento original
+                        // Decrementa o estoque com a quantidade adicionada
+                        pecasService.decrementarQuantidade(pecaId, displayItem.getQuantidade());
+                    }
+                }
+
+            } catch (Exception e) {
+                showAlert(Alert.AlertType.ERROR, "Erro de Estoque", "Não foi possível atualizar o estoque de peças: " + e.getMessage());
+                e.printStackTrace();
+                // É fundamental que o serviço de orçamento gerencie a transação para um rollback em caso de falha no estoque
+                return;
+            }
+
+
             // IMPORTANTE: Ao confirmar, salve a string do veículo no formato padronizado!
             // Isso evita futuros problemas de formatação.
             orcamentoToAlter.setVeiculo(automovelSelecionado.getMarca() + " - " + automovelSelecionado.getPlaca());
@@ -616,42 +612,56 @@ public class AlterarOrcamentoController {
             orcamentoToAlter.setValorVeiculo(valorVeiculo);
 
             List<OrcamentoPeca> orcamentoPecasAtualizadas = listaPecasOrcamento.stream()
-                    .map(displayItem -> new OrcamentoPeca(orcamentoToAlter, displayItem.getPeca(), displayItem.getQuantidade(), displayItem.getValorUnitario()))
+                    .map(displayItem -> {
+                        // Certifique-se de que o OrcamentoPeca recém-criado tenha o Orcamento pai associado
+                        OrcamentoPeca op = new OrcamentoPeca(orcamentoToAlter, displayItem.getPeca(), displayItem.getQuantidade(), displayItem.getValorUnitario());
+                        // Se houver um ID existente para a OrcamentoPeca original (para manter associações JPA)
+                        // Você pode tentar recuperá-lo aqui ou deixar o JPA gerenciar novas e existentes.
+                        // Por simplicidade, assumindo que OrcamentoPeca é recriado a cada atualização.
+                        return op;
+                    })
                     .collect(Collectors.toList());
             orcamentoToAlter.setOrcamentoPecas(orcamentoPecasAtualizadas);
 
             List<OrcamentoServico> orcamentoServicosAtualizadas = listaServicosOrcamento.stream()
-                    .map(displayItem -> new OrcamentoServico(orcamentoToAlter, displayItem.getServico(), displayItem.getQuantidade(), displayItem.getValorUnitario()))
+                    .map(displayItem -> {
+                        OrcamentoServico os = new OrcamentoServico(orcamentoToAlter, displayItem.getServico(), displayItem.getQuantidade(), displayItem.getValorUnitario());
+                        return os;
+                    })
                     .collect(Collectors.toList());
             orcamentoToAlter.setOrcamentoServicos(orcamentoServicosAtualizadas);
 
+            // Chame o serviço para atualizar o orçamento no banco de dados
             orcamentoService.atualizarOrcamento(orcamentoToAlter);
 
-            showAlert(Alert.AlertType.INFORMATION, "Sucesso", "Orçamento alterado com sucesso!");
-            returnToOrcamentoView(event);
+            showAlert(Alert.AlertType.INFORMATION, "Sucesso", "Orçamento atualizado com sucesso!");
+            voltarParaPesquisa(event); // Retorna à tela anterior
         } catch (Exception e) {
-            showAlert(Alert.AlertType.ERROR, "Erro ao Alterar Orçamento", "Ocorreu um erro ao tentar alterar o orçamento: " + e.getMessage());
+            showAlert(Alert.AlertType.ERROR, "Erro", "Erro ao atualizar orçamento: " + e.getMessage());
             e.printStackTrace();
         }
     }
 
     @FXML
     private void handleCancelar(ActionEvent event) {
-        returnToOrcamentoView(event);
+        // Ao cancelar, simplesmente retorna para a tela de pesquisa.
+        // A lógica de reversão do estoque (se algo tivesse sido pré-reservado)
+        // deveria ser tratada no serviço ou na camada de persistência em uma transação.
+        voltarParaPesquisa(event);
     }
 
-    private void returnToOrcamentoView(ActionEvent event) {
+    private void voltarParaPesquisa(ActionEvent event) {
         try {
             FXMLLoader loader = new FXMLLoader(getClass().getResource("/com/ufersa/OFIZE/view/OrcamentoView.fxml"));
             Parent orcamentoView = loader.load();
 
-            Scene scene = ((Button) event.getSource()).getScene();
-            scene.setRoot(orcamentoView);
-
+            Scene scene = mainPane.getScene();
             Stage stage = (Stage) scene.getWindow();
+
+            scene.setRoot(orcamentoView);
             stage.setTitle("Lista de Orçamentos");
         } catch (IOException e) {
-            showAlert(Alert.AlertType.ERROR, "Erro de Navegação", "Não foi possível retornar à tela de orçamentos: " + e.getMessage());
+            showAlert(Alert.AlertType.ERROR, "Erro de Navegação", "Não foi possível carregar a tela de pesquisa de orçamento.");
             e.printStackTrace();
         }
     }
@@ -661,14 +671,10 @@ public class AlterarOrcamentoController {
         alert.setTitle(title);
         alert.setHeaderText(null);
         alert.setContentText(message);
-        Stage owner = (Stage) (clienteComboBox != null ? clienteComboBox.getScene().getWindow() : null); // Alterado para um controle que sempre existirá
-        if (owner != null) {
-            alert.initOwner(owner);
-        }
         alert.showAndWait();
     }
 
-    // --- Classes Display (mantidas, são cruciais para as TableViews) ---
+    // Classes Display (mantidas como antes)
     public static class OrcamentoPecaDisplay {
         private final Pecas peca;
         private javafx.beans.property.IntegerProperty quantidade;
@@ -685,7 +691,9 @@ public class AlterarOrcamentoController {
         public Pecas getPeca() { return peca; }
         public int getQuantidade() { return quantidade.get(); }
         public javafx.beans.property.IntegerProperty quantidadeProperty() { return quantidade; }
-        public void setQuantidade(int quantidade) { this.quantidade.set(quantidade); }
+        public void setQuantidade(int quantidade) {
+            this.quantidade.set(quantidade);
+        }
 
         public String getNomePeca() { return nomePeca.get(); }
         public javafx.beans.property.StringProperty nomePecaProperty() { return nomePeca; }
@@ -711,7 +719,9 @@ public class AlterarOrcamentoController {
         public Servico getServico() { return servico; }
         public int getQuantidade() { return quantidade.get(); }
         public javafx.beans.property.IntegerProperty quantidadeProperty() { return quantidade; }
-        public void setQuantidade(int quantidade) { this.quantidade.set(quantidade); }
+        public void setQuantidade(int quantidade) {
+            this.quantidade.set(quantidade);
+        }
 
         public String getNomeServico() { return nomeServico.get(); }
         public javafx.beans.property.StringProperty nomeServicoProperty() { return nomeServico; }

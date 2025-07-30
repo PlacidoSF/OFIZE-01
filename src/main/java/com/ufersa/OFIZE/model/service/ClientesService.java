@@ -1,14 +1,17 @@
+// src/main/java/com/ufersa/OFIZE/model/service/ClientesService.java
 package com.ufersa.OFIZE.model.service;
 
-import com.ufersa.OFIZE.exceptions.DadoDuplicadoException;
 import com.ufersa.OFIZE.model.dao.AutomoveisDAO;
+import com.ufersa.OFIZE.model.dao.OrcamentoDAO; // Importar OrcamentoDAO
 import com.ufersa.OFIZE.model.entitie.Automoveis;
 import com.ufersa.OFIZE.model.entitie.Clientes;
+import com.ufersa.OFIZE.model.entitie.Orcamento; // Importar Orcamento
 import java.util.List;
 
 public class ClientesService extends ClienteServiceAbstract {
 
     private final AutomoveisDAO automoveisDAO = new AutomoveisDAO();
+    private final OrcamentoDAO orcamentoDAO = new OrcamentoDAO(); // Instanciar OrcamentoDAO
 
     public ClientesService() {
         super();
@@ -23,7 +26,7 @@ public class ClientesService extends ClienteServiceAbstract {
             throw new IllegalArgumentException("Dados do cliente são inválidos.");
         }
         if (clientesDAO.findByCpf(cliente.getCpf()) != null) {
-            throw new DadoDuplicadoException("CPF já cadastrado no sistema.");
+            throw new IllegalArgumentException("CPF já cadastrado no sistema.");
         }
         clientesDAO.persist(cliente);
     }
@@ -44,7 +47,7 @@ public class ClientesService extends ClienteServiceAbstract {
         }
         Clientes clienteExistenteComCpf = clientesDAO.findByCpf(cliente.getCpf());
         if (clienteExistenteComCpf != null && !clienteExistenteComCpf.getId().equals(cliente.getId())) {
-            throw new DadoDuplicadoException("O CPF informado já pertence a outro cliente.");
+            throw new IllegalArgumentException("O CPF informado já pertence a outro cliente.");
         }
         clientesDAO.merge(cliente);
     }
@@ -61,6 +64,13 @@ public class ClientesService extends ClienteServiceAbstract {
         if (cliente == null || cliente.getId() == null) {
             throw new IllegalArgumentException("Cliente inválido para remoção.");
         }
+
+        // Nova verificação para orçamentos
+        List<Orcamento> orcamentosDoCliente = orcamentoDAO.findByClienteId(cliente.getId());
+        if (!orcamentosDoCliente.isEmpty()) {
+            throw new IllegalStateException("Não é possível remover o cliente pois ele possui orçamentos associados.");
+        }
+
         List<Automoveis> automoveisDoCliente = automoveisDAO.findByClienteId(cliente.getId());
         for (Automoveis auto : automoveisDoCliente) {
             automoveisDAO.remove(auto);
@@ -70,6 +80,11 @@ public class ClientesService extends ClienteServiceAbstract {
 
     public boolean clientePossuiAutomoveis(Long clienteId) {
         return automoveisDAO.clientePossuiAutomoveis(clienteId);
+    }
+
+    // Novo método para verificar se o cliente possui orçamentos
+    public boolean clientePossuiOrcamentos(Long clienteId) {
+        return !orcamentoDAO.findByClienteId(clienteId).isEmpty();
     }
 
     private boolean isClienteValido(Clientes cliente) {

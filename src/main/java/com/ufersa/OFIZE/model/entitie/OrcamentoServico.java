@@ -28,7 +28,7 @@ public class OrcamentoServico {
     private int quantidade; // Este será sempre 1 para serviços (lógica nos controllers)
     private double valorUnitario; // Valor do serviço no momento da inclusão no orçamento
 
-    // Construtor padrão (obrigatório para JPA)
+
     public OrcamentoServico() {
     }
 
@@ -57,22 +57,13 @@ public class OrcamentoServico {
         return this.quantidade * this.valorUnitario;
     }
 
-    // *** MÉTODOS PARA EXIBIÇÃO NA TABLEVIEW ***
 
-    /**
-     * Retorna o nome do serviço para exibição na TableView.
-     * @return O nome do serviço.
-     */
     @Transient // Indica que esta propriedade não é persistida no banco de dados
     public String getNomeServico() {
         return (this.servico != null) ? this.servico.getNome() : "";
     }
 
-    /**
-     * Retorna o valor total deste item de serviço para exibição na TableView.
-     * Corresponde a getTotalItemValue().
-     * @return O valor total do item de serviço.
-     */
+
     @Transient // Indica que esta propriedade não é persistida no banco de dados
     public double getValorTotalServico() {
         // Para serviços, a quantidade será sempre 1 de acordo com o requisito,

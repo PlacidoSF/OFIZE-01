@@ -1,3 +1,4 @@
+// src/main/java/com/ufersa/OFIZE/controller/PesquisarClienteController.java
 package com.ufersa.OFIZE.controller;
 
 import com.ufersa.OFIZE.model.entitie.Clientes;
@@ -48,15 +49,13 @@ public class PesquisarClienteController {
         }
     }
 
-    // MÉTODO ATUALIZADO
     private void buscarClientes(String nome) {
         clientesContainer.getChildren().clear();
         List<Clientes> clientesEncontrados = clientesService.pesquisarPorNome(nome);
 
-        // Lógica para exibir mensagem quando a lista está vazia
         if (clientesEncontrados.isEmpty()) {
             Label noResultsLabel = new Label("Nenhum cliente encontrado.");
-            clientesContainer.getChildren().add(noResultsLabel); // Sem estilo extra
+            clientesContainer.getChildren().add(noResultsLabel);
         } else {
             for (Clientes cliente : clientesEncontrados) {
                 clientesContainer.getChildren().add(criarLinhaCliente(cliente));
@@ -108,8 +107,16 @@ public class PesquisarClienteController {
 
     private void deletarCliente(Clientes cliente) {
         boolean possuiAutomoveis = clientesService.clientePossuiAutomoveis(cliente.getId());
+        boolean possuiOrcamentos = clientesService.clientePossuiOrcamentos(cliente.getId()); // Nova verificação
+
         String tituloAlerta = "Você realmente quer apagar este Cliente?";
         String conteudoAlerta = "Cliente: " + cliente.getNome();
+
+        if (possuiOrcamentos) {
+            Alert errorAlert = new Alert(Alert.AlertType.ERROR, "Não é possível remover o cliente pois ele possui orçamentos associados.");
+            errorAlert.showAndWait();
+            return; // Impede a continuação da exclusão
+        }
 
         if (possuiAutomoveis) {
             tituloAlerta = "Atenção: Cliente possui automóveis!";
@@ -130,6 +137,9 @@ public class PesquisarClienteController {
             try {
                 clientesService.removerCliente(cliente);
                 buscarClientes(searchField.getText());
+            } catch (IllegalStateException e) { // Captura a exceção específica
+                Alert errorAlert = new Alert(Alert.AlertType.ERROR, e.getMessage());
+                errorAlert.showAndWait();
             } catch (Exception e) {
                 Alert errorAlert = new Alert(Alert.AlertType.ERROR, "Erro ao deletar: " + e.getMessage());
                 errorAlert.showAndWait();

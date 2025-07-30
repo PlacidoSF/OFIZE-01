@@ -7,11 +7,12 @@ import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.ManyToOne;
 import javax.persistence.OneToMany;
-
+import javax.persistence.JoinColumn;
 import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Objects; // Importar Objects para o equals/hashCode
+import java.util.Objects;
+
 
 @Entity
 public class Orcamento {
@@ -20,6 +21,7 @@ public class Orcamento {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id; // Id unico do orçamento
 
+    private String nomeClienteString;
     private String veiculo;
     private double valorVeiculo; // Agora representa a "taxa mínima do veículo"
     private LocalDate data;
@@ -31,9 +33,6 @@ public class Orcamento {
     @ManyToOne
     private Clientes cliente;
 
-    // Relacionamento OneToMany para OrcamentoPeca
-    // Usamos CascadeType.ALL e orphanRemoval = true para gerenciar o ciclo de vida
-    // de OrcamentoPeca através de Orcamento.
     @OneToMany(mappedBy = "orcamento", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<OrcamentoPeca> orcamentoPecas = new ArrayList<>();
 
@@ -50,9 +49,8 @@ public class Orcamento {
         this.valorTotal = 0.0;
     }
 
-    // Construtor completo (opcional, dependendo da sua necessidade)
     public Orcamento(String veiculo, double valorVeiculo, Clientes cliente) {
-        this(); // Chama o construtor padrão para inicializar data, status, pago e valorTotal
+        this();
         this.veiculo = veiculo;
         this.valorVeiculo = valorVeiculo;
         this.cliente = cliente;
@@ -80,8 +78,7 @@ public class Orcamento {
     public void setPago(boolean pago) { this.pago = pago; }
 
     public double getValorTotal() { return valorTotal; }
-    // Não deve haver um setter público para valorTotal, ele deve ser calculado.
-    // public void setValorTotal(double valorTotal) { this.valorTotal = valorTotal; }
+
 
     public Clientes getCliente() { return cliente; }
     public void setCliente(Clientes cliente) { this.cliente = cliente; }
@@ -145,7 +142,7 @@ public class Orcamento {
         this.valorTotal = this.valorVeiculo + totalPecas + totalServicos;
     }
 
-    // Opcional: Adicionar equals e hashCode para melhor funcionamento com coleções e persistência
+
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;

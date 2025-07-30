@@ -220,9 +220,6 @@ public class CadastrarOrcamentoController {
 
     // NOVO MÉTODO: Carrega automóveis com base no cliente selecionado
     private void carregarAutomoveisPorCliente(Clientes cliente) {
-        // Supondo que AutomoveisService tenha um método para buscar automóveis por cliente
-        // Você precisará implementar esse método no seu AutomoveisService e AutomoveisDAO.
-        // Por exemplo: automovelService.buscarAutomoveisPorCliente(cliente);
         List<Automoveis> automoveisDoCliente = automovelService.buscarAutomoveisPorCliente(cliente);
         automovelComboBox.setItems(FXCollections.observableArrayList(automoveisDoCliente));
         automovelComboBox.getSelectionModel().clearSelection(); // Limpa a seleção anterior
@@ -236,52 +233,16 @@ public class CadastrarOrcamentoController {
         pecaSubtotalColumn.setCellValueFactory(cellData -> new javafx.beans.property.SimpleStringProperty(String.format("%.2f", cellData.getValue().getSubtotal())));
 
         pecaAcoesColumn.setCellFactory(param -> new TableCell<OrcamentoPecaDisplay, Void>() {
-            // Remova os botões decreaseButton e increaseButton
-            // final Button decreaseButton = new Button("-");
-            // final Button increaseButton = new Button("+");
+
             final Button deleteButton = new Button("Remover");
-            // Modifique o HBox para conter apenas o botão "Remover"
+
             final HBox pane = new HBox(5, deleteButton); // Era: final HBox pane = new HBox(5, decreaseButton, increaseButton, deleteButton);
 
             {
-                // Remova as linhas que adicionam classes de estilo aos botões removidos
-                // decreaseButton.getStyleClass().add("quantity-button");
-                // increaseButton.getStyleClass().add("quantity-button");
+
                 deleteButton.getStyleClass().add("cancel-button");
 
-                // Remova os ActionEvents dos botões removidos
-                /*
-                decreaseButton.setOnAction(event -> {
-                    OrcamentoPecaDisplay item = getTableView().getItems().get(getIndex());
-                    if (item.getQuantidade() > 1) {
-                        item.setQuantidade(item.getQuantidade() - 1);
-                        getTableView().refresh();
-                        calcularTotalOrcamento();
-                    } else {
-                        Alert confirmAlert = new Alert(Alert.AlertType.CONFIRMATION);
-                        confirmAlert.setTitle("Remover Peça");
-                        confirmAlert.setHeaderText("A quantidade da peça é 1. Deseja removê-la do orçamento?");
-                        Optional<ButtonType> result = confirmAlert.showAndWait();
-                        if (result.isPresent() && result.get() == ButtonType.OK) {
-                            listaPecasOrcamento.remove(item);
-                            pecasNoOrcamentoMap.remove(item.getPeca().getId());
-                            calcularTotalOrcamento();
-                        }
-                    }
-                });
 
-                increaseButton.setOnAction(event -> {
-                    OrcamentoPecaDisplay item = getTableView().getItems().get(getIndex());
-                    Pecas pecaReal = item.getPeca();
-                    if (pecaReal.getQuantidade() > item.getQuantidade()) {
-                        item.setQuantidade(item.getQuantidade() + 1);
-                        getTableView().refresh();
-                        calcularTotalOrcamento();
-                    } else {
-                        showAlert(Alert.AlertType.WARNING, "Estoque Insuficiente", "Não há mais estoque disponível para esta peça.");
-                    }
-                });
-                */
                 deleteButton.setOnAction(event -> {
                     OrcamentoPecaDisplay item = getTableView().getItems().get(getIndex());
                     listaPecasOrcamento.remove(item);

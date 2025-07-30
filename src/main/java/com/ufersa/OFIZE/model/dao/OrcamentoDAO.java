@@ -90,6 +90,11 @@ public class OrcamentoDAO extends DAOGenerico<Orcamento, Long> {
         return query.getResultList();
     }
 
+    public List<Orcamento> findByClienteId(Long clienteId) {
+        return em.createQuery("SELECT o FROM Orcamento o WHERE o.cliente.id = :clienteId", Orcamento.class)
+                .setParameter("clienteId", clienteId)
+                .getResultList();
+    }
 
     @Override
     public void close() {

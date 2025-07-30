@@ -246,7 +246,7 @@ public class OrcamentoController {
         deletarButton.getStyleClass().add("delete-button");
         deletarButton.setOnAction(event -> handleDeletarOrcamento(orcamento));
 
-        if (orcamento.isStatus() && orcamento.isPago()) {
+        if (orcamento.isStatus() || orcamento.isPago()) {
             alterarButton.setDisable(true);
             deletarButton.setDisable(true);
         }

@@ -105,7 +105,7 @@ public class PecasService {
 
     public void decrementarQuantidade(Long pecaId, int quantidade) {
         try {
-            Pecas peca = buscarPeca(pecaId); // Este método agora pode lançar EntidadeNaoEncontradaException
+            Pecas peca = buscarPeca(pecaId);
             if (peca != null) {
                 if (peca.getQuantidade() >= quantidade) {
                     peca.setQuantidade(peca.getQuantidade() - quantidade);
