@@ -60,14 +60,16 @@ public class CadastroAutomovelController {
     @FXML
     void handleConfirmar(ActionEvent event) {
         try {
-            String marca = marcaField.getText();
-            String cor = corField.getText();
             String placa = placaField.getText();
-            int ano = Integer.parseInt(anoField.getText());
-            int quilometragem = Integer.parseInt(quilometragemField.getText());
             Clientes proprietario = proprietarioComboBox.getValue();
 
-            Automoveis novoAutomovel = new Automoveis(marca, cor, placa, ano, quilometragem, proprietario);
+            Automoveis novoAutomovel = new Automoveis.Builder(placa, proprietario)
+                    .marca(marcaField.getText())
+                    .cor(corField.getText())
+                    .ano(Integer.parseInt(anoField.getText()))
+                    .quilometragem(Integer.parseInt(quilometragemField.getText()))
+                    .build();
+
             automoveisService.cadastrar(novoAutomovel);
 
             showAlert(Alert.AlertType.INFORMATION, "Sucesso", "Automóvel cadastrado com sucesso!");

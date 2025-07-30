@@ -26,16 +26,15 @@ public class Automoveis {
 
     public Automoveis() {}
 
-    public Automoveis(String marca, String cor, String placa, int ano, int quilometragem, Clientes proprietario) {
-        this.marca = marca;
-        this.cor = cor;
-        this.placa = placa;
-        this.ano = ano;
-        this.quilometragem = quilometragem;
-        this.proprietario = proprietario;
+    private Automoveis(Builder builder) {
+        this.marca = builder.marca;
+        this.cor = builder.cor;
+        this.placa = builder.placa;
+        this.ano = builder.ano;
+        this.quilometragem = builder.quilometragem;
+        this.proprietario = builder.proprietario;
     }
 
-    // Getters e Setters
     public Long getId() { return id; }
     public void setId(Long id) { this.id = id; }
 
@@ -56,4 +55,42 @@ public class Automoveis {
 
     public Clientes getProprietario() { return proprietario; }
     public void setProprietario(Clientes proprietario) { this.proprietario = proprietario; }
+
+    public static class Builder {
+        private final String placa;
+        private final Clientes proprietario;
+        private String marca = "";
+        private String cor = "";
+        private int ano = 0;
+        private int quilometragem = 0;
+
+        public Builder(String placa, Clientes proprietario) {
+            this.placa = placa;
+            this.proprietario = proprietario;
+        }
+
+        public Builder marca(String marca) {
+            this.marca = marca;
+            return this;
+        }
+
+        public Builder cor(String cor) {
+            this.cor = cor;
+            return this;
+        }
+
+        public Builder ano(int ano) {
+            this.ano = ano;
+            return this;
+        }
+
+        public Builder quilometragem(int quilometragem) {
+            this.quilometragem = quilometragem;
+            return this;
+        }
+
+        public Automoveis build() {
+            return new Automoveis(this);
+        }
+    }
 }
