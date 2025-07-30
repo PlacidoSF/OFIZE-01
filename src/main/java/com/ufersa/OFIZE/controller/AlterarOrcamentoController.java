@@ -23,7 +23,6 @@ import javafx.scene.Parent;
 import javafx.scene.Scene;
 import javafx.scene.control.Alert;
 import javafx.scene.control.Button;
-// import javafx.scene.control.CheckBox; // Removido
 import javafx.scene.control.ComboBox;
 import javafx.scene.control.DatePicker;
 import javafx.scene.control.TextField;
@@ -33,13 +32,12 @@ import javafx.scene.control.TableCell;
 import javafx.scene.control.cell.PropertyValueFactory;
 import javafx.scene.layout.BorderPane;
 import javafx.stage.Stage;
-// import javafx.util.Callback; // Pode ser removido se não estiver explicitamente usando um Callback genérico
 import javafx.util.StringConverter;
 import javafx.geometry.Pos;
 import javafx.geometry.Insets;
 import javafx.scene.layout.HBox;
 import javafx.scene.control.TextInputDialog;
-import javafx.scene.control.Label; // Adicionado para totalOrcamentoLabel
+import javafx.scene.control.Label;
 import java.io.IOException;
 import java.time.LocalDate;
 import java.util.HashMap;
@@ -59,8 +57,7 @@ public class AlterarOrcamentoController {
     private DatePicker dataPicker;
     @FXML
     private TextField valorVeiculoField;
-    // @FXML private CheckBox statusCheckBox; // REMOVIDO
-    // @FXML private CheckBox pagoCheckBox;     // REMOVIDO
+
     @FXML
     private Button confirmarButton;
     @FXML
@@ -133,9 +130,7 @@ public class AlterarOrcamentoController {
         setupPecasTableView();
         setupServicosTableView();
 
-        // REMOVIDO: Desabilitar campos pago e status aqui
-        // statusCheckBox.setDisable(true);
-        // pagoCheckBox.setDisable(true);
+;
 
         valorVeiculoField.textProperty().addListener((observable, oldValue, newValue) -> calcularTotalOrcamento());
 
@@ -262,7 +257,7 @@ public class AlterarOrcamentoController {
                 removeButton.getStyleClass().add("cancel-button");
                 removeButton.setPadding(new Insets(3, 5, 3, 5));
 
-                editButton.getStyleClass().add("confirm-button");
+                editButton.getStyleClass().add("edit-button");
                 editButton.setPadding(new Insets(3, 5, 3, 5));
 
                 HBox pane = new HBox(5, editButton, removeButton);
@@ -331,7 +326,7 @@ public class AlterarOrcamentoController {
                 removeButton.getStyleClass().add("cancel-button");
                 removeButton.setPadding(new Insets(3, 5, 3, 5));
 
-                editButton.getStyleClass().add("confirm-button");
+                editButton.getStyleClass().add("edit-button");
                 editButton.setPadding(new Insets(3, 5, 3, 5));
 
                 HBox pane = new HBox(5, editButton, removeButton);

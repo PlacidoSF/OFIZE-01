@@ -260,12 +260,9 @@ public class OrcamentoController {
         try {
             FXMLLoader loader = new FXMLLoader(getClass().getResource("/com/ufersa/OFIZE/view/cadastrar_orcamento.fxml"));
             Parent root = loader.load();
-            Stage stage = (Stage) ((Button) event.getSource()).getScene().getWindow();
-            Scene scene = new Scene(root);
-            stage.setScene(scene);
-            stage.setTitle("Cadastrar Novo Orçamento");
-            stage.setMaximized(true);
-            stage.show();
+            // Use the current scene to set the new root
+            Scene scene = ((Button) event.getSource()).getScene();
+            scene.setRoot(root);
         } catch (IOException e) {
             e.printStackTrace();
             showAlert(Alert.AlertType.ERROR, "Erro", "Não foi possível carregar a tela de cadastro de orçamento.");
@@ -282,12 +279,9 @@ public class OrcamentoController {
                 controller.setOrcamentoParaAlterar(orcamento);
             }
 
-            Stage stage = (Stage) ((Button) event.getSource()).getScene().getWindow();
-            Scene scene = new Scene(root);
-            stage.setScene(scene);
-            stage.setTitle("Alterar Orçamento");
-            stage.setMaximized(true);
-            stage.show();
+            // Use the current scene to set the new root
+            Scene scene = ((Button) event.getSource()).getScene();
+            scene.setRoot(root);
         } catch (IOException e) {
             e.printStackTrace();
             showAlert(Alert.AlertType.ERROR, "Erro", "Não foi possível carregar a tela de alteração de orçamento.");

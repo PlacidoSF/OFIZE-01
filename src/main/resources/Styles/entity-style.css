@@ -44,7 +44,7 @@
 
 /* Estilo do VBox que contém o conteúdo principal */
 .content-area {
-    -fx-max-width: 800px;
+
     -fx-padding: 40px;
 }
 
@@ -80,6 +80,19 @@
     -fx-font-weight: bold;
     -fx-background-radius: 8;
     -fx-padding: 12px 30px;
+    -fx-cursor: hand;
+}
+.confirm-button:hover {
+    -fx-background-color: #36d45d;
+}
+
+.edit-button {
+    -fx-background-color: #2fb551;
+    -fx-text-fill: white;
+    -fx-font-size: 14px;
+    -fx-font-weight: bold;
+    -fx-background-radius: 8;
+    -fx-padding: 8px 25px;
     -fx-cursor: hand;
 }
 .confirm-button:hover {

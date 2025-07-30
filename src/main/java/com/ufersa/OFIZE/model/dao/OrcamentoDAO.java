@@ -70,6 +70,40 @@ public class OrcamentoDAO {
         return query.getResultList();
     }
 
+    public List<Orcamento> buscarPorPeriodoEStatus(LocalDate inicio, LocalDate fim, Boolean statusConcluido, Boolean statusPago) {
+        StringBuilder jpql = new StringBuilder("SELECT o FROM Orcamento o WHERE 1=1");
+
+        if (inicio != null) {
+            jpql.append(" AND o.data >= :inicio");
+        }
+        if (fim != null) {
+            jpql.append(" AND o.data <= :fim");
+        }
+        if (statusConcluido != null) {
+            jpql.append(" AND o.status = :statusConcluido");
+        }
+        if (statusPago != null) {
+            jpql.append(" AND o.pago = :statusPago");
+        }
+
+        TypedQuery<Orcamento> query = em.createQuery(jpql.toString(), Orcamento.class);
+
+        if (inicio != null) {
+            query.setParameter("inicio", inicio);
+        }
+        if (fim != null) {
+            query.setParameter("fim", fim);
+        }
+        if (statusConcluido != null) {
+            query.setParameter("statusConcluido", statusConcluido);
+        }
+        if (statusPago != null) {
+            query.setParameter("statusPago", statusPago);
+        }
+
+        return query.getResultList();
+    }
+
     public void fechar() {
         if (em.isOpen()) {
             em.close();

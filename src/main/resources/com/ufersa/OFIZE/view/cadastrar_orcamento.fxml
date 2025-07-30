@@ -16,7 +16,7 @@
 <?import javafx.scene.text.Text?>
 <?import javafx.scene.text.TextFlow?>
 
-<BorderPane fx:id="mainPane" prefHeight="600.0" prefWidth="800.0" styleClass="root"
+<BorderPane fx:id="mainPane"  styleClass="root"
             stylesheets="@/Styles/entity-style.css"
             xmlns="http://javafx.com/javafx/21" xmlns:fx="http://javafx.com/fxml/1"
             fx:controller="com.ufersa.OFIZE.controller.CadastrarOrcamentoController">
@@ -32,7 +32,7 @@
                 <Text styleClass="logo-font, logo-text-white" text="X" />
             </TextFlow>
             <HBox HBox.hgrow="ALWAYS" alignment="CENTER_RIGHT">
-                <VBox styleClass="hamburger-menu">
+                <VBox styleClass="hamburger-menu" >
                     <Region styleClass="hamburger-bar" />
                     <Region styleClass="hamburger-bar" />
                     <Region styleClass="hamburger-bar" />
@@ -42,16 +42,16 @@
     </top>
 
     <center>
-        <ScrollPane fitToWidth="true" styleClass="no-background-scroll-pane">
+        <ScrollPane BorderPane.alignment="CENTER" fitToWidth="true" styleClass="no-background-scroll-pane" VBox.vgrow="ALWAYS">
             <content>
-                <VBox alignment="TOP_CENTER" spacing="20.0" styleClass="content-area">
+                <VBox alignment="TOP_CENTER" spacing="20.0" styleClass="content-area" VBox.vgrow="ALWAYS" HBox.hgrow="ALWAYS">
                     <padding>
                         <Insets top="40.0" right="40.0" bottom="40.0" left="40.0" />
                     </padding>
                     <Label styleClass="title" text="Cadastrar Orçamento" />
                     <Label styleClass="subtitle" text="Adicione as informações necessárias para cadastrar o orçamento." />
 
-                    <HBox spacing="20.0" alignment="CENTER_LEFT">
+                    <HBox spacing="20.0" alignment="CENTER_LEFT" >
                         <VBox spacing="5.0" HBox.hgrow="ALWAYS">
                             <Label text="Cliente:" />
                             <ComboBox fx:id="clienteComboBox" prefWidth="250.0" promptText="Selecione o Cliente" styleClass="form-field" />

@@ -43,6 +43,8 @@ public class MenuController {
             fxmlPath = "/com/ufersa/OFIZE/view/ServicoView.fxml";
         } else if (source == orcamentosButton) {
             fxmlPath = "/com/ufersa/OFIZE/view/OrcamentoView.fxml";
+        } else if (source == financasButton) {
+            fxmlPath = "/com/ufersa/OFIZE/view/RelatoriosView.fxml";
         }
 
         if (fxmlPath != null) {

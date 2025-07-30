@@ -70,6 +70,15 @@ public class OrcamentoService {
         }
     }
 
+    public List<Orcamento> buscarOrcamentosParaRelatorio(LocalDate inicio, LocalDate fim, Boolean statusConcluido, Boolean statusPago) {
+        try {
+            return dao.buscarPorPeriodoEStatus(inicio, fim, statusConcluido, statusPago);
+        } catch (Exception e) {
+            System.err.println("Erro ao buscar orçamentos para relatório: " + e.getMessage());
+            return List.of();
+        }
+    }
+
     public void encerrarConexao() {
         try {
             dao.fechar();
