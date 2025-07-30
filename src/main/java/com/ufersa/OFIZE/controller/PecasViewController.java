@@ -67,9 +67,9 @@ public class PecasViewController implements Initializable {
     private void loadPecas(String searchTerm) {
         pecasContainer.getChildren().clear();
         if (searchTerm == null || searchTerm.trim().isEmpty()) {
-            allPecas = pecasService.buscarTodas();
+            allPecas = pecasService.buscarTodasPecas();
         } else {
-            allPecas = pecasService.pesquisar(searchTerm, searchTerm);
+            allPecas = pecasService.buscarPecasPorNomeOuFabricante(searchTerm, searchTerm);
         }
 
         if (allPecas.isEmpty()) {

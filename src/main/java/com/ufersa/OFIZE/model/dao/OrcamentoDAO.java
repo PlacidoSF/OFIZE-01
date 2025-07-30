@@ -6,62 +6,48 @@ import java.util.List;
 import com.ufersa.OFIZE.model.entitie.Clientes;
 import com.ufersa.OFIZE.model.entitie.Orcamento;
 
-import javax.persistence.EntityManager;
-import javax.persistence.EntityManagerFactory;
-import javax.persistence.Persistence;
 import javax.persistence.TypedQuery;
 
-public class OrcamentoDAO {
 
-    private final EntityManagerFactory emf = Persistence.createEntityManagerFactory("ofize-pu");
-    private final EntityManager em = emf.createEntityManager();
+public class OrcamentoDAO extends DAOGenerico<Orcamento, Long> {
 
     public OrcamentoDAO() {
+        super(Orcamento.class);
     }
 
+
     public void salvar(Orcamento orcamento) {
-        em.getTransaction().begin();
-        em.persist(orcamento);
-        em.getTransaction().commit();
+        super.persist(orcamento);
     }
 
     public Orcamento buscarPorId(Long id) {
-        return em.find(Orcamento.class, id);
+        return super.findById(id);
     }
 
-    // NOVO MÉTODO: buscarTodos()
     public List<Orcamento> buscarTodos() {
-        TypedQuery<Orcamento> query = em.createQuery("SELECT o FROM Orcamento o", Orcamento.class);
-        return query.getResultList();
+        return super.findAll();
     }
 
     public void atualizar(Orcamento orcamento) {
-        em.getTransaction().begin();
-        em.merge(orcamento);
-        em.getTransaction().commit();
+        super.merge(orcamento);
     }
 
     public void deletar(Long id) {
-        Orcamento orc = em.find(Orcamento.class, id);
+        Orcamento orc = super.findById(id);
         if (orc != null) {
-            em.getTransaction().begin();
-            em.remove(orc);
-            em.getTransaction().commit();
+            super.remove(orc);
         }
     }
 
+
     public List<Orcamento> buscarPorVeiculoClienteOuPeriodo(String veiculo, Clientes cliente, LocalDate inicio, LocalDate fim) {
-        // Note: This JPQL query with multiple ORs might not behave as expected if you want to combine filters with AND logic.
-        // For "search by vehicle OR client OR period", this is fine.
-        // If you intend to allow flexible combinations (e.g., vehicle AND client, or client AND period),
-        // you'll need a more dynamic query builder or separate methods.
         String jpql = "SELECT o FROM Orcamento o WHERE " +
                 "(:veiculo IS NOT NULL AND LOWER(o.veiculo) LIKE LOWER(CONCAT('%', :veiculo, '%'))) OR " +
                 "(:cliente IS NOT NULL AND o.cliente = :cliente) OR " +
                 "(:inicio IS NOT NULL AND o.data >= :inicio) OR " +
                 "(:fim IS NOT NULL AND o.data <= :fim)";
 
-        TypedQuery<Orcamento> query = em.createQuery(jpql, Orcamento.class);
+        TypedQuery<Orcamento> query = em.createQuery(jpql, Orcamento.class); // 'em' é acessível via protected da superclasse
         query.setParameter("veiculo", veiculo);
         query.setParameter("cliente", cliente);
         query.setParameter("inicio", inicio);
@@ -86,7 +72,7 @@ public class OrcamentoDAO {
             jpql.append(" AND o.pago = :statusPago");
         }
 
-        TypedQuery<Orcamento> query = em.createQuery(jpql.toString(), Orcamento.class);
+        TypedQuery<Orcamento> query = em.createQuery(jpql.toString(), Orcamento.class); // 'em' é acessível via protected da superclasse
 
         if (inicio != null) {
             query.setParameter("inicio", inicio);
@@ -104,12 +90,9 @@ public class OrcamentoDAO {
         return query.getResultList();
     }
 
-    public void fechar() {
-        if (em.isOpen()) {
-            em.close();
-        }
-        if (emf.isOpen()) {
-            emf.close();
-        }
+
+    @Override
+    public void close() {
+        super.close();
     }
 }

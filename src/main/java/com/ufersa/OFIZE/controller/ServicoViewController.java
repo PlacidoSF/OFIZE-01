@@ -75,7 +75,7 @@ public class ServicoViewController implements Initializable {
         if (searchTerm == null || searchTerm.trim().isEmpty()) {
             allServicos = servicoService.listarTodosServicos();
         } else {
-            allServicos = servicoService.buscarServicosPorNome(searchTerm);
+            allServicos = servicoService.buscarServicoPorNome(searchTerm);
         }
 
         if (allServicos.isEmpty()) {
@@ -182,7 +182,7 @@ public class ServicoViewController implements Initializable {
         confirmAlert.showAndWait().ifPresent(response -> {
             if (response == ButtonType.OK) {
                 try {
-                    servicoService.removerServico(servico);
+                    servicoService.removerServico(servico.getId());
                     loadServicos("");
                     showAlert(null, Alert.AlertType.INFORMATION, "Sucesso", "Serviço excluído com sucesso!");
                 } catch (Exception e) {

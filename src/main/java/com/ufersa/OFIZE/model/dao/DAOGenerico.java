@@ -1,4 +1,4 @@
-// src/main/java/com/ufersa/OFIZE.model.dao/DAOGenerico.java
+// src/main/java/com.ufersa/OFIZE.model.dao/DAOGenerico.java
 package com.ufersa.OFIZE.model.dao;
 
 import javax.persistence.EntityManager;
@@ -7,12 +7,12 @@ import javax.persistence.NoResultException;
 import javax.persistence.Persistence;
 import java.util.List;
 
-public abstract class DAOGenerico<T, ID> { // T para o tipo da entidade, ID para o tipo do ID
+public abstract class DAOGenerico<T, ID> {
 
     protected final EntityManagerFactory emf = Persistence.createEntityManagerFactory("ofize-pu");
     protected final EntityManager em = emf.createEntityManager();
 
-    private Class<T> entityClass; // Para saber qual entidade está sendo gerenciada
+    private Class<T> entityClass;
 
     public DAOGenerico(Class<T> entityClass) {
         this.entityClass = entityClass;
@@ -25,17 +25,18 @@ public abstract class DAOGenerico<T, ID> { // T para o tipo da entidade, ID para
         em.getTransaction().commit();
     }
 
-    // Atualiza uma entidade existente
-    public void merge(T entity) {
+    // ATENÇÃO AQUI: O método merge agora retorna 'T'
+    public T merge(T entity) { // MUDANÇA AQUI: de 'void' para 'T'
         em.getTransaction().begin();
-        em.merge(entity);
+        T mergedEntity = em.merge(entity); // Captura o resultado do merge
         em.getTransaction().commit();
+        return mergedEntity; // Retorna a entidade gerenciada
     }
 
     // Remove uma entidade
     public void remove(T entity) {
         em.getTransaction().begin();
-        em.remove(em.contains(entity) ? entity : em.merge(entity)); // Garante que a entidade esteja no contexto gerenciado
+        em.remove(em.contains(entity) ? entity : em.merge(entity));
         em.getTransaction().commit();
     }
 
@@ -44,13 +45,12 @@ public abstract class DAOGenerico<T, ID> { // T para o tipo da entidade, ID para
         try {
             return em.find(entityClass, id);
         } catch (NoResultException e) {
-            return null; // Retorna null se não encontrar
+            return null;
         }
     }
 
     // Lista todas as entidades do tipo T
     public List<T> findAll() {
-        // Usa o nome da classe da entidade para a consulta JPQL
         return em.createQuery("SELECT e FROM " + entityClass.getSimpleName() + " e", entityClass).getResultList();
     }
 

@@ -1,83 +1,108 @@
 package com.ufersa.OFIZE.model.service;
 
+import com.ufersa.OFIZE.exceptions.EntidadeNaoEncontradaException; // Import da exceção
 import com.ufersa.OFIZE.model.dao.OrcamentoPecaDAO;
 import com.ufersa.OFIZE.model.entitie.OrcamentoPeca;
+import com.ufersa.OFIZE.model.entitie.Pecas;
+
 import java.util.List;
 
 public class OrcamentoPecaService {
 
     private final OrcamentoPecaDAO orcamentoPecaDAO;
+    private final PecasService pecasService;
 
     public OrcamentoPecaService() {
         this.orcamentoPecaDAO = new OrcamentoPecaDAO();
+        this.pecasService = new PecasService();
     }
 
-    /**
-     * Salva ou atualiza um item de peça de orçamento.
-     * @param orcamentoPeca O item de peça de orçamento a ser salvo/atualizado.
-     */
     public void saveOrUpdate(OrcamentoPeca orcamentoPeca) {
-        // Exemplo de validação:
-        if (orcamentoPeca.getPeca() == null || orcamentoPeca.getOrcamento() == null) {
-            throw new IllegalArgumentException("Peça e Orçamento devem ser associados ao item.");
-        }
-        if (orcamentoPeca.getQuantidade() <= 0) {
-            throw new IllegalArgumentException("A quantidade da peça deve ser maior que zero.");
-        }
+        try {
+            if (orcamentoPeca != null && orcamentoPeca.getPeca() != null && orcamentoPeca.getOrcamento() != null) {
+                Pecas pecaAssociada = orcamentoPeca.getPeca();
+                int quantidadeNova = orcamentoPeca.getQuantidade();
+                int quantidadeAntiga = 0;
 
-        // Se o item já tem um ID, ele já existe e deve ser mergeado
-        if (orcamentoPeca.getId() != null) {
-            orcamentoPecaDAO.merge(orcamentoPeca);
-        } else {
-            // Caso contrário, é um novo item e deve ser persistido
-            orcamentoPecaDAO.persist(orcamentoPeca);
+                Pecas pecaNoEstoque = pecasService.buscarPeca(pecaAssociada.getId()); // Este pode lançar a exceção
+
+                if (orcamentoPeca.getId() != null) {
+                    OrcamentoPeca existingOrcamentoPeca = orcamentoPecaDAO.findById(orcamentoPeca.getId());
+                    if (existingOrcamentoPeca == null) {
+                        throw new EntidadeNaoEncontradaException("Item de Orçamento-Peça", orcamentoPeca.getId()); // Adição da exceção
+                    }
+                    quantidadeAntiga = existingOrcamentoPeca.getQuantidade();
+
+                    pecasService.incrementarQuantidade(pecaNoEstoque.getId(), quantidadeAntiga);
+                    pecasService.decrementarQuantidade(pecaNoEstoque.getId(), quantidadeNova);
+
+                    orcamentoPecaDAO.merge(orcamentoPeca);
+                    System.out.println("Item de orçamento-peça atualizado com sucesso!");
+                } else {
+                    pecasService.decrementarQuantidade(pecaNoEstoque.getId(), quantidadeNova);
+                    orcamentoPecaDAO.persist(orcamentoPeca);
+                    System.out.println("Item de orçamento-peça salvo com sucesso!");
+                }
+            } else {
+                System.err.println("Dados do item de orçamento-peça inválidos.");
+            }
+        } catch (EntidadeNaoEncontradaException e) { // Captura exceção de peça ou do próprio item
+            throw e; // Relança para a camada superior
+        } catch (Exception e) {
+            System.err.println("Erro ao salvar/atualizar item de orçamento-peça: " + e.getMessage());
+            e.printStackTrace();
         }
     }
 
-    /**
-     * Remove um item de peça de orçamento.
-     * @param orcamentoPeca O item de peça de orçamento a ser removido.
-     */
     public void remove(OrcamentoPeca orcamentoPeca) {
-        if (orcamentoPeca == null || orcamentoPeca.getId() == null) {
-            throw new IllegalArgumentException("Item de peça de orçamento inválido para remoção.");
+        try {
+            if (orcamentoPeca != null && orcamentoPeca.getId() != null) {
+                OrcamentoPeca existingOrcamentoPeca = orcamentoPecaDAO.findById(orcamentoPeca.getId());
+                if (existingOrcamentoPeca == null) {
+                    throw new EntidadeNaoEncontradaException("Item de Orçamento-Peça", orcamentoPeca.getId()); // Adição da exceção
+                }
+
+                if (existingOrcamentoPeca.getPeca() != null && existingOrcamentoPeca.getQuantidade() > 0) {
+                    pecasService.incrementarQuantidade(existingOrcamentoPeca.getPeca().getId(), existingOrcamentoPeca.getQuantidade());
+                }
+
+                orcamentoPecaDAO.remove(existingOrcamentoPeca);
+                System.out.println("Item de orçamento-peça removido com sucesso!");
+            } else {
+                System.err.println("ID do item de orçamento-peça inválido para remoção.");
+            }
+        } catch (EntidadeNaoEncontradaException e) { // Captura exceção se o item não for encontrado
+            throw e; // Relança para a camada superior
+        } catch (Exception e) {
+            System.err.println("Erro ao remover item de orçamento-peça: " + e.getMessage());
+            e.printStackTrace();
         }
-        orcamentoPecaDAO.remove(orcamentoPeca);
     }
 
-    /**
-     * Busca um item de peça de orçamento pelo ID.
-     * @param id O ID do item de peça de orçamento.
-     * @return O OrcamentoPeca encontrado ou null se não existir.
-     */
     public OrcamentoPeca findById(Long id) {
-        return orcamentoPecaDAO.findById(id);
-    }
-
-    /**
-     * Busca todos os itens de peça de orçamento.
-     * @return Uma lista de todos os OrcamentoPeca.
-     */
-    public List<OrcamentoPeca> findAll() {
-        return orcamentoPecaDAO.findAll();
-    }
-
-    /**
-     * Busca todos os itens de peça associados a um orçamento específico.
-     * @param orcamentoId O ID do orçamento.
-     * @return Uma lista de OrcamentoPeca para o orçamento especificado.
-     */
-    public List<OrcamentoPeca> findByOrcamentoId(Long orcamentoId) {
-        if (orcamentoId == null) {
-            throw new IllegalArgumentException("O ID do orçamento não pode ser nulo.");
+        try {
+            OrcamentoPeca orcamentoPeca = orcamentoPecaDAO.findById(id);
+            if (orcamentoPeca == null) {
+                throw new EntidadeNaoEncontradaException("Item de Orçamento-Peça", id); // Adição da exceção
+            }
+            return orcamentoPeca;
+        } catch (Exception e) {
+            System.err.println("Erro ao buscar item de orçamento-peça por ID: " + e.getMessage());
+            e.printStackTrace();
+            return null;
         }
-        return orcamentoPecaDAO.findByOrcamentoId(orcamentoId);
     }
 
-    /**
-     * Fecha o EntityManager associado a este serviço.
-     * Deve ser chamado ao finalizar o uso do serviço para liberar recursos.
-     */
+    public List<OrcamentoPeca> findByOrcamentoId(Long orcamentoId) {
+        try {
+            return orcamentoPecaDAO.findByOrcamentoId(orcamentoId);
+        } catch (Exception e) {
+            System.err.println("Erro ao buscar itens de orçamento-peça por ID de orçamento: " + e.getMessage());
+            e.printStackTrace();
+            return null;
+        }
+    }
+
     public void close() {
         orcamentoPecaDAO.close();
     }

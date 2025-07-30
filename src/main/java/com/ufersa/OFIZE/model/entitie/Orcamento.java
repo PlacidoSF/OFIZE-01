@@ -32,6 +32,8 @@ public class Orcamento {
     private Clientes cliente;
 
     // Relacionamento OneToMany para OrcamentoPeca
+    // Usamos CascadeType.ALL e orphanRemoval = true para gerenciar o ciclo de vida
+    // de OrcamentoPeca através de Orcamento.
     @OneToMany(mappedBy = "orcamento", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<OrcamentoPeca> orcamentoPecas = new ArrayList<>();
 
@@ -40,69 +42,36 @@ public class Orcamento {
     private List<OrcamentoServico> orcamentoServicos = new ArrayList<>();
 
 
-    // CONSTRUTORES
-
     // Construtor padrão
     public Orcamento() {
         this.data = LocalDate.now();
         this.status = false;
         this.pago = false;
-        this.valorTotal = 0.0; // Inicializa com 0
+        this.valorTotal = 0.0;
     }
 
-    // Construtor com parâmetros atualizado
-    public Orcamento(String veiculo, double valorVeiculo, List<OrcamentoPeca> orcamentoPecas,
-                     List<OrcamentoServico> orcamentoServicos, Clientes cliente) {
+    // Construtor completo (opcional, dependendo da sua necessidade)
+    public Orcamento(String veiculo, double valorVeiculo, Clientes cliente) {
         this(); // Chama o construtor padrão para inicializar data, status, pago e valorTotal
-        setVeiculo(veiculo);
-        setValorVeiculo(valorVeiculo); // Define a taxa mínima do veículo
-        setCliente(cliente);
-        setOrcamentoPecas(orcamentoPecas);
-        setOrcamentoServicos(orcamentoServicos);
-        // O valorTotal será calculado no controller ou em um método à parte
-        calcularValorTotal(); // Chame este método após definir todas as listas
+        this.veiculo = veiculo;
+        this.valorVeiculo = valorVeiculo;
+        this.cliente = cliente;
     }
 
-
-    // GETTERS AND SETTERS
-
-    // Valor Total
-    public double getValorTotal() {
-        return valorTotal;
-    }
-
-    // O setter para valorTotal deve ser privado ou não existir, pois ele é calculado.
-    // Ou pode ser usado para persistência, mas a lógica de cálculo deve vir de outro lugar.
-    public void setValorTotal(double valorTotal) {
-        this.valorTotal = valorTotal;
-    }
-
-    // Método para calcular o valor total (pode ser chamado no Service ou Controller)
-    public void calcularValorTotal() {
-        double totalPecas = orcamentoPecas.stream()
-                .mapToDouble(op -> op.getQuantidade() * op.getValorUnitario())
-                .sum();
-        double totalServicos = orcamentoServicos.stream()
-                .mapToDouble(os -> os.getQuantidade() * os.getValorUnitario())
-                .sum();
-        this.valorTotal = this.valorVeiculo + totalPecas + totalServicos;
-    }
-
-
-    // Métodos existentes (mantidos, mas com observações)
+    // Getters e Setters
+    public Long getId() { return id; }
+    public void setId(Long id) { this.id = id; }
 
     public String getVeiculo() { return veiculo; }
     public void setVeiculo(String veiculo) { this.veiculo = veiculo; }
 
-    public double getValorVeiculo() { return valorVeiculo; } // Taxa mínima do veículo
-    public void setValorVeiculo(double valorVeiculo) {
-        this.valorVeiculo = valorVeiculo;
-        // Recalcular total se a taxa mínima mudar
-        calcularValorTotal();
-    }
+    public double getValorVeiculo() { return valorVeiculo; }
+    public void setValorVeiculo(double valorVeiculo) { this.valorVeiculo = valorVeiculo; }
 
     public LocalDate getData() { return data; }
-    public void setData(LocalDate data) { this.data = data; }
+    public void setData(LocalDate data) {
+        this.data = data;
+    }
 
     public boolean isStatus() { return status; }
     public void setStatus(boolean status) { this.status = status; }
@@ -110,19 +79,13 @@ public class Orcamento {
     public boolean isPago() { return pago; }
     public void setPago(boolean pago) { this.pago = pago; }
 
+    public double getValorTotal() { return valorTotal; }
+    // Não deve haver um setter público para valorTotal, ele deve ser calculado.
+    // public void setValorTotal(double valorTotal) { this.valorTotal = valorTotal; }
+
     public Clientes getCliente() { return cliente; }
-    public void setCliente(Clientes cliente) {
-        if (cliente != null && cliente.getNome() != null && !cliente.getNome().isEmpty()) {
-            this.cliente = cliente;
-        } else {
-            this.cliente = null;
-        }
-    }
+    public void setCliente(Clientes cliente) { this.cliente = cliente; }
 
-    public Long getId() { return id; }
-    public void setId(Long id) { this.id = id; }
-
-    // OrcamentoPecas
     public List<OrcamentoPeca> getOrcamentoPecas() { return orcamentoPecas; }
     public void setOrcamentoPecas(List<OrcamentoPeca> orcamentoPecas) {
         this.orcamentoPecas.clear();
@@ -146,8 +109,6 @@ public class Orcamento {
         calcularValorTotal(); // Recalcular total ao remover uma peça
     }
 
-
-    // OrcamentoServicos
     public List<OrcamentoServico> getOrcamentoServicos() { return orcamentoServicos; }
     public void setOrcamentoServicos(List<OrcamentoServico> orcamentoServicos) {
         this.orcamentoServicos.clear();
@@ -169,6 +130,19 @@ public class Orcamento {
         this.orcamentoServicos.remove(orcamentoServico);
         orcamentoServico.setOrcamento(null); // Remove a referência inversa
         calcularValorTotal(); // Recalcular total ao remover um serviço
+    }
+
+    // Método para calcular o valor total do orçamento
+    public void calcularValorTotal() {
+        double totalPecas = orcamentoPecas.stream()
+                .mapToDouble(op -> op.getQuantidade() * op.getValorUnitario())
+                .sum();
+
+        double totalServicos = orcamentoServicos.stream()
+                .mapToDouble(os -> os.getQuantidade() * os.getValorUnitario())
+                .sum();
+
+        this.valorTotal = this.valorVeiculo + totalPecas + totalServicos;
     }
 
     // Opcional: Adicionar equals e hashCode para melhor funcionamento com coleções e persistência

@@ -64,7 +64,7 @@
                         </VBox>
                         <VBox spacing="5.0" HBox.hgrow="ALWAYS">
                             <Label text="Veículo (Marca/Placa):" />
-                            <TextField fx:id="veiculoField" prefWidth="250.0" promptText="Veículo (Marca/Placa)" styleClass="form-field" />
+                            <ComboBox fx:id="automovelComboBox" prefWidth="250.0" promptText="Selecione o Veículo" styleClass="form-field" />
                         </VBox>
                         <VBox spacing="5.0" HBox.hgrow="ALWAYS">
                             <Label text="Data:" />

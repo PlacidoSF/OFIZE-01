@@ -1,4 +1,3 @@
-// src/main/java/com/ufersa/OFIZE/model/entitie/OrcamentoServico.java
 package com.ufersa.OFIZE.model.entitie;
 
 import javax.persistence.Entity;
@@ -8,9 +7,10 @@ import javax.persistence.GenerationType;
 import javax.persistence.Table;
 import javax.persistence.ManyToOne;
 import javax.persistence.JoinColumn;
+import javax.persistence.Transient; // Importar para propriedades não persistidas
 
 @Entity
-@Table(name = "orcamento_servicos") // Ou o nome da sua tabela de associação
+@Table(name = "orcamento_servicos")
 public class OrcamentoServico {
 
     @Id
@@ -25,14 +25,14 @@ public class OrcamentoServico {
     @JoinColumn(name = "servico_id")
     private Servico servico; // Referência à entidade Servico
 
-    private int quantidade;
+    private int quantidade; // Este será sempre 1 para serviços (lógica nos controllers)
     private double valorUnitario; // Valor do serviço no momento da inclusão no orçamento
 
     // Construtor padrão (obrigatório para JPA)
     public OrcamentoServico() {
     }
 
-    // *** ADICIONE OU VERIFIQUE ESTE CONSTRUTOR ***
+    // Construtor completo
     public OrcamentoServico(Orcamento orcamento, Servico servico, int quantidade, double valorUnitario) {
         this.orcamento = orcamento;
         this.servico = servico;
@@ -55,5 +55,28 @@ public class OrcamentoServico {
     // Método auxiliar para obter o valor total deste item de serviço no orçamento
     public double getTotalItemValue() {
         return this.quantidade * this.valorUnitario;
+    }
+
+    // *** MÉTODOS PARA EXIBIÇÃO NA TABLEVIEW ***
+
+    /**
+     * Retorna o nome do serviço para exibição na TableView.
+     * @return O nome do serviço.
+     */
+    @Transient // Indica que esta propriedade não é persistida no banco de dados
+    public String getNomeServico() {
+        return (this.servico != null) ? this.servico.getNome() : "";
+    }
+
+    /**
+     * Retorna o valor total deste item de serviço para exibição na TableView.
+     * Corresponde a getTotalItemValue().
+     * @return O valor total do item de serviço.
+     */
+    @Transient // Indica que esta propriedade não é persistida no banco de dados
+    public double getValorTotalServico() {
+        // Para serviços, a quantidade será sempre 1 de acordo com o requisito,
+        // então getTotalItemValue() já reflete o valor unitário * 1.
+        return getTotalItemValue();
     }
 }

@@ -1,5 +1,6 @@
 package com.ufersa.OFIZE.model.service;
 
+import com.ufersa.OFIZE.exceptions.EntidadeNaoEncontradaException; // Import da exceção
 import com.ufersa.OFIZE.model.dao.OrcamentoServicoDAO;
 import com.ufersa.OFIZE.model.entitie.OrcamentoServico;
 import java.util.List;
@@ -12,70 +13,71 @@ public class OrcamentoServicoService {
         this.orcamentoServicoDAO = new OrcamentoServicoDAO();
     }
 
-    /**
-     * Salva ou atualiza um item de serviço de orçamento.
-     * @param orcamentoServico O item de serviço de orçamento a ser salvo/atualizado.
-     */
     public void saveOrUpdate(OrcamentoServico orcamentoServico) {
-        // Exemplo de validação:
-        if (orcamentoServico.getServico() == null || orcamentoServico.getOrcamento() == null) {
-            throw new IllegalArgumentException("Serviço e Orçamento devem ser associados ao item.");
-        }
-        if (orcamentoServico.getQuantidade() <= 0) {
-            throw new IllegalArgumentException("A quantidade do serviço deve ser maior que zero.");
-        }
-
-        if (orcamentoServico.getId() != null) {
-            orcamentoServicoDAO.merge(orcamentoServico);
-        } else {
-            orcamentoServicoDAO.persist(orcamentoServico);
+        try {
+            if (orcamentoServico != null && orcamentoServico.getServico() != null && orcamentoServico.getOrcamento() != null) {
+                if (orcamentoServico.getId() != null) {
+                    OrcamentoServico existingOrcamentoServico = orcamentoServicoDAO.findById(orcamentoServico.getId());
+                    if (existingOrcamentoServico == null) {
+                        throw new EntidadeNaoEncontradaException("Item de Orçamento-Serviço", orcamentoServico.getId()); // Adição da exceção
+                    }
+                    orcamentoServicoDAO.merge(orcamentoServico);
+                    System.out.println("Item de orçamento-serviço atualizado com sucesso!");
+                } else {
+                    orcamentoServicoDAO.persist(orcamentoServico);
+                    System.out.println("Item de orçamento-serviço salvo com sucesso!");
+                }
+            } else {
+                System.err.println("Dados do item de orçamento-serviço inválidos.");
+            }
+        } catch (Exception e) {
+            System.err.println("Erro ao salvar/atualizar item de orçamento-serviço: " + e.getMessage());
+            e.printStackTrace();
         }
     }
 
-    /**
-     * Remove um item de serviço de orçamento.
-     * @param orcamentoServico O item de serviço de orçamento a ser removido.
-     */
     public void remove(OrcamentoServico orcamentoServico) {
-        if (orcamentoServico == null || orcamentoServico.getId() == null) {
-            throw new IllegalArgumentException("Item de serviço de orçamento inválido para remoção.");
+        try {
+            if (orcamentoServico != null && orcamentoServico.getId() != null) {
+                OrcamentoServico existingOrcamentoServico = orcamentoServicoDAO.findById(orcamentoServico.getId());
+                if (existingOrcamentoServico == null) {
+                    throw new EntidadeNaoEncontradaException("Item de Orçamento-Serviço", orcamentoServico.getId()); // Adição da exceção
+                }
+                orcamentoServicoDAO.remove(existingOrcamentoServico);
+                System.out.println("Item de orçamento-serviço removido com sucesso!");
+            } else {
+                System.err.println("ID do item de orçamento-serviço inválido para remoção.");
+            }
+        } catch (Exception e) {
+            System.err.println("Erro ao remover item de orçamento-serviço: " + e.getMessage());
+            e.printStackTrace();
         }
-        orcamentoServicoDAO.remove(orcamentoServico);
     }
 
-    /**
-     * Busca um item de serviço de orçamento pelo ID.
-     * @param id O ID do item de serviço de orçamento.
-     * @return O OrcamentoServico encontrado ou null se não existir.
-     */
     public OrcamentoServico findById(Long id) {
-        return orcamentoServicoDAO.findById(id);
-    }
-
-    /**
-     * Busca todos os itens de serviço de orçamento.
-     * @return Uma lista de todos os OrcamentoServico.
-     */
-    public List<OrcamentoServico> findAll() {
-        return orcamentoServicoDAO.findAll();
-    }
-
-    /**
-     * Busca todos os itens de serviço associados a um orçamento específico.
-     * @param orcamentoId O ID do orçamento.
-     * @return Uma lista de OrcamentoServico para o orçamento especificado.
-     */
-    public List<OrcamentoServico> findByOrcamentoId(Long orcamentoId) {
-        if (orcamentoId == null) {
-            throw new IllegalArgumentException("O ID do orçamento não pode ser nulo.");
+        try {
+            OrcamentoServico orcamentoServico = orcamentoServicoDAO.findById(id);
+            if (orcamentoServico == null) {
+                throw new EntidadeNaoEncontradaException("Item de Orçamento-Serviço", id); // Adição da exceção
+            }
+            return orcamentoServico;
+        } catch (Exception e) {
+            System.err.println("Erro ao buscar item de orçamento-serviço por ID: " + e.getMessage());
+            e.printStackTrace();
+            return null;
         }
-        return orcamentoServicoDAO.findByOrcamentoId(orcamentoId);
     }
 
-    /**
-     * Fecha o EntityManager associado a este serviço.
-     * Deve ser chamado ao finalizar o uso do serviço para liberar recursos.
-     */
+    public List<OrcamentoServico> findByOrcamentoId(Long orcamentoId) {
+        try {
+            return orcamentoServicoDAO.findByOrcamentoId(orcamentoId);
+        } catch (Exception e) {
+            System.err.println("Erro ao buscar itens de orçamento-serviço por ID de orçamento: " + e.getMessage());
+            e.printStackTrace();
+            return null;
+        }
+    }
+
     public void close() {
         orcamentoServicoDAO.close();
     }

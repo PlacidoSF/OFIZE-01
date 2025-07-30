@@ -1,6 +1,6 @@
 package com.ufersa.OFIZE.model.entitie;
 
-// Mude todas as importações de 'javax.persistence' para 'jakarta.persistence'
+
 import javax.persistence.Entity;
 import javax.persistence.Id;
 import javax.persistence.GeneratedValue;
@@ -8,6 +8,7 @@ import javax.persistence.GenerationType;
 import javax.persistence.Table;
 import javax.persistence.ManyToOne;
 import javax.persistence.JoinColumn;
+import javax.persistence.Transient; // Importar para propriedades não persistidas
 
 @Entity
 @Table(name = "orcamento_pecas") // Ou o nome da sua tabela de associação
@@ -23,7 +24,7 @@ public class OrcamentoPeca {
 
     @ManyToOne
     @JoinColumn(name = "peca_id")
-    private Pecas peca; // Referência à entidade Pecas
+    private Pecas peca; // Referência à entidade Pecas (confirmado como Pecas)
 
     private int quantidade;
     private double valorUnitario; // Valor da peça no momento da inclusão no orçamento
@@ -31,7 +32,6 @@ public class OrcamentoPeca {
     public OrcamentoPeca() {
     }
 
-    // *** ADICIONE OU VERIFIQUE ESTE CONSTRUTOR ***
     public OrcamentoPeca(Orcamento orcamento, Pecas peca, int quantidade, double valorUnitario) {
         this.orcamento = orcamento;
         this.peca = peca;
@@ -54,5 +54,17 @@ public class OrcamentoPeca {
     // Método auxiliar para obter o valor total deste item de peça no orçamento
     public double getTotalItemValue() {
         return this.quantidade * this.valorUnitario;
+    }
+
+
+    @Transient // Indica que esta propriedade não é persistida no banco de dados
+    public String getNomePeca() {
+        return (this.peca != null) ? this.peca.getNome() : "";
+    }
+
+
+    @Transient // Indica que esta propriedade não é persistida no banco de dados
+    public double getValorTotalPeca() {
+        return getTotalItemValue();
     }
 }

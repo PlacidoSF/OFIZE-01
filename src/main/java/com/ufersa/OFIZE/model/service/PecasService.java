@@ -1,74 +1,143 @@
 package com.ufersa.OFIZE.model.service;
 
 import java.util.List;
-import com.ufersa.OFIZE.model.dao.PecasDao; // Assumindo que PecasDAO está em dao
+import com.ufersa.OFIZE.exceptions.EntidadeNaoEncontradaException; // Import da exceção
+import com.ufersa.OFIZE.model.dao.PecasDao;
 import com.ufersa.OFIZE.model.entitie.Pecas;
 
-public class PecasService{
+public class PecasService {
 
-    private final PecasDao dao = new PecasDao();
+    private final PecasDao dao;
 
-    public PecasService(){
+    public PecasService() {
+        this.dao = new PecasDao();
     }
 
-    //Confirma se todos os dados de peça são válidos
     private boolean ValidarPeca(Pecas peca) {
-        boolean isIdValid = (peca.getId() == null || peca.getId() > 0);
-        return peca != null && isIdValid && peca.getPreco() > 0 &&
-                peca.getNome() != null && !peca.getNome().isEmpty() &&
-                peca.getFabricante() != null && !peca.getFabricante().isEmpty() && peca.getQuantidade() > 0;
+        return peca != null && peca.getPreco() > 0 &&
+                peca.getNome() != null && !peca.getNome().trim().isEmpty() &&
+                peca.getFabricante() != null && !peca.getFabricante().trim().isEmpty() && peca.getQuantidade() >= 0;
     }
 
-    //Cadastra uma nova peça, mas validando os dados primeiro
     public void cadastrarPeca(Pecas peca) {
-        if (ValidarPeca(peca)) {
-            dao.persist(peca);
-        } else {
-            throw new IllegalArgumentException("Os dados da peça são inválidos");
+        try {
+            if (ValidarPeca(peca)) {
+                dao.persist(peca);
+                System.out.println("Peça cadastrada com sucesso!");
+            } else {
+                System.err.println("Dados da peça inválidos para cadastro.");
+            }
+        } catch (Exception e) {
+            System.err.println("Erro ao cadastrar peça: " + e.getMessage());
+            e.printStackTrace();
         }
     }
 
-    //Atualiza uma peça, mas validando os dados primeiro
     public void atualizarPeca(Pecas peca) {
-        if (ValidarPeca(peca) && dao.findById(peca.getId()) != null) {
-            dao.merge(peca);
-        } else {
-            throw new IllegalArgumentException("Peça possui dados inválidos ou não encontrados");
+        try {
+            if (ValidarPeca(peca)) {
+                Pecas pecaExistente = dao.findById(peca.getId());
+                if (pecaExistente == null) {
+                    throw new EntidadeNaoEncontradaException("Peça", peca.getId()); // Adição da exceção
+                }
+                dao.merge(peca);
+                System.out.println("Peça atualizada com sucesso!");
+            } else {
+                System.err.println("Dados da peça inválidos para atualização.");
+            }
+        } catch (Exception e) {
+            System.err.println("Erro ao atualizar peça: " + e.getMessage());
+            e.printStackTrace();
         }
     }
 
-    //Remove uma peça
     public void removerPeca(Pecas peca) {
-        Pecas pecaExistente = dao.findById(peca.getId());
-        if (pecaExistente != null) {
-            dao.remove(pecaExistente);
-        } else {
-            throw new IllegalArgumentException("Peça não foi encontrada");
+        try {
+            if (peca != null && peca.getId() != null) {
+                Pecas pecaExistente = dao.findById(peca.getId());
+                if (pecaExistente == null) {
+                    throw new EntidadeNaoEncontradaException("Peça", peca.getId()); // Adição da exceção
+                }
+                dao.remove(pecaExistente);
+                System.out.println("Peça removida com sucesso!");
+            } else {
+                System.err.println("ID da peça inválido para remoção.");
+            }
+        } catch (Exception e) {
+            System.err.println("Erro ao remover peça: " + e.getMessage());
+            e.printStackTrace();
         }
     }
 
-    //Busca uma peça
     public Pecas buscarPeca(Long id) {
-        return dao.findById(id);
-    }
-
-    //Busca todas as peça
-    public List<Pecas> buscarTodas() {
-        return dao.findAll();
-    }
-
-    // Pesquisa peças por nome ou fabricante. Se ambos forem vazios, retorna todas as peças.
-    public List<Pecas> pesquisar(String nome, String fabricante) {
-        // Normaliza os inputs para garantir que null e strings vazias sejam tratadas uniformemente
-        String trimmedNome = (nome == null) ? "" : nome.trim();
-        String trimmedFabricante = (fabricante == null) ? "" : fabricante.trim();
-
-        // Se ambos os campos de pesquisa estiverem vazios, retorne todas as peças
-        if (trimmedNome.isEmpty() && trimmedFabricante.isEmpty()) {
-            return dao.findAll(); // <--- CHAME dao.findAll() AQUI
+        try {
+            Pecas peca = dao.findById(id);
+            if (peca == null) {
+                throw new EntidadeNaoEncontradaException("Peça", id); // Adição da exceção
+            }
+            return peca;
+        } catch (Exception e) {
+            System.err.println("Erro ao buscar peça: " + e.getMessage());
+            e.printStackTrace();
+            return null;
         }
+    }
 
-        // Caso contrário, execute a busca específica no DAO
-        return dao.buscarPorNomeOufabricante(trimmedNome, trimmedFabricante);
+    public List<Pecas> buscarTodasPecas() {
+        try {
+            return dao.findAll();
+        } catch (Exception e) {
+            System.err.println("Erro ao buscar todas as peças: " + e.getMessage());
+            e.printStackTrace();
+            return null;
+        }
+    }
+
+    public List<Pecas> buscarPecasPorNomeOuFabricante(String nome, String fabricante) {
+        try {
+            return dao.buscarPorNomeOufabricante(nome, fabricante);
+        } catch (Exception e) {
+            System.err.println("Erro ao buscar peças por nome ou fabricante: " + e.getMessage());
+            e.printStackTrace();
+            return null;
+        }
+    }
+
+    public void decrementarQuantidade(Long pecaId, int quantidade) {
+        try {
+            Pecas peca = buscarPeca(pecaId); // Este método agora pode lançar EntidadeNaoEncontradaException
+            if (peca != null) {
+                if (peca.getQuantidade() >= quantidade) {
+                    peca.setQuantidade(peca.getQuantidade() - quantidade);
+                    dao.merge(peca);
+                } else {
+                    System.err.println("Erro: Quantidade insuficiente em estoque para a peça " + peca.getNome());
+                }
+            }
+        } catch (EntidadeNaoEncontradaException e) { // Captura a exceção se a peça não for encontrada
+            throw e; // Relança para a camada superior, como o OrcamentoService
+        } catch (Exception e) {
+            System.err.println("Erro ao decrementar quantidade da peça: " + e.getMessage());
+            e.printStackTrace();
+        }
+    }
+
+    public void incrementarQuantidade(Long pecaId, int quantidade) {
+        try {
+            Pecas peca = buscarPeca(pecaId); // Este método agora pode lançar EntidadeNaoEncontradaException
+            if (peca != null) {
+                peca.setQuantidade(peca.getQuantidade() + quantidade);
+                dao.merge(peca);
+            }
+        } catch (EntidadeNaoEncontradaException e) { // Captura a exceção se a peça não for encontrada
+            throw e; // Relança para a camada superior, como o OrcamentoService
+        } catch (Exception e) {
+            System.err.println("Erro ao incrementar quantidade da peça: " + e.getMessage());
+            e.printStackTrace();
+        }
+    }
+
+    public void close() {
+        dao.close();
     }
 }

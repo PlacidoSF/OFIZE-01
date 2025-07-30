@@ -1,6 +1,8 @@
 package com.ufersa.OFIZE.model.service;
 
 import com.ufersa.OFIZE.model.entitie.Automoveis;
+import com.ufersa.OFIZE.model.entitie.Clientes;
+
 import java.util.List;
 
 public class AutomoveisService extends AutomoveisServiceAbstract {
@@ -57,6 +59,17 @@ public class AutomoveisService extends AutomoveisServiceAbstract {
             return automoveisDAO.findAll();
         }
         return automoveisDAO.buscarPorMarcaOuProprietario(textoBusca);
+    }
+
+    public List<Automoveis> buscarAutomoveisPorCliente(Clientes cliente) {
+        if (cliente == null || cliente.getId() == null) {
+            throw new IllegalArgumentException("Cliente ou ID do cliente não pode ser nulo para buscar automóveis.");
+        }
+        return automoveisDAO.findByClienteId(cliente.getId());
+    }
+
+    public Automoveis buscarAutomovelPorPlaca(String placa) {
+        return automoveisDAO.buscarPorPlaca(placa);
     }
 
     private boolean isAutomovelValido(Automoveis automovel) {

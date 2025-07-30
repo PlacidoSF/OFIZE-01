@@ -50,13 +50,13 @@ import java.util.stream.Collectors;
 public class AlterarOrcamentoController {
 
     @FXML
-    private TextField veiculoField;
+    private ComboBox<Automoveis> automovelComboBox; // ALTERADO: De TextField para ComboBox<Automoveis>
     @FXML
     private ComboBox<Clientes> clienteComboBox;
     @FXML
     private DatePicker dataPicker;
     @FXML
-    private TextField valorVeiculoField;
+    private TextField valorVeiculoField; // Mantido, pois é o valor monetário do veículo
 
     @FXML
     private Button confirmarButton;
@@ -130,8 +130,6 @@ public class AlterarOrcamentoController {
         setupPecasTableView();
         setupServicosTableView();
 
-;
-
         valorVeiculoField.textProperty().addListener((observable, oldValue, newValue) -> calcularTotalOrcamento());
 
         listaPecasOrcamento.addListener((javafx.collections.ListChangeListener<OrcamentoPecaDisplay>) c -> calcularTotalOrcamento());
@@ -156,24 +154,83 @@ public class AlterarOrcamentoController {
             }
         });
 
+        // NOVO: Desabilita o ComboBox de automóveis inicialmente
+        automovelComboBox.setDisable(true);
+        // NOVO: Adiciona um listener para a seleção do cliente
+        clienteComboBox.getSelectionModel().selectedItemProperty().addListener((obs, oldVal, newVal) -> {
+            if (newVal != null) {
+                // Cliente selecionado: habilita e carrega os automóveis
+                automovelComboBox.setDisable(false);
+                carregarAutomoveisPorCliente(newVal);
+            } else {
+                // Nenhum cliente selecionado: desabilita e limpa os automóveis
+                automovelComboBox.setDisable(true);
+                automovelComboBox.setItems(FXCollections.observableArrayList()); // Limpa os itens
+                automovelComboBox.getSelectionModel().clearSelection(); // Limpa a seleção
+            }
+        });
+
+        // Configuração do converter para automovelComboBox
+        automovelComboBox.setConverter(new StringConverter<Automoveis>() {
+            @Override
+            public String toString(Automoveis automovel) {
+                return automovel != null ? automovel.getMarca() + " - " + automovel.getPlaca() : "";
+            }
+
+            @Override
+            public Automoveis fromString(String string) {
+                // Não é usado para seleção via ComboBox, mas necessário para a interface StringConverter
+                // Se você for permitir digitação livre no ComboBox, precisaria implementar isso
+                return null;
+            }
+        });
+
         calcularTotalOrcamento();
     }
 
     public void setOrcamentoParaAlterar(Orcamento orcamento) {
         this.orcamentoToAlter = orcamento;
         if (orcamentoToAlter != null) {
-            veiculoField.setText(orcamentoToAlter.getVeiculo());
             dataPicker.setValue(orcamentoToAlter.getData());
             valorVeiculoField.setText(String.format("%.2f", orcamentoToAlter.getValorVeiculo()));
 
-            // REMOVIDO: Preencher status e pago
-            // statusCheckBox.setSelected(orcamentoToAlter.isStatus());
-            // pagoCheckBox.setSelected(orcamentoToAlter.isPago());
-
             if (orcamentoToAlter.getCliente() != null) {
                 clienteComboBox.getSelectionModel().select(orcamentoToAlter.getCliente());
+
+                // NOVO: Após selecionar o cliente, carregue os automóveis
+                // Isso é chamado pelo listener do clienteComboBox, mas pode ser chamado explicitamente também
+                carregarAutomoveisPorCliente(orcamentoToAlter.getCliente());
+
+                // Tenta selecionar o automóvel correto no ComboBox
+                String veiculoOrcamentoStr = orcamentoToAlter.getVeiculo();
+                System.out.println("Veículo do Orçamento (string): " + veiculoOrcamentoStr); // Para depuração
+
+                if (veiculoOrcamentoStr != null && !veiculoOrcamentoStr.isEmpty()) {
+                    // Normaliza a string do orçamento para comparação
+                    String normalizedOrcamentoVeiculo = veiculoOrcamentoStr.toLowerCase().replaceAll("[^a-z0-9]", ""); // Remove não alfanuméricos
+
+                    Automoveis autoParaSelecionar = null;
+                    for (Automoveis auto : automovelComboBox.getItems()) {
+                        // Normaliza a string do automóvel para comparação
+                        String normalizedAutoString = (auto.getMarca() + auto.getPlaca()).toLowerCase().replaceAll("[^a-z0-9]", ""); // Concatena e normaliza
+
+                        if (normalizedAutoString.equals(normalizedOrcamentoVeiculo)) {
+                            autoParaSelecionar = auto;
+                            break;
+                        }
+                    }
+                    if (autoParaSelecionar != null) {
+                        automovelComboBox.getSelectionModel().select(autoParaSelecionar);
+                        System.out.println("Veículo selecionado no ComboBox: " + autoParaSelecionar.getMarca() + " - " + autoParaSelecionar.getPlaca()); // Para depuração
+                    } else {
+                        System.out.println("Automóvel do orçamento não encontrado na lista de veículos do cliente."); // Para depuração
+                    }
+                }
             } else {
                 clienteComboBox.getSelectionModel().clearSelection();
+                automovelComboBox.getSelectionModel().clearSelection(); // Limpa também o automóvel
+                automovelComboBox.setDisable(true); // Desabilita se não houver cliente
+                automovelComboBox.setItems(FXCollections.observableArrayList()); // Limpa os itens
             }
 
             listaPecasOrcamento.clear();
@@ -217,8 +274,20 @@ public class AlterarOrcamentoController {
         });
     }
 
+    private void carregarAutomoveisPorCliente(Clientes cliente) {
+        if (cliente != null) {
+            List<Automoveis> automoveisDoCliente = automovelService.buscarAutomoveisPorCliente(cliente);
+            automovelComboBox.setItems(FXCollections.observableArrayList(automoveisDoCliente));
+            System.out.println("Automóveis carregados para o cliente " + cliente.getNome() + ": " + automoveisDoCliente.size()); // Para depuração
+        } else {
+            automovelComboBox.setItems(FXCollections.observableArrayList()); // Limpa se nenhum cliente
+            System.out.println("Nenhum cliente selecionado, limpando automóveis."); // Para depuração
+        }
+        automovelComboBox.getSelectionModel().clearSelection(); // Sempre limpa a seleção anterior antes de carregar novos
+    }
+
     private void carregarPecasComboBox() {
-        List<Pecas> pecas = pecasService.buscarTodas();
+        List<Pecas> pecas = pecasService.buscarTodasPecas();
         pecasComboBox.setItems(FXCollections.observableArrayList(pecas));
         pecasComboBox.setConverter(new StringConverter<Pecas>() {
             @Override
@@ -268,11 +337,25 @@ public class AlterarOrcamentoController {
                     listaPecasOrcamento.remove(item);
                     pecasNoOrcamentoMap.remove(item.getPeca().getId());
                     calcularTotalOrcamento();
+
+                    // NOVO: Devolver a quantidade de peças para o estoque ao remover
+                    try {
+                        Pecas pecaEmEstoque = pecasService.buscarPeca(item.getPeca().getId()); // Busca a peça atualizada
+                        if (pecaEmEstoque != null) {
+                            pecaEmEstoque.setQuantidade(pecaEmEstoque.getQuantidade() + item.getQuantidade());
+                            pecasService.atualizarPeca(pecaEmEstoque);
+                            showAlert(Alert.AlertType.INFORMATION, "Estoque Atualizado", "Quantidade de '" + item.getNomePeca() + "' restaurada no estoque.");
+                        }
+                    } catch (Exception e) {
+                        showAlert(Alert.AlertType.ERROR, "Erro no Estoque", "Erro ao restaurar peça no estoque: " + e.getMessage());
+                        e.printStackTrace();
+                    }
                 });
 
                 editButton.setOnAction(event -> {
                     OrcamentoPecaDisplay item = getTableView().getItems().get(getIndex());
-                    TextInputDialog dialog = new TextInputDialog(String.valueOf(item.getQuantidade()));
+                    int oldQty = item.getQuantidade(); // Guarda a quantidade atual
+                    TextInputDialog dialog = new TextInputDialog(String.valueOf(oldQty));
                     dialog.setTitle("Editar Quantidade da Peça");
                     dialog.setHeaderText("Altere a quantidade para '" + item.getNomePeca() + "'");
                     dialog.setContentText("Nova Quantidade:");
@@ -285,15 +368,37 @@ public class AlterarOrcamentoController {
                                 showAlert(Alert.AlertType.WARNING, "Quantidade Inválida", "A quantidade deve ser maior que zero.");
                                 return;
                             }
-                            if (item.getPeca().getQuantidade() < newQty) {
-                                showAlert(Alert.AlertType.ERROR, "Estoque Insuficiente", "Não há estoque suficiente para a peça.");
+
+                            Pecas pecaReal = pecasService.buscarPeca(item.getPeca().getId()); // Busca a peça atualizada
+                            if (pecaReal == null) {
+                                showAlert(Alert.AlertType.ERROR, "Erro", "Peça não encontrada no estoque para atualização.");
                                 return;
                             }
-                            item.setQuantidade(newQty);
+
+                            int diferenca = newQty - oldQty;
+
+                            if (diferenca > 0) { // Aumentou a quantidade no orçamento
+                                if (pecaReal.getQuantidade() < diferenca) {
+                                    showAlert(Alert.AlertType.ERROR, "Estoque Insuficiente", "Não há estoque suficiente para aumentar a quantidade em " + diferenca + ".");
+                                    return;
+                                }
+                                pecaReal.setQuantidade(pecaReal.getQuantidade() - diferenca);
+                            } else if (diferenca < 0) { // Diminuiu a quantidade no orçamento
+                                pecaReal.setQuantidade(pecaReal.getQuantidade() + Math.abs(diferenca));
+                            }
+                            // Se diferença for 0, não faz nada com o estoque
+
+                            pecasService.atualizarPeca(pecaReal); // Salva a peça com a nova quantidade no estoque
+                            item.setQuantidade(newQty); // Atualiza a quantidade na lista do orçamento
                             pecasTableView.refresh();
                             calcularTotalOrcamento();
+                            showAlert(Alert.AlertType.INFORMATION, "Estoque Atualizado", "Quantidade de '" + item.getNomePeca() + "' ajustada no estoque.");
+
                         } catch (NumberFormatException e) {
                             showAlert(Alert.AlertType.ERROR, "Erro", "Por favor, insira um número válido.");
+                        } catch (Exception e) {
+                            showAlert(Alert.AlertType.ERROR, "Erro no Estoque", "Ocorreu um erro ao atualizar o estoque: " + e.getMessage());
+                            e.printStackTrace();
                         }
                     });
                 });
@@ -318,50 +423,21 @@ public class AlterarOrcamentoController {
         servicoPrecoUnitarioColumn.setCellValueFactory(cellData -> new javafx.beans.property.SimpleStringProperty(String.format("%.2f", cellData.getValue().getValorUnitario())));
         servicoSubtotalColumn.setCellValueFactory(cellData -> new javafx.beans.property.SimpleStringProperty(String.format("%.2f", cellData.getValue().getSubtotal())));
 
-        servicoAcoesColumn.setCellFactory(param -> new TableCell<OrcamentoServicoDisplay, Void>() {
+        servicoAcoesColumn.setCellFactory(param -> new TableCell<OrcamentoServicoDisplay, Void>() { // Alterado para Void
             private final Button removeButton = new Button("Remover");
-            private final Button editButton = new Button("Editar");
 
             {
                 removeButton.getStyleClass().add("cancel-button");
                 removeButton.setPadding(new Insets(3, 5, 3, 5));
 
-                editButton.getStyleClass().add("edit-button");
-                editButton.setPadding(new Insets(3, 5, 3, 5));
-
-                HBox pane = new HBox(5, editButton, removeButton);
+                HBox pane = new HBox(5, removeButton); // HBox para agrupar botões
                 pane.setAlignment(Pos.CENTER);
-
 
                 removeButton.setOnAction(event -> {
                     OrcamentoServicoDisplay item = getTableView().getItems().get(getIndex());
                     listaServicosOrcamento.remove(item);
                     servicosNoOrcamentoMap.remove(item.getServico().getId());
                     calcularTotalOrcamento();
-                });
-
-                editButton.setOnAction(event -> {
-                    OrcamentoServicoDisplay item = getTableView().getItems().get(getIndex());
-                    TextInputDialog dialog = new TextInputDialog(String.valueOf(item.getQuantidade()));
-                    dialog.setTitle("Editar Quantidade do Serviço");
-                    dialog.setHeaderText("Altere a quantidade para '" + item.getNomeServico() + "'");
-                    dialog.setContentText("Nova Quantidade:");
-
-                    Optional<String> result = dialog.showAndWait();
-                    result.ifPresent(newQtyStr -> {
-                        try {
-                            int newQty = Integer.parseInt(newQtyStr);
-                            if (newQty <= 0) {
-                                showAlert(Alert.AlertType.WARNING, "Quantidade Inválida", "A quantidade deve ser maior que zero.");
-                                return;
-                            }
-                            item.setQuantidade(newQty);
-                            servicosTableView.refresh();
-                            calcularTotalOrcamento();
-                        } catch (NumberFormatException e) {
-                            showAlert(Alert.AlertType.ERROR, "Erro", "Por favor, insira um número válido.");
-                        }
-                    });
                 });
             }
 
@@ -371,7 +447,7 @@ public class AlterarOrcamentoController {
                 if (empty) {
                     setGraphic(null);
                 } else {
-                    setGraphic(new HBox(5, editButton, removeButton));
+                    setGraphic(new HBox(5, removeButton));
                 }
             }
         });
@@ -398,24 +474,36 @@ public class AlterarOrcamentoController {
             return;
         }
 
-        if (pecaSelecionada.getQuantidade() < quantidade) {
+        Pecas pecaReal = pecasService.buscarPeca(pecaSelecionada.getId()); // Sempre busca a peça mais atualizada do banco
+        if (pecaReal == null) {
+            showAlert(Alert.AlertType.ERROR, "Erro", "Peça não encontrada no estoque.");
+            return;
+        }
+
+        if (pecaReal.getQuantidade() < quantidade) {
             showAlert(Alert.AlertType.ERROR, "Estoque Insuficiente", "Não há estoque suficiente para a peça selecionada.");
             return;
         }
 
-        OrcamentoPecaDisplay existingItem = pecasNoOrcamentoMap.get(pecaSelecionada.getId());
+        OrcamentoPecaDisplay existingItem = pecasNoOrcamentoMap.get(pecaReal.getId());
         if (existingItem != null) {
             int novaQuantidadeTotal = existingItem.getQuantidade() + quantidade;
-            if (pecaSelecionada.getQuantidade() < novaQuantidadeTotal) {
-                showAlert(Alert.AlertType.ERROR, "Estoque Insuficiente", "Aumentar a quantidade excederia o estoque disponível.");
-                return;
-            }
             existingItem.setQuantidade(novaQuantidadeTotal);
             pecasTableView.refresh();
         } else {
-            OrcamentoPecaDisplay newDisplayItem = new OrcamentoPecaDisplay(pecaSelecionada, quantidade, pecaSelecionada.getPreco());
+            OrcamentoPecaDisplay newDisplayItem = new OrcamentoPecaDisplay(pecaReal, quantidade, pecaReal.getPreco());
             listaPecasOrcamento.add(newDisplayItem);
-            pecasNoOrcamentoMap.put(pecaSelecionada.getId(), newDisplayItem);
+            pecasNoOrcamentoMap.put(pecaReal.getId(), newDisplayItem);
+        }
+
+        // NOVO: Diminuir a quantidade da peça no estoque ao adicionar ao orçamento
+        try {
+            pecaReal.setQuantidade(pecaReal.getQuantidade() - quantidade);
+            pecasService.atualizarPeca(pecaReal);
+            showAlert(Alert.AlertType.INFORMATION, "Estoque Atualizado", "Quantidade de '" + pecaReal.getNome() + "' deduzida do estoque.");
+        } catch (Exception e) {
+            showAlert(Alert.AlertType.ERROR, "Erro no Estoque", "Erro ao deduzir peça do estoque: " + e.getMessage());
+            e.printStackTrace();
         }
 
         calcularTotalOrcamento();
@@ -480,7 +568,6 @@ public class AlterarOrcamentoController {
         }
 
         double totalGeral = totalPecas + totalServicos + valorVeiculo;
-        // Verifica se totalOrcamentoLabel não é nulo antes de tentar usar
         if (totalOrcamentoLabel != null) {
             totalOrcamentoLabel.setText(String.format("Total do Orçamento: R$ %.2f", totalGeral));
         }
@@ -495,8 +582,11 @@ public class AlterarOrcamentoController {
         }
 
         try {
-            if (veiculoField.getText().trim().isEmpty() || dataPicker.getValue() == null || clienteComboBox.getSelectionModel().getSelectedItem() == null) {
-                showAlert(Alert.AlertType.WARNING, "Campos Obrigatórios", "Por favor, preencha todos os campos obrigatórios (Veículo, Cliente, Data).");
+            Clientes clienteSelecionado = clienteComboBox.getSelectionModel().getSelectedItem();
+            Automoveis automovelSelecionado = automovelComboBox.getSelectionModel().getSelectedItem();
+
+            if (automovelSelecionado == null || dataPicker.getValue() == null || clienteSelecionado == null) {
+                showAlert(Alert.AlertType.WARNING, "Campos Obrigatórios", "Por favor, preencha todos os campos obrigatórios (Automóvel, Cliente, Data).");
                 return;
             }
 
@@ -518,25 +608,22 @@ public class AlterarOrcamentoController {
                 valorVeiculo = 0.0;
             }
 
-            orcamentoToAlter.setVeiculo(veiculoField.getText());
-            orcamentoToAlter.setCliente(clienteComboBox.getSelectionModel().getSelectedItem());
+            // IMPORTANTE: Ao confirmar, salve a string do veículo no formato padronizado!
+            // Isso evita futuros problemas de formatação.
+            orcamentoToAlter.setVeiculo(automovelSelecionado.getMarca() + " - " + automovelSelecionado.getPlaca());
+            orcamentoToAlter.setCliente(clienteSelecionado);
             orcamentoToAlter.setData(dataPicker.getValue());
             orcamentoToAlter.setValorVeiculo(valorVeiculo);
-
-            // REMOVIDO: Não alterar status e pago
-            // orcamentoToAlter.setStatus(statusCheckBox.isSelected());
-            // orcamentoToAlter.setPago(pagoCheckBox.isSelected());
 
             List<OrcamentoPeca> orcamentoPecasAtualizadas = listaPecasOrcamento.stream()
                     .map(displayItem -> new OrcamentoPeca(orcamentoToAlter, displayItem.getPeca(), displayItem.getQuantidade(), displayItem.getValorUnitario()))
                     .collect(Collectors.toList());
             orcamentoToAlter.setOrcamentoPecas(orcamentoPecasAtualizadas);
 
-            List<OrcamentoServico> orcamentoServicosAtualizados = listaServicosOrcamento.stream()
+            List<OrcamentoServico> orcamentoServicosAtualizadas = listaServicosOrcamento.stream()
                     .map(displayItem -> new OrcamentoServico(orcamentoToAlter, displayItem.getServico(), displayItem.getQuantidade(), displayItem.getValorUnitario()))
                     .collect(Collectors.toList());
-            orcamentoToAlter.setOrcamentoServicos(orcamentoServicosAtualizados);
-
+            orcamentoToAlter.setOrcamentoServicos(orcamentoServicosAtualizadas);
 
             orcamentoService.atualizarOrcamento(orcamentoToAlter);
 
@@ -574,7 +661,7 @@ public class AlterarOrcamentoController {
         alert.setTitle(title);
         alert.setHeaderText(null);
         alert.setContentText(message);
-        Stage owner = (Stage) (veiculoField != null ? veiculoField.getScene().getWindow() : null);
+        Stage owner = (Stage) (clienteComboBox != null ? clienteComboBox.getScene().getWindow() : null); // Alterado para um controle que sempre existirá
         if (owner != null) {
             alert.initOwner(owner);
         }

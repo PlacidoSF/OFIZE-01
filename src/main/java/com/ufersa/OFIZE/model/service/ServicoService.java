@@ -1,85 +1,104 @@
 package com.ufersa.OFIZE.model.service;
 
+import com.ufersa.OFIZE.exceptions.EntidadeNaoEncontradaException; // Import da exceção
 import com.ufersa.OFIZE.model.dao.ServicoDAO;
 import com.ufersa.OFIZE.model.entitie.Servico;
 
 import java.util.List;
 
-
 public class ServicoService {
 
-    private final ServicoDAO servicoDAO; // O DAO é privado e final, instanciado no construtor
+    private final ServicoDAO servicoDAO;
 
     public ServicoService() {
-        this.servicoDAO = new ServicoDAO(); // Inicializa o DAO
+        this.servicoDAO = new ServicoDAO();
     }
-
 
     public void salvarServico(Servico servico) {
-        if (servico == null) {
-            throw new IllegalArgumentException("O objeto Serviço não pode ser nulo.");
+        try {
+            if (servico != null && servico.getNome() != null && !servico.getNome().trim().isEmpty() && servico.getValor() > 0) {
+                servicoDAO.persist(servico);
+                System.out.println("Serviço salvo com sucesso.");
+            } else {
+                System.err.println("Dados do serviço inválidos.");
+            }
+        } catch (Exception e) {
+            System.err.println("Erro ao salvar serviço: " + e.getMessage());
+            e.printStackTrace();
         }
-        if (servico.getNome() == null || servico.getNome().trim().isEmpty()) {
-            throw new IllegalArgumentException("O nome do serviço não pode ser vazio.");
-        }
-        if (servico.getValor() <= 0) {
-            throw new IllegalArgumentException("O valor do serviço deve ser maior que zero.");
-        }
-
-        servicoDAO.persist(servico);
     }
-
 
     public Servico buscarServicoPorId(Long id) {
-        if (id == null || id <= 0) {
-            throw new IllegalArgumentException("ID do serviço inválido.");
+        try {
+            Servico servico = servicoDAO.findById(id);
+            if (servico == null) {
+                throw new EntidadeNaoEncontradaException("Serviço", id); // Adição da exceção
+            }
+            return servico;
+        } catch (Exception e) {
+            System.err.println("Erro ao buscar serviço por ID: " + e.getMessage());
+            e.printStackTrace();
+            return null;
         }
-        return servicoDAO.findById(id);
     }
-
 
     public List<Servico> listarTodosServicos() {
-        return servicoDAO.findAll();
+        try {
+            return servicoDAO.findAll();
+        } catch (Exception e) {
+            System.err.println("Erro ao listar todos os serviços: " + e.getMessage());
+            e.printStackTrace();
+            return null;
+        }
     }
-
 
     public void atualizarServico(Servico servico) {
-        if (servico == null || servico.getId() == null) {
-            throw new IllegalArgumentException("Serviço ou ID do serviço não pode ser nulo para atualização.");
+        try {
+            if (servico != null && servico.getId() != null && servico.getNome() != null && !servico.getNome().trim().isEmpty() && servico.getValor() > 0) {
+                Servico servicoExistente = servicoDAO.findById(servico.getId());
+                if (servicoExistente == null) {
+                    throw new EntidadeNaoEncontradaException("Serviço", servico.getId()); // Adição da exceção
+                }
+                servicoDAO.merge(servico);
+                System.out.println("Serviço atualizado com sucesso.");
+            } else {
+                System.err.println("Dados do serviço inválidos para atualização.");
+            }
+        } catch (Exception e) {
+            System.err.println("Erro ao atualizar serviço: " + e.getMessage());
+            e.printStackTrace();
         }
-        if (servico.getNome() == null || servico.getNome().trim().isEmpty()) {
-            throw new IllegalArgumentException("O nome do serviço não pode ser vazio.");
-        }
-        if (servico.getValor() <= 0) {
-            throw new IllegalArgumentException("O valor do serviço deve ser maior que zero.");
-        }
-
-
-        Servico existingServico = servicoDAO.findById(servico.getId());
-        if (existingServico == null) {
-            throw new IllegalArgumentException("Serviço com ID " + servico.getId() + " não encontrado para atualização.");
-        }
-
-        servicoDAO.merge(servico);
     }
 
-
-
-    public void removerServico(Servico servico) {
-        if (servico == null || servico.getId() == null) {
-            throw new IllegalArgumentException("Serviço ou ID do serviço não pode ser nulo para remoção.");
+    public void removerServico(Long id) {
+        try {
+            if (id != null) {
+                Servico servicoExistente = servicoDAO.findById(id);
+                if (servicoExistente == null) {
+                    throw new EntidadeNaoEncontradaException("Serviço", id); // Adição da exceção
+                }
+                servicoDAO.remove(servicoExistente);
+                System.out.println("Serviço removido com sucesso.");
+            } else {
+                System.err.println("ID do serviço inválido para remoção.");
+            }
+        } catch (Exception e) {
+            System.err.println("Erro ao remover serviço: " + e.getMessage());
+            e.printStackTrace();
         }
-
-        servicoDAO.remove(servico);
     }
 
-
-    public List<Servico> buscarServicosPorNome(String nome) {
-        if (nome == null || nome.trim().isEmpty()) {
-
-            return servicoDAO.findAll();
+    public List<Servico> buscarServicoPorNome(String nome) {
+        try {
+            return servicoDAO.findByNomeContaining(nome);
+        } catch (Exception e) {
+            System.err.println("Erro ao buscar serviço por nome: " + e.getMessage());
+            e.printStackTrace();
+            return null;
         }
-        return servicoDAO.findByNomeContaining(nome);
     }
 
+    public void close() {
+        servicoDAO.close();
+    }
 }

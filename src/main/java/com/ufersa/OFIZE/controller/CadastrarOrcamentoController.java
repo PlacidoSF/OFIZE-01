@@ -22,8 +22,8 @@ import javafx.scene.Parent;
 import javafx.scene.Scene;
 import javafx.scene.control.*;
 import javafx.scene.control.cell.PropertyValueFactory;
-// import javafx.scene.layout.AnchorPane; // Remova esta importação
-import javafx.scene.layout.BorderPane; // Adicione esta importação
+import javafx.scene.layout.BorderPane;
+import javafx.scene.layout.HBox;
 import javafx.stage.Stage;
 import javafx.util.StringConverter;
 
@@ -38,7 +38,7 @@ import java.util.stream.Collectors;
 public class CadastrarOrcamentoController {
 
     @FXML
-    private BorderPane mainPane; // ALTERADO: Tipo de AnchorPane para BorderPane
+    private BorderPane mainPane;
     @FXML
     private ComboBox<Automoveis> automovelComboBox;
     @FXML
@@ -46,9 +46,8 @@ public class CadastrarOrcamentoController {
     @FXML
     private DatePicker dataDatePicker;
     @FXML
-    private TextField valorVeiculoTextField; // Novo campo para o valor mínimo do veículo
+    private TextField valorVeiculoTextField;
 
-    // Peças
     @FXML
     private ComboBox<Pecas> pecasComboBox;
     @FXML
@@ -64,10 +63,9 @@ public class CadastrarOrcamentoController {
     @FXML
     private TableColumn<OrcamentoPecaDisplay, String> pecaSubtotalColumn;
     @FXML
-    private TableColumn<OrcamentoPecaDisplay, Button> pecaAcoesColumn;
+    private TableColumn<OrcamentoPecaDisplay, Void> pecaAcoesColumn;
 
 
-    // Serviços
     @FXML
     private ComboBox<Servico> servicosComboBox;
     @FXML
@@ -88,18 +86,15 @@ public class CadastrarOrcamentoController {
     @FXML
     private Label totalOrcamentoLabel;
 
-    // Serviços (Camada de Negócio)
     private OrcamentoService orcamentoService;
     private AutomoveisService automovelService;
     private PecasService pecasService;
     private ServicoService servicoService;
     private ClientesService clientesService;
 
-    // Listas para a TableView (agora baseadas nas classes Display)
     private ObservableList<OrcamentoPecaDisplay> listaPecasOrcamento = FXCollections.observableArrayList();
     private ObservableList<OrcamentoServicoDisplay> listaServicosOrcamento = FXCollections.observableArrayList();
 
-    // Mapas para controle de unicidade/quantidade (opcional, pode ser feito iterando nas listas)
     private Map<Long, OrcamentoPecaDisplay> pecasNoOrcamentoMap = new HashMap<>();
     private Map<Long, OrcamentoServicoDisplay> servicosNoOrcamentoMap = new HashMap<>();
 
@@ -113,26 +108,9 @@ public class CadastrarOrcamentoController {
 
         dataDatePicker.setValue(LocalDate.now());
 
-        // Listener para o campo valorVeiculoTextField
         valorVeiculoTextField.textProperty().addListener((observable, oldValue, newValue) -> calcularTotalOrcamento());
 
-
         // --- Configuração dos ComboBoxes ---
-
-        // Automóveis
-        List<Automoveis> automoveis = automovelService.buscarTodos();
-        automovelComboBox.setItems(FXCollections.observableArrayList(automoveis));
-        automovelComboBox.setConverter(new StringConverter<Automoveis>() {
-            @Override
-            public String toString(Automoveis automovel) {
-                return automovel != null ? automovel.getMarca() + " - " + automovel.getPlaca() : "";
-            }
-
-            @Override
-            public Automoveis fromString(String string) {
-                return null;
-            }
-        });
 
         // Clientes
         List<Clientes> clientes = clientesService.buscarTodos();
@@ -149,9 +127,37 @@ public class CadastrarOrcamentoController {
             }
         });
 
+        // NOVO: Desabilita o ComboBox de automóveis inicialmente
+        automovelComboBox.setDisable(true);
+        // NOVO: Adiciona um listener para a seleção do cliente
+        clienteComboBox.getSelectionModel().selectedItemProperty().addListener((obs, oldVal, newVal) -> {
+            if (newVal != null) {
+                // Cliente selecionado: habilita e carrega os automóveis
+                automovelComboBox.setDisable(false);
+                carregarAutomoveisPorCliente(newVal);
+            } else {
+                // Nenhum cliente selecionado: desabilita e limpa os automóveis
+                automovelComboBox.setDisable(true);
+                automovelComboBox.setItems(FXCollections.observableArrayList()); // Limpa os itens
+            }
+        });
+
+        // Automóveis (Converter para exibição, itens serão carregados dinamicamente)
+        automovelComboBox.setConverter(new StringConverter<Automoveis>() {
+            @Override
+            public String toString(Automoveis automovel) {
+                return automovel != null ? automovel.getMarca() + " - " + automovel.getPlaca() : "";
+            }
+
+            @Override
+            public Automoveis fromString(String string) {
+                return null;
+            }
+        });
+
 
         // Peças
-        List<Pecas> pecas = pecasService.buscarTodas();
+        List<Pecas> pecas = pecasService.buscarTodasPecas();
         pecasComboBox.setItems(FXCollections.observableArrayList(pecas));
         pecasComboBox.setConverter(new StringConverter<Pecas>() {
             @Override
@@ -209,8 +215,19 @@ public class CadastrarOrcamentoController {
         listaPecasOrcamento.addListener((javafx.collections.ListChangeListener<OrcamentoPecaDisplay>) c -> calcularTotalOrcamento());
         listaServicosOrcamento.addListener((javafx.collections.ListChangeListener<OrcamentoServicoDisplay>) c -> calcularTotalOrcamento());
 
-        calcularTotalOrcamento(); // Chama para iniciar com 0.00
+        calcularTotalOrcamento();
     }
+
+    // NOVO MÉTODO: Carrega automóveis com base no cliente selecionado
+    private void carregarAutomoveisPorCliente(Clientes cliente) {
+        // Supondo que AutomoveisService tenha um método para buscar automóveis por cliente
+        // Você precisará implementar esse método no seu AutomoveisService e AutomoveisDAO.
+        // Por exemplo: automovelService.buscarAutomoveisPorCliente(cliente);
+        List<Automoveis> automoveisDoCliente = automovelService.buscarAutomoveisPorCliente(cliente);
+        automovelComboBox.setItems(FXCollections.observableArrayList(automoveisDoCliente));
+        automovelComboBox.getSelectionModel().clearSelection(); // Limpa a seleção anterior
+    }
+
 
     private void setupPecasTableView() {
         pecaNomeColumn.setCellValueFactory(new PropertyValueFactory<>("nomePeca"));
@@ -218,13 +235,53 @@ public class CadastrarOrcamentoController {
         pecaPrecoUnitarioColumn.setCellValueFactory(cellData -> new javafx.beans.property.SimpleStringProperty(String.format("%.2f", cellData.getValue().getValorUnitario())));
         pecaSubtotalColumn.setCellValueFactory(cellData -> new javafx.beans.property.SimpleStringProperty(String.format("%.2f", cellData.getValue().getSubtotal())));
 
-        pecaAcoesColumn.setCellFactory(param -> new TableCell<OrcamentoPecaDisplay, Button>() {
+        pecaAcoesColumn.setCellFactory(param -> new TableCell<OrcamentoPecaDisplay, Void>() {
+            // Remova os botões decreaseButton e increaseButton
+            // final Button decreaseButton = new Button("-");
+            // final Button increaseButton = new Button("+");
             final Button deleteButton = new Button("Remover");
+            // Modifique o HBox para conter apenas o botão "Remover"
+            final HBox pane = new HBox(5, deleteButton); // Era: final HBox pane = new HBox(5, decreaseButton, increaseButton, deleteButton);
+
             {
-                // ALTERADO: Usando getStyleClass().add() em vez de setStyle()
-                deleteButton.getStyleClass().add("cancel-button"); // Adiciona a classe CSS
-                // Opcional: ajustar padding ou tamanho se o "cancel-button" for muito grande para a célula
-                // deleteButton.setStyle("-fx-padding: 2 5 2 5;");
+                // Remova as linhas que adicionam classes de estilo aos botões removidos
+                // decreaseButton.getStyleClass().add("quantity-button");
+                // increaseButton.getStyleClass().add("quantity-button");
+                deleteButton.getStyleClass().add("cancel-button");
+
+                // Remova os ActionEvents dos botões removidos
+                /*
+                decreaseButton.setOnAction(event -> {
+                    OrcamentoPecaDisplay item = getTableView().getItems().get(getIndex());
+                    if (item.getQuantidade() > 1) {
+                        item.setQuantidade(item.getQuantidade() - 1);
+                        getTableView().refresh();
+                        calcularTotalOrcamento();
+                    } else {
+                        Alert confirmAlert = new Alert(Alert.AlertType.CONFIRMATION);
+                        confirmAlert.setTitle("Remover Peça");
+                        confirmAlert.setHeaderText("A quantidade da peça é 1. Deseja removê-la do orçamento?");
+                        Optional<ButtonType> result = confirmAlert.showAndWait();
+                        if (result.isPresent() && result.get() == ButtonType.OK) {
+                            listaPecasOrcamento.remove(item);
+                            pecasNoOrcamentoMap.remove(item.getPeca().getId());
+                            calcularTotalOrcamento();
+                        }
+                    }
+                });
+
+                increaseButton.setOnAction(event -> {
+                    OrcamentoPecaDisplay item = getTableView().getItems().get(getIndex());
+                    Pecas pecaReal = item.getPeca();
+                    if (pecaReal.getQuantidade() > item.getQuantidade()) {
+                        item.setQuantidade(item.getQuantidade() + 1);
+                        getTableView().refresh();
+                        calcularTotalOrcamento();
+                    } else {
+                        showAlert(Alert.AlertType.WARNING, "Estoque Insuficiente", "Não há mais estoque disponível para esta peça.");
+                    }
+                });
+                */
                 deleteButton.setOnAction(event -> {
                     OrcamentoPecaDisplay item = getTableView().getItems().get(getIndex());
                     listaPecasOrcamento.remove(item);
@@ -234,12 +291,12 @@ public class CadastrarOrcamentoController {
             }
 
             @Override
-            protected void updateItem(Button item, boolean empty) {
+            protected void updateItem(Void item, boolean empty) {
                 super.updateItem(item, empty);
                 if (empty) {
                     setGraphic(null);
                 } else {
-                    setGraphic(deleteButton);
+                    setGraphic(pane);
                 }
             }
         });
@@ -255,10 +312,7 @@ public class CadastrarOrcamentoController {
         servicoAcoesColumn.setCellFactory(param -> new TableCell<OrcamentoServicoDisplay, Button>() {
             final Button deleteButton = new Button("Remover");
             {
-                // ALTERADO: Usando getStyleClass().add() em vez de setStyle()
-                deleteButton.getStyleClass().add("cancel-button"); // Adiciona a classe CSS
-                // Opcional: ajustar padding ou tamanho se o "cancel-button" for muito grande para a célula
-                // deleteButton.setStyle("-fx-padding: 2 5 2 5;");
+                deleteButton.getStyleClass().add("cancel-button");
                 deleteButton.setOnAction(event -> {
                     OrcamentoServicoDisplay item = getTableView().getItems().get(getIndex());
                     listaServicosOrcamento.remove(item);
@@ -307,7 +361,12 @@ public class CadastrarOrcamentoController {
 
         OrcamentoPecaDisplay existingItem = pecasNoOrcamentoMap.get(pecaSelecionada.getId());
         if (existingItem != null) {
-            existingItem.setQuantidade(existingItem.getQuantidade() + quantidade);
+            int novaQuantidadeTotal = existingItem.getQuantidade() + quantidade;
+            if (pecaSelecionada.getQuantidade() < novaQuantidadeTotal) {
+                showAlert(Alert.AlertType.ERROR, "Estoque Insuficiente", "Adicionar essa quantidade excede o estoque disponível para a peça.");
+                return;
+            }
+            existingItem.setQuantidade(novaQuantidadeTotal);
             pecasTableView.refresh();
         } else {
             OrcamentoPecaDisplay newDisplayItem = new OrcamentoPecaDisplay(pecaSelecionada, quantidade, pecaSelecionada.getPreco());
@@ -371,9 +430,8 @@ public class CadastrarOrcamentoController {
         String valorVeiculoText = valorVeiculoTextField.getText();
         if (valorVeiculoText != null && !valorVeiculoText.trim().isEmpty()) {
             try {
-                valorVeiculo = Double.parseDouble(valorVeiculoText.replace(",", ".")); // Handle comma as decimal separator
+                valorVeiculo = Double.parseDouble(valorVeiculoText.replace(",", "."));
             } catch (NumberFormatException e) {
-                // Optionally show a warning, but don't stop calculation
                 System.err.println("Valor do veículo inválido: " + valorVeiculoText);
             }
         }
@@ -387,7 +445,7 @@ public class CadastrarOrcamentoController {
         Clientes cliente = clienteComboBox.getSelectionModel().getSelectedItem();
         Automoveis automovel = automovelComboBox.getSelectionModel().getSelectedItem();
         LocalDate data = dataDatePicker.getValue();
-        double valorVeiculo = 0.0; // Initialize to default value
+        double valorVeiculo = 0.0;
 
         if (cliente == null) {
             showAlert(Alert.AlertType.ERROR, "Erro de Validação", "Por favor, selecione um cliente.");
@@ -404,7 +462,6 @@ public class CadastrarOrcamentoController {
             return;
         }
 
-        // Validate valorVeiculoTextField
         String valorVeiculoText = valorVeiculoTextField.getText();
         if (valorVeiculoText != null && !valorVeiculoText.trim().isEmpty()) {
             try {
@@ -418,7 +475,6 @@ public class CadastrarOrcamentoController {
                 return;
             }
         } else {
-            // If the field is empty, assume 0.0 or prompt user
             showAlert(Alert.AlertType.WARNING, "Atenção", "O 'Valor Mínimo do Veículo' está vazio. Será considerado R$ 0.00.");
             valorVeiculo = 0.0;
         }
@@ -438,7 +494,7 @@ public class CadastrarOrcamentoController {
             try {
                 Orcamento novoOrcamento = new Orcamento();
                 novoOrcamento.setVeiculo(automovel.getMarca() + " " + automovel.getPlaca());
-                novoOrcamento.setValorVeiculo(valorVeiculo); // Set the valorVeiculo
+                novoOrcamento.setValorVeiculo(valorVeiculo);
                 novoOrcamento.setData(data);
                 novoOrcamento.setCliente(cliente);
 
@@ -452,10 +508,20 @@ public class CadastrarOrcamentoController {
                         .collect(Collectors.toList());
                 novoOrcamento.setOrcamentoServicos(orcamentoServicos);
 
+                novoOrcamento.calcularValorTotal();
+
                 orcamentoService.salvarOrcamento(novoOrcamento);
+
+                for (OrcamentoPecaDisplay pecaDisplay : listaPecasOrcamento) {
+                    Pecas pecaNoEstoque = pecaDisplay.getPeca();
+                    int quantidadeUtilizada = pecaDisplay.getQuantidade();
+                    pecaNoEstoque.setQuantidade(pecaNoEstoque.getQuantidade() - quantidadeUtilizada);
+                    pecasService.atualizarPeca(pecaNoEstoque);
+                }
+
                 showAlert(Alert.AlertType.INFORMATION, "Sucesso", "Orçamento cadastrado com sucesso!");
-                limparFormulario(); // Limpa o formulário após o cadastro
-                returnToOrcamentoView(); // Volta para a tela de orçamentos
+                limparFormulario();
+                returnToOrcamentoView();
             } catch (Exception e) {
                 showAlert(Alert.AlertType.ERROR, "Erro", "Erro ao cadastrar orçamento: " + e.getMessage());
                 e.printStackTrace();
@@ -467,22 +533,19 @@ public class CadastrarOrcamentoController {
     private void cancelarCadastro() {
         limparFormulario();
 
-        returnToOrcamentoView(); // Adicionado: Chama a função para retornar à tela de pesquisa
+        returnToOrcamentoView();
     }
 
-    // Adicionado: Método para retornar à tela de orçamentos
     private void returnToOrcamentoView() {
         try {
             FXMLLoader loader = new FXMLLoader(getClass().getResource("/com/ufersa/OFIZE/view/OrcamentoView.fxml"));
             Parent orcamentoView = loader.load();
 
-            // Usa o mainPane para obter a cena e a janela atual
             Scene scene = mainPane.getScene();
             Stage stage = (Stage) scene.getWindow();
 
             scene.setRoot(orcamentoView);
-            stage.setTitle("Lista de Orçamentos"); // Defina o título da tela de listagem
-            // stage.show(); // Não é necessário chamar show() novamente se já estiver na mesma stage
+            stage.setTitle("Lista de Orçamentos");
         } catch (IOException e) {
             showAlert(Alert.AlertType.ERROR, "Erro de Navegação", "Não foi possível retornar à tela de orçamentos: " + e.getMessage());
             e.printStackTrace();
@@ -493,7 +556,7 @@ public class CadastrarOrcamentoController {
         clienteComboBox.getSelectionModel().clearSelection();
         automovelComboBox.getSelectionModel().clearSelection();
         dataDatePicker.setValue(LocalDate.now());
-        valorVeiculoTextField.setText(""); // Clear the new text field
+        valorVeiculoTextField.setText("");
         listaPecasOrcamento.clear();
         listaServicosOrcamento.clear();
         pecasNoOrcamentoMap.clear();
@@ -505,6 +568,9 @@ public class CadastrarOrcamentoController {
         servicosComboBox.getSelectionModel().clearSelection();
         quantidadeServicosTextField.setText("1");
         quantidadeServicosTextField.setDisable(true);
+        // NOVO: Assegura que o ComboBox de automóveis seja desabilitado e limpo ao limpar o formulário
+        automovelComboBox.setDisable(true);
+        automovelComboBox.setItems(FXCollections.observableArrayList());
     }
 
     private void showAlert(Alert.AlertType type, String title, String message) {

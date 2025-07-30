@@ -43,7 +43,7 @@ public class OrcamentoController {
     @FXML
     private VBox orcamentosContainer;
     @FXML
-    private VBox menuHamburguer; // NOVO CAMPO
+    private VBox menuHamburguer;
 
     private OrcamentoService orcamentoService;
     private ClientesService clientesService;
@@ -61,11 +61,9 @@ public class OrcamentoController {
         dataInicioPicker.valueProperty().addListener((obs, oldDate, newDate) -> handlePesquisarOrcamentos());
         dataFimPicker.valueProperty().addListener((obs, oldDate, newDate) -> handlePesquisarOrcamentos());
 
-        // LÓGICA ADICIONADA: Adiciona a ação de clique para voltar ao menu
         menuHamburguer.setOnMouseClicked(this::handleVoltarAoMenu);
     }
 
-    // NOVO MÉTODO
     private void handleVoltarAoMenu(MouseEvent event) {
         try {
             Parent root = FXMLLoader.load(getClass().getResource("/com/ufersa/OFIZE/view/menu.fxml"));
@@ -175,13 +173,24 @@ public class OrcamentoController {
         statusToggleButton.getStyleClass().add("toggle-button");
         ImageView checkIconStatus = createIcon("/Imagens/check.png", 15, 15);
         statusToggleButton.setGraphic(checkIconStatus);
+
+        // Define o estado inicial do botão de status
+        if (orcamento.isStatus()) {
+            statusToggleButton.setDisable(true);
+        }
+
         statusToggleButton.setOnAction(event -> {
-            orcamento.setStatus(!orcamento.isStatus());
-            orcamentoService.salvarOrcamento(orcamento);
-            handlePesquisarOrcamentos();
-            showAlert(Alert.AlertType.INFORMATION, "Status Alterado",
-                    "O status do orçamento ID " + orcamento.getId() + " foi alterado para " +
-                            (orcamento.isStatus() ? "Concluído" : "Pendente") + ".");
+            // Garante que o botão só funciona se não estiver desabilitado
+            if (!statusToggleButton.isDisable()) {
+                orcamento.setStatus(!orcamento.isStatus());
+                orcamentoService.salvarOrcamento(orcamento);
+                handlePesquisarOrcamentos(); // Recarrega para refletir a mudança
+                showAlert(Alert.AlertType.INFORMATION, "Status Alterado",
+                        "O status do orçamento ID " + orcamento.getId() + " foi alterado para " +
+                                (orcamento.isStatus() ? "Concluído" : "Pendente") + ".");
+                // Desabilita o botão após a ação bem-sucedida
+                statusToggleButton.setDisable(true);
+            }
         });
         statusBox.getChildren().addAll(statusLabel, statusToggleButton);
         statusLabel.setPrefWidth(80.0);
@@ -195,13 +204,24 @@ public class OrcamentoController {
         pagoToggleButton.getStyleClass().add("toggle-button");
         ImageView checkIconPago = createIcon("/Imagens/check.png", 15, 15);
         pagoToggleButton.setGraphic(checkIconPago);
+
+        // Define o estado inicial do botão de pagamento
+        if (orcamento.isPago()) {
+            pagoToggleButton.setDisable(true);
+        }
+
         pagoToggleButton.setOnAction(event -> {
-            orcamento.setPago(!orcamento.isPago());
-            orcamentoService.salvarOrcamento(orcamento);
-            handlePesquisarOrcamentos();
-            showAlert(Alert.AlertType.INFORMATION, "Pagamento Alterado",
-                    "O status de pagamento do orçamento ID " + orcamento.getId() + " foi alterado para " +
-                            (orcamento.isPago() ? "Concluído" : "Pendente") + ".");
+            // Garante que o botão só funciona se não estiver desabilitado
+            if (!pagoToggleButton.isDisable()) {
+                orcamento.setPago(!orcamento.isPago());
+                orcamentoService.salvarOrcamento(orcamento);
+                handlePesquisarOrcamentos(); // Recarrega para refletir a mudança
+                showAlert(Alert.AlertType.INFORMATION, "Pagamento Alterado",
+                        "O status de pagamento do orçamento ID " + orcamento.getId() + " foi alterado para " +
+                                (orcamento.isPago() ? "Concluído" : "Pendente") + ".");
+                // Desabilita o botão após a ação bem-sucedida
+                pagoToggleButton.setDisable(true);
+            }
         });
         pagoBox.getChildren().addAll(pagoLabel, pagoToggleButton);
         pagoLabel.setPrefWidth(80.0);
@@ -260,7 +280,6 @@ public class OrcamentoController {
         try {
             FXMLLoader loader = new FXMLLoader(getClass().getResource("/com/ufersa/OFIZE/view/cadastrar_orcamento.fxml"));
             Parent root = loader.load();
-            // Use the current scene to set the new root
             Scene scene = ((Button) event.getSource()).getScene();
             scene.setRoot(root);
         } catch (IOException e) {
@@ -279,7 +298,6 @@ public class OrcamentoController {
                 controller.setOrcamentoParaAlterar(orcamento);
             }
 
-            // Use the current scene to set the new root
             Scene scene = ((Button) event.getSource()).getScene();
             scene.setRoot(root);
         } catch (IOException e) {
@@ -300,9 +318,14 @@ public class OrcamentoController {
 
         Optional<ButtonType> result = alert.showAndWait();
         if (result.isPresent() && result.get() == simButton) {
-            orcamentoService.deletarOrcamento(orcamento.getId());
-            showAlert(Alert.AlertType.INFORMATION, "Sucesso", "Orçamento deletado com sucesso.");
-            handlePesquisarOrcamentos();
+            try {
+                orcamentoService.deletarOrcamento(orcamento.getId());
+                showAlert(Alert.AlertType.INFORMATION, "Sucesso", "Orçamento deletado com sucesso e quantidades de peças restauradas.");
+                handlePesquisarOrcamentos();
+            } catch (Exception e) {
+                showAlert(Alert.AlertType.ERROR, "Erro ao Deletar Orçamento", "Ocorreu um erro ao deletar o orçamento: " + e.getMessage());
+                e.printStackTrace();
+            }
         }
     }
 
