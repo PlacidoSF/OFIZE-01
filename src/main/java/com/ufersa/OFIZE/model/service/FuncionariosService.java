@@ -16,14 +16,14 @@ public class FuncionariosService extends FuncionarioServiceAbstract {
         if ("admin".equalsIgnoreCase(funcn.getUsuario())) {
             throw new IllegalArgumentException("O nome de usuário 'admin' é reservado para o gerente.");
         }
+
         try {
-            if (funcionariosDAO.findByUsuario(funcn.getUsuario()) != null || gerentesService.login(funcn.getUsuario(), "qualquer_senha_para_teste_de_existencia") != null) {
+            if (funcionariosDAO.findByUsuario(funcn.getUsuario()) != null || gerentesService.login(funcn.getUsuario(), "qualquer_coisa") != null) {
                 throw new DadoDuplicadoException("Este nome de usuário já está em uso.");
             }
-        } catch(AutenticacaoException e){
-
+        } catch (AutenticacaoException e) {
+            // Ignorado intencionalmente
         }
-
 
         funcionariosDAO.persist(funcn);
     }

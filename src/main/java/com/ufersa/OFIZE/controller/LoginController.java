@@ -43,7 +43,6 @@ public class LoginController {
             }
             loginSucesso();
         } catch (AutenticacaoException e) {
-
             showAlert(Alert.AlertType.ERROR, "Erro de Login", e.getMessage());
         }
     }

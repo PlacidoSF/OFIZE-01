@@ -1,8 +1,9 @@
 package com.ufersa.OFIZE.controller;
 
+import com.ufersa.OFIZE.exceptions.AutenticacaoException;
 import com.ufersa.OFIZE.model.entitie.Funcionarios;
 import com.ufersa.OFIZE.model.service.FuncionariosService;
-import com.ufersa.OFIZE.model.service.*;
+import com.ufersa.OFIZE.model.service.GerentesService;
 import javafx.application.Platform;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
@@ -35,22 +36,26 @@ public class CadastroFuncionarioController {
             String adminUser = credentials.getKey();
             String adminPass = credentials.getValue();
 
-            if (gerentesService.login(adminUser, adminPass) != null) {
-                try {
-                    String novoUsuario = novoUsuarioField.getText();
-                    String novaSenha = novaSenhaField.getText();
-                    Funcionarios novoFuncionario = new Funcionarios(novoUsuario, novaSenha);
+            try {
+                // 1. Tenta autenticar o gerente. Se falhar, lança AutenticacaoException.
+                gerentesService.login(adminUser, adminPass);
 
-                    funcionariosService.cadastrarFuncionario(novoFuncionario);
+                // 2. Se o login do gerente for bem-sucedido, tenta cadastrar o novo funcionário.
+                String novoUsuario = novoUsuarioField.getText();
+                String novaSenha = novaSenhaField.getText();
+                Funcionarios novoFuncionario = new Funcionarios(novoUsuario, novaSenha);
 
-                    showAlert(Alert.AlertType.INFORMATION, "Sucesso", "Funcionário cadastrado com sucesso!");
-                    handleVoltar(null);
+                funcionariosService.cadastrarFuncionario(novoFuncionario);
 
-                } catch (IllegalArgumentException e) {
-                    showAlert(Alert.AlertType.ERROR, "Erro de Cadastro", e.getMessage());
-                }
-            } else {
-                showAlert(Alert.AlertType.ERROR, "Autenticação Falhou", "Usuário ou senha do gerente inválidos.");
+                showAlert(Alert.AlertType.INFORMATION, "Sucesso", "Funcionário cadastrado com sucesso!");
+                handleVoltar(null);
+
+            } catch (AutenticacaoException e) {
+                // 3. Captura o erro específico de login do gerente e exibe a mensagem.
+                showAlert(Alert.AlertType.ERROR, "Autenticação Falhou", e.getMessage());
+            } catch (IllegalArgumentException e) {
+                // 4. Captura os erros de validação do cadastro do novo funcionário.
+                showAlert(Alert.AlertType.ERROR, "Erro de Cadastro", e.getMessage());
             }
         });
     }
