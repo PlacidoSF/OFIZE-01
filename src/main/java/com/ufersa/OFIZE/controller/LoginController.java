@@ -1,6 +1,7 @@
 package com.ufersa.OFIZE.controller;
 
 import com.ufersa.OFIZE.Main;
+import com.ufersa.OFIZE.exceptions.AutenticacaoException;
 import com.ufersa.OFIZE.model.entitie.Funcionarios;
 import com.ufersa.OFIZE.model.entitie.Gerentes;
 import com.ufersa.OFIZE.model.service.FuncionariosService;
@@ -32,24 +33,24 @@ public class LoginController {
         String usuario = usuarioField.getText();
         String senha = senhaField.getText();
 
-        Gerentes gerenteLogado = gerentesService.login(usuario, senha);
-        Funcionarios funcionarioLogado = null;
-
-        if (gerenteLogado != null) {
-            Main.setUsuarioLogado(gerenteLogado);
-        } else {
-            funcionarioLogado = funcionariosService.login(usuario, senha);
-            if (funcionarioLogado != null) {
+        try {
+            Gerentes gerenteLogado = gerentesService.login(usuario, senha);
+            if (gerenteLogado == null) {
+                Funcionarios funcionarioLogado = funcionariosService.login(usuario, senha);
                 Main.setUsuarioLogado(funcionarioLogado);
+            } else {
+                Main.setUsuarioLogado(gerenteLogado);
             }
-        }
+            loginSucesso();
+        } catch (AutenticacaoException e) {
 
-        if (gerenteLogado != null || funcionarioLogado != null) {
-            showAlert(Alert.AlertType.INFORMATION, "Sucesso", "Login realizado com sucesso!");
-            navigateTo("/com/ufersa/OFIZE/view/menu.fxml");
-        } else {
-            showAlert(Alert.AlertType.ERROR, "Erro", "Usuário ou senha inválidos.");
+            showAlert(Alert.AlertType.ERROR, "Erro de Login", e.getMessage());
         }
+    }
+
+    private void loginSucesso() {
+        showAlert(Alert.AlertType.INFORMATION, "Sucesso", "Login realizado com sucesso!");
+        navigateTo("/com/ufersa/OFIZE/view/menu.fxml");
     }
 
     @FXML

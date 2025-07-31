@@ -1,5 +1,6 @@
 package com.ufersa.OFIZE.model.service;
 
+import com.ufersa.OFIZE.exceptions.AutenticacaoException;
 import com.ufersa.OFIZE.exceptions.DadoDuplicadoException;
 import com.ufersa.OFIZE.model.entitie.Funcionarios;
 
@@ -15,21 +16,32 @@ public class FuncionariosService extends FuncionarioServiceAbstract {
         if ("admin".equalsIgnoreCase(funcn.getUsuario())) {
             throw new IllegalArgumentException("O nome de usuário 'admin' é reservado para o gerente.");
         }
-        if (funcionariosDAO.findByUsuario(funcn.getUsuario()) != null || gerentesService.login(funcn.getUsuario(), "") != null) {
-            throw new DadoDuplicadoException("Este nome de usuário já está em uso.");
+        try {
+            if (funcionariosDAO.findByUsuario(funcn.getUsuario()) != null || gerentesService.login(funcn.getUsuario(), "qualquer_senha_para_teste_de_existencia") != null) {
+                throw new DadoDuplicadoException("Este nome de usuário já está em uso.");
+            }
+        } catch(AutenticacaoException e){
+
         }
+
 
         funcionariosDAO.persist(funcn);
     }
 
-    public Funcionarios login(String usuario, String senha) {
+    public Funcionarios login(String usuario, String senha) throws AutenticacaoException {
         if (usuario == null || usuario.trim().isEmpty() || senha == null || senha.isEmpty()) {
-            return null;
+            throw new AutenticacaoException("Usuário e senha devem ser preenchidos.");
         }
         Funcionarios funcn = funcionariosDAO.findByUsuario(usuario);
-        if (funcn != null && funcn.getSenha().equals(senha)) {
-            return funcn;
+
+        if (funcn == null) {
+            throw new AutenticacaoException("Usuário não encontrado.");
         }
-        return null;
+
+        if (!funcn.getSenha().equals(senha)) {
+            throw new AutenticacaoException("Senha inválida.");
+        }
+
+        return funcn;
     }
 }
