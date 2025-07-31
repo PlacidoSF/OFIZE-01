@@ -3,12 +3,11 @@ package com.ufersa.OFIZE.model.service;
 import java.time.LocalDate;
 import java.util.List;
 
-import com.ufersa.OFIZE.exceptions.EntidadeNaoEncontradaException; // Import da exceção
+import com.ufersa.OFIZE.exceptions.EntidadeNaoEncontradaException;
 import com.ufersa.OFIZE.model.dao.OrcamentoDAO;
 import com.ufersa.OFIZE.model.entitie.Clientes;
 import com.ufersa.OFIZE.model.entitie.Orcamento;
 import com.ufersa.OFIZE.model.entitie.OrcamentoPeca;
-import com.ufersa.OFIZE.model.entitie.Pecas;
 
 public class OrcamentoService {
 
@@ -72,7 +71,7 @@ public class OrcamentoService {
         try {
             Orcamento orcamentoParaDeletar = dao.buscarPorId(id);
             if (orcamentoParaDeletar == null) {
-                throw new EntidadeNaoEncontradaException("Orçamento", id); // Adição da exceção
+                throw new EntidadeNaoEncontradaException("Orçamento", id);
             }
 
             if (orcamentoParaDeletar.getOrcamentoPecas() != null) {

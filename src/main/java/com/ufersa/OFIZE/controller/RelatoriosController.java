@@ -2,7 +2,6 @@ package com.ufersa.OFIZE.controller;
 
 import com.ufersa.OFIZE.model.entitie.Orcamento;
 import com.ufersa.OFIZE.model.service.OrcamentoService;
-// import com.ufersa.OFIZE.utils.TxtGeneratorService; // Esta importação não é mais estritamente necessária aqui se for usada apenas pela estratégia
 import com.ufersa.OFIZE.utils.strategy.ReportExporterStrategy;
 import com.ufersa.OFIZE.utils.strategy.TxtReportExporterStrategy;
 import javafx.beans.property.SimpleDoubleProperty;
@@ -26,7 +25,6 @@ import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
 import java.util.List;
 import java.util.ResourceBundle;
-import javafx.event.ActionEvent;
 import javafx.scene.layout.VBox;
 
 public class RelatoriosController implements Initializable {
@@ -63,16 +61,14 @@ public class RelatoriosController implements Initializable {
     private OrcamentoService orcamentoService;
     private ObservableList<Orcamento> orcamentoList;
 
-    private ReportExporterStrategy currentExporterStrategy; // Referência à estratégia
+    private ReportExporterStrategy currentExporterStrategy;
 
     @Override
     public void initialize(URL url, ResourceBundle resourceBundle) {
-        // Se OrcamentoService for Singleton, use OrcamentoService.getInstance();
         orcamentoService = new OrcamentoService();
         orcamentoList = FXCollections.observableArrayList();
         orcamentosTableView.setItems(orcamentoList);
 
-        // Define a estratégia padrão (TXT) no início
         this.currentExporterStrategy = new TxtReportExporterStrategy();
 
         dataColumn.setCellValueFactory(cellData -> new SimpleStringProperty(
@@ -159,7 +155,7 @@ public class RelatoriosController implements Initializable {
     }
 
     @FXML
-    private void exportarTxt() { // Poderia ser renomeado para 'exportarRelatorio' no futuro
+    private void exportarTxt() {
         List<Orcamento> dadosParaTxt = orcamentosTableView.getItems();
 
         if (dadosParaTxt.isEmpty()) {
@@ -177,9 +173,6 @@ public class RelatoriosController implements Initializable {
 
         if (file != null) {
             try {
-                // AQUI está a beleza do Strategy:
-                // O controlador não sabe como a exportação de TXT acontece,
-                // apenas delega para a estratégia configurada (currentExporterStrategy).
                 currentExporterStrategy.export(dadosParaTxt, file.getAbsolutePath());
                 showAlert(Alert.AlertType.INFORMATION, "Sucesso", "Arquivo TXT gerado com sucesso em: " + file.getAbsolutePath());
             } catch (IOException e) {

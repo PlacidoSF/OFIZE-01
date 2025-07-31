@@ -12,23 +12,28 @@ import javax.persistence.TypedQuery;
 public class OrcamentoDAO extends DAOGenerico<Orcamento, Long> {
 
     public OrcamentoDAO() {
+
         super(Orcamento.class);
     }
 
 
     public void salvar(Orcamento orcamento) {
+
         super.persist(orcamento);
     }
 
     public Orcamento buscarPorId(Long id) {
+
         return super.findById(id);
     }
 
     public List<Orcamento> buscarTodos() {
+
         return super.findAll();
     }
 
     public void atualizar(Orcamento orcamento) {
+
         super.merge(orcamento);
     }
 

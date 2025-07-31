@@ -4,7 +4,7 @@ import com.ufersa.OFIZE.model.entitie.Servico;
 import javax.persistence.TypedQuery;
 import java.util.List;
 
-
+// Extende DAO generico
 public class ServicoDAO extends DAOGenerico<Servico, Long> {
 
 

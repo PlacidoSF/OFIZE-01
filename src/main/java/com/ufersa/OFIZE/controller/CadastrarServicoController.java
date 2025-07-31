@@ -6,19 +6,18 @@ import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Parent;
-import javafx.scene.Scene; // Manter para 'getScene()'
+import javafx.scene.Scene;
 import javafx.scene.control.Alert;
 import javafx.scene.control.TextField;
 import javafx.scene.layout.AnchorPane;
 import javafx.stage.Stage;
-// Removido: import javafx.scene.input.KeyCombination; // Não é mais necessário aqui com setRoot()
 
 import java.io.IOException;
 
 public class CadastrarServicoController {
 
     @FXML
-    private AnchorPane rootPane; // Usado para obter a Stage para os alertas e para a navegação
+    private AnchorPane rootPane;
 
     @FXML
     private TextField nomeField;
@@ -26,15 +25,14 @@ public class CadastrarServicoController {
     @FXML
     private TextField valorField;
 
-    private ServicoService servicoService; // Instância do ServicoService
+    private ServicoService servicoService;
 
     public CadastrarServicoController() {
-        this.servicoService = new ServicoService(); // Inicializa a instância
+        this.servicoService = new ServicoService();
     }
 
     @FXML
     private void handleConfirmar(ActionEvent event) {
-        // Obtenha a Stage atual para ser o owner dos alertas
         Stage currentStage = (Stage) rootPane.getScene().getWindow();
 
         String nome = nomeField.getText();
@@ -48,7 +46,7 @@ public class CadastrarServicoController {
         double valor;
         try {
             valor = Double.parseDouble(valorStr);
-            if (valor <= 0) { // Alterado para valor <= 0, já que 0 não faz sentido para preço
+            if (valor <= 0) {
                 showAlert(currentStage, Alert.AlertType.ERROR, "Erro de Validação", "O valor deve ser um número positivo.");
                 return;
             }
@@ -60,11 +58,10 @@ public class CadastrarServicoController {
         Servico novoServico = new Servico(nome, valor);
 
         try {
-            // *** CORREÇÃO AQUI: Chamar o método na instância do servicoService ***
+
             servicoService.salvarServico(novoServico);
             showAlert(currentStage, Alert.AlertType.INFORMATION, "Sucesso", "Serviço cadastrado com sucesso!");
             clearFields();
-            // Retorne para ServicoView após o cadastro bem-sucedido
             returnToServicoListView(event);
         } catch (IllegalArgumentException e) {
             showAlert(currentStage, Alert.AlertType.ERROR, "Erro de Validação", e.getMessage());
@@ -81,35 +78,16 @@ public class CadastrarServicoController {
 
     private void returnToServicoListView(ActionEvent event) {
         try {
-            // Obtenha a Stage e a Scene atual
-            Stage stage = (Stage) rootPane.getScene().getWindow(); // Obtenha a Stage através de um nó FXML
-            Scene currentScene = stage.getScene(); // Obtenha a cena ATUAL da Stage
-
-            // Carregue o FXML da tela de Serviços. CONFIRME O NOME EXATO DO ARQUIVO FXML.
-            // Para consistência, usando 'ServicoView.fxml'.
+            Stage stage = (Stage) rootPane.getScene().getWindow();
+            Scene currentScene = stage.getScene();
             FXMLLoader loader = new FXMLLoader(getClass().getResource("/com/ufersa/OFIZE/view/ServicoView.fxml"));
             Parent servicoListView = loader.load();
 
-            // *** CORREÇÃO AQUI: Use setRoot() para trocar o conteúdo da cena existente ***
             currentScene.setRoot(servicoListView);
             stage.setTitle("Pesquisar Serviços");
 
-            // NÃO PRECISA MAIS CHAMAR setFullScreen() AQUI.
-            // A Stage já deve estar em tela cheia se foi configurada no Main.java.
-            // As propriedades de FullScreen (ExitHint, ExitKeyCombination) são da Stage e permanecem.
-            // stage.setFullScreen(true); // REMOVA ESTA LINHA
-            // stage.setFullScreenExitHint("Pressione ESC para sair da tela cheia"); // REMOVA ESTA LINHA
-            // stage.setFullScreenExitKeyCombination(KeyCombination.valueOf("ESC")); // REMOVA ESTA LINHA
-            // stage.show(); // NÃO PRECISA DE show() novamente, a stage já está visível
-
-            // Opcional: Se ServicoViewController precisar ser inicializado/atualizado ao retornar
-            // ServicoViewController servicoController = loader.getController();
-            // if (servicoController != null) {
-            //     servicoController.initialize(); // Ou um método de atualização, se initialize() for chamado uma única vez
-            // }
 
         } catch (IOException e) {
-            // Se houver erro ao carregar a tela, ainda mostre o alerta na stage atual.
             Stage currentStage = (Stage) rootPane.getScene().getWindow();
             showAlert(currentStage, Alert.AlertType.ERROR, "Erro de Navegação", "Não foi possível retornar à tela de pesquisa de serviços.");
             e.printStackTrace();

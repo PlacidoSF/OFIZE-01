@@ -80,18 +80,14 @@ public class AlterarServicoController {
         returnToServicoListView(event);
     }
 
-    // MÉTODO ATUALIZADO
     private void returnToServicoListView(ActionEvent event) {
         try {
             FXMLLoader loader = new FXMLLoader(getClass().getResource("/com/ufersa/OFIZE/view/ServicoView.fxml"));
             Parent servicoListView = loader.load();
 
-            // Pega a cena ATUAL em vez de criar uma nova
             Scene scene = ((Button) event.getSource()).getScene();
-            // Apenas troca o conteúdo da cena, preservando o tamanho da janela
             scene.setRoot(servicoListView);
 
-            // Opcional: Garante que o título da janela seja o correto
             Stage stage = (Stage) scene.getWindow();
             stage.setTitle("Pesquisar Serviços");
 

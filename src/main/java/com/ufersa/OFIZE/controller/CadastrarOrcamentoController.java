@@ -107,10 +107,10 @@ public class CadastrarOrcamentoController {
         clientesService = new ClientesService();
 
         dataDatePicker.setValue(LocalDate.now());
+        dataDatePicker.setDisable(true);
 
         valorVeiculoTextField.textProperty().addListener((observable, oldValue, newValue) -> calcularTotalOrcamento());
 
-        // --- Configuração dos ComboBoxes ---
 
         // Clientes
         List<Clientes> clientes = clientesService.buscarTodos();
@@ -127,22 +127,20 @@ public class CadastrarOrcamentoController {
             }
         });
 
-        // NOVO: Desabilita o ComboBox de automóveis inicialmente
+
         automovelComboBox.setDisable(true);
-        // NOVO: Adiciona um listener para a seleção do cliente
+
         clienteComboBox.getSelectionModel().selectedItemProperty().addListener((obs, oldVal, newVal) -> {
             if (newVal != null) {
-                // Cliente selecionado: habilita e carrega os automóveis
+
                 automovelComboBox.setDisable(false);
                 carregarAutomoveisPorCliente(newVal);
             } else {
-                // Nenhum cliente selecionado: desabilita e limpa os automóveis
                 automovelComboBox.setDisable(true);
                 automovelComboBox.setItems(FXCollections.observableArrayList()); // Limpa os itens
             }
         });
 
-        // Automóveis (Converter para exibição, itens serão carregados dinamicamente)
         automovelComboBox.setConverter(new StringConverter<Automoveis>() {
             @Override
             public String toString(Automoveis automovel) {
@@ -207,18 +205,15 @@ public class CadastrarOrcamentoController {
             }
         });
 
-        // --- Configuração das TableViews ---
         setupPecasTableView();
         setupServicosTableView();
 
-        // Listener para atualizar o total do orçamento
         listaPecasOrcamento.addListener((javafx.collections.ListChangeListener<OrcamentoPecaDisplay>) c -> calcularTotalOrcamento());
         listaServicosOrcamento.addListener((javafx.collections.ListChangeListener<OrcamentoServicoDisplay>) c -> calcularTotalOrcamento());
 
         calcularTotalOrcamento();
     }
 
-    // NOVO MÉTODO: Carrega automóveis com base no cliente selecionado
     private void carregarAutomoveisPorCliente(Clientes cliente) {
         List<Automoveis> automoveisDoCliente = automovelService.buscarAutomoveisPorCliente(cliente);
         automovelComboBox.setItems(FXCollections.observableArrayList(automoveisDoCliente));
@@ -529,7 +524,6 @@ public class CadastrarOrcamentoController {
         servicosComboBox.getSelectionModel().clearSelection();
         quantidadeServicosTextField.setText("1");
         quantidadeServicosTextField.setDisable(true);
-        // NOVO: Assegura que o ComboBox de automóveis seja desabilitado e limpo ao limpar o formulário
         automovelComboBox.setDisable(true);
         automovelComboBox.setItems(FXCollections.observableArrayList());
     }

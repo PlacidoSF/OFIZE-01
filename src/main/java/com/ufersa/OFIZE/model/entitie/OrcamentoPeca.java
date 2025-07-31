@@ -8,10 +8,10 @@ import javax.persistence.GenerationType;
 import javax.persistence.Table;
 import javax.persistence.ManyToOne;
 import javax.persistence.JoinColumn;
-import javax.persistence.Transient; // Importar para propriedades não persistidas
+import javax.persistence.Transient;
 
 @Entity
-@Table(name = "orcamento_pecas") // Ou o nome da sua tabela de associação
+@Table(name = "orcamento_pecas")
 public class OrcamentoPeca {
 
     @Id
@@ -24,10 +24,10 @@ public class OrcamentoPeca {
 
     @ManyToOne
     @JoinColumn(name = "peca_id")
-    private Pecas peca; // Referência à entidade Pecas (confirmado como Pecas)
+    private Pecas peca;
 
     private int quantidade;
-    private double valorUnitario; // Valor da peça no momento da inclusão no orçamento
+    private double valorUnitario;
 
     public OrcamentoPeca() {
     }
@@ -40,31 +40,38 @@ public class OrcamentoPeca {
     }
 
     // Getters e Setters
-    public Long getId() { return id; }
-    public void setId(Long id) { this.id = id; }
-    public Orcamento getOrcamento() { return orcamento; }
-    public void setOrcamento(Orcamento orcamento) { this.orcamento = orcamento; }
-    public Pecas getPeca() { return peca; }
-    public void setPeca(Pecas peca) { this.peca = peca; }
-    public int getQuantidade() { return quantidade; }
-    public void setQuantidade(int quantidade) { this.quantidade = quantidade; }
-    public double getValorUnitario() { return valorUnitario; }
-    public void setValorUnitario(double valorUnitario) { this.valorUnitario = valorUnitario; }
+    public Long getId() {
+        return id; }
 
-    // Método auxiliar para obter o valor total deste item de peça no orçamento
+    public void setId(Long id) {
+        this.id = id; }
+
+    public Orcamento getOrcamento() {
+        return orcamento; }
+
+    public void setOrcamento(Orcamento orcamento) {
+        this.orcamento = orcamento; }
+
+    public Pecas getPeca() {
+        return peca; }
+
+    public void setPeca(Pecas peca) {
+        this.peca = peca; }
+
+    public int getQuantidade() {
+        return quantidade; }
+
+    public void setQuantidade(int quantidade) {
+        this.quantidade = quantidade; }
+
+    public double getValorUnitario() {
+        return valorUnitario; }
+
+    public void setValorUnitario(double valorUnitario) {
+        this.valorUnitario = valorUnitario; }
+
     public double getTotalItemValue() {
         return this.quantidade * this.valorUnitario;
     }
 
-
-    @Transient // Indica que esta propriedade não é persistida no banco de dados
-    public String getNomePeca() {
-        return (this.peca != null) ? this.peca.getNome() : "";
-    }
-
-
-    @Transient // Indica que esta propriedade não é persistida no banco de dados
-    public double getValorTotalPeca() {
-        return getTotalItemValue();
-    }
 }

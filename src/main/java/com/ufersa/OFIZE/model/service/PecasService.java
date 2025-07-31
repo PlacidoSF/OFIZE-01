@@ -1,7 +1,7 @@
 package com.ufersa.OFIZE.model.service;
 
 import java.util.List;
-import com.ufersa.OFIZE.exceptions.EntidadeNaoEncontradaException; // Import da exceção
+import com.ufersa.OFIZE.exceptions.EntidadeNaoEncontradaException;
 import com.ufersa.OFIZE.model.dao.PecasDao;
 import com.ufersa.OFIZE.model.entitie.Pecas;
 
@@ -38,7 +38,7 @@ public class PecasService {
             if (ValidarPeca(peca)) {
                 Pecas pecaExistente = dao.findById(peca.getId());
                 if (pecaExistente == null) {
-                    throw new EntidadeNaoEncontradaException("Peça", peca.getId()); // Adição da exceção
+                    throw new EntidadeNaoEncontradaException("Peça", peca.getId());
                 }
                 dao.merge(peca);
                 System.out.println("Peça atualizada com sucesso!");
@@ -56,7 +56,7 @@ public class PecasService {
             if (peca != null && peca.getId() != null) {
                 Pecas pecaExistente = dao.findById(peca.getId());
                 if (pecaExistente == null) {
-                    throw new EntidadeNaoEncontradaException("Peça", peca.getId()); // Adição da exceção
+                    throw new EntidadeNaoEncontradaException("Peça", peca.getId());
                 }
                 dao.remove(pecaExistente);
                 System.out.println("Peça removida com sucesso!");
@@ -73,7 +73,7 @@ public class PecasService {
         try {
             Pecas peca = dao.findById(id);
             if (peca == null) {
-                throw new EntidadeNaoEncontradaException("Peça", id); // Adição da exceção
+                throw new EntidadeNaoEncontradaException("Peça", id);
             }
             return peca;
         } catch (Exception e) {
@@ -114,8 +114,8 @@ public class PecasService {
                     System.err.println("Erro: Quantidade insuficiente em estoque para a peça " + peca.getNome());
                 }
             }
-        } catch (EntidadeNaoEncontradaException e) { // Captura a exceção se a peça não for encontrada
-            throw e; // Relança para a camada superior, como o OrcamentoService
+        } catch (EntidadeNaoEncontradaException e) {
+            throw e;
         } catch (Exception e) {
             System.err.println("Erro ao decrementar quantidade da peça: " + e.getMessage());
             e.printStackTrace();
@@ -124,13 +124,13 @@ public class PecasService {
 
     public void incrementarQuantidade(Long pecaId, int quantidade) {
         try {
-            Pecas peca = buscarPeca(pecaId); // Este método agora pode lançar EntidadeNaoEncontradaException
+            Pecas peca = buscarPeca(pecaId);
             if (peca != null) {
                 peca.setQuantidade(peca.getQuantidade() + quantidade);
                 dao.merge(peca);
             }
-        } catch (EntidadeNaoEncontradaException e) { // Captura a exceção se a peça não for encontrada
-            throw e; // Relança para a camada superior, como o OrcamentoService
+        } catch (EntidadeNaoEncontradaException e) {
+            throw e;
         } catch (Exception e) {
             System.err.println("Erro ao incrementar quantidade da peça: " + e.getMessage());
             e.printStackTrace();

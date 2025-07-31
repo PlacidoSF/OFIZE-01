@@ -1,4 +1,3 @@
-// src/main/java/com.ufersa/OFIZE.model.dao/DAOGenerico.java
 package com.ufersa.OFIZE.model.dao;
 
 import javax.persistence.EntityManager;
@@ -26,11 +25,11 @@ public abstract class DAOGenerico<T, ID> {
     }
 
     // ATENÇÃO AQUI: O método merge agora retorna 'T'
-    public T merge(T entity) { // MUDANÇA AQUI: de 'void' para 'T'
+    public T merge(T entity) {
         em.getTransaction().begin();
-        T mergedEntity = em.merge(entity); // Captura o resultado do merge
+        T mergedEntity = em.merge(entity);
         em.getTransaction().commit();
-        return mergedEntity; // Retorna a entidade gerenciada
+        return mergedEntity;
     }
 
     // Remove uma entidade
@@ -54,7 +53,6 @@ public abstract class DAOGenerico<T, ID> {
         return em.createQuery("SELECT e FROM " + entityClass.getSimpleName() + " e", entityClass).getResultList();
     }
 
-    // O método close() é importante para liberar recursos
     public void close() {
         if (em.isOpen()) {
             em.close();

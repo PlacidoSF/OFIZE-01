@@ -174,13 +174,11 @@ public class OrcamentoController {
         ImageView checkIconStatus = createIcon("/Imagens/check.png", 15, 15);
         statusToggleButton.setGraphic(checkIconStatus);
 
-        // Define o estado inicial do botão de status
         if (orcamento.isStatus()) {
             statusToggleButton.setDisable(true);
         }
 
         statusToggleButton.setOnAction(event -> {
-            // Garante que o botão só funciona se não estiver desabilitado
             if (!statusToggleButton.isDisable()) {
                 orcamento.setStatus(!orcamento.isStatus());
                 orcamentoService.salvarOrcamento(orcamento);
@@ -188,7 +186,6 @@ public class OrcamentoController {
                 showAlert(Alert.AlertType.INFORMATION, "Status Alterado",
                         "O status do orçamento ID " + orcamento.getId() + " foi alterado para " +
                                 (orcamento.isStatus() ? "Concluído" : "Pendente") + ".");
-                // Desabilita o botão após a ação bem-sucedida
                 statusToggleButton.setDisable(true);
             }
         });
@@ -205,13 +202,11 @@ public class OrcamentoController {
         ImageView checkIconPago = createIcon("/Imagens/check.png", 15, 15);
         pagoToggleButton.setGraphic(checkIconPago);
 
-        // Define o estado inicial do botão de pagamento
         if (orcamento.isPago()) {
             pagoToggleButton.setDisable(true);
         }
 
         pagoToggleButton.setOnAction(event -> {
-            // Garante que o botão só funciona se não estiver desabilitado
             if (!pagoToggleButton.isDisable()) {
                 orcamento.setPago(!orcamento.isPago());
                 orcamentoService.salvarOrcamento(orcamento);
@@ -219,7 +214,6 @@ public class OrcamentoController {
                 showAlert(Alert.AlertType.INFORMATION, "Pagamento Alterado",
                         "O status de pagamento do orçamento ID " + orcamento.getId() + " foi alterado para " +
                                 (orcamento.isPago() ? "Concluído" : "Pendente") + ".");
-                // Desabilita o botão após a ação bem-sucedida
                 pagoToggleButton.setDisable(true);
             }
         });

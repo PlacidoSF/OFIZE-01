@@ -18,15 +18,14 @@ public class Servico {
 
     private String nome;
     private double valor;
-    private boolean status; // false: não finalizado, true: finalizado
+
 
     @ManyToOne
     @JoinColumn(name = "automovel_id")
     private Automoveis automovel;
 
-    // Construtor padrão do JPA.
     public Servico() {
-        this.status = false;
+
     }
 
     // Construtor para novos serviços.

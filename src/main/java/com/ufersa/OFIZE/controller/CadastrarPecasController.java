@@ -25,9 +25,9 @@ public class CadastrarPecasController {
     @FXML
     private TextField quantidadeField;
     @FXML
-    private Button confirmarButton; // Você pode querer um fx:id para este no FXML
+    private Button confirmarButton;
     @FXML
-    private Button cancelarButton;  // E para este também
+    private Button cancelarButton;
 
     private PecasService pecasService;
 
@@ -37,7 +37,6 @@ public class CadastrarPecasController {
 
     @FXML
     public void initialize() {
-        // Inicialização, se houver
     }
 
     @FXML
@@ -53,10 +52,8 @@ public class CadastrarPecasController {
 
             showAlert(Alert.AlertType.INFORMATION, "Sucesso", "Peça cadastrada com sucesso!");
 
-            // Limpa os campos após o cadastro, antes de voltar
             limparCampos();
 
-            // *** Voltar para a tela PecasView após sucesso ***
             returnToPecasView(event);
 
         } catch (NumberFormatException e) {
@@ -71,7 +68,6 @@ public class CadastrarPecasController {
 
     @FXML
     private void handleCancelar(ActionEvent event) {
-        // *** Voltar para a tela PecasView ao cancelar ***
         returnToPecasView(event);
     }
 
@@ -82,20 +78,16 @@ public class CadastrarPecasController {
         quantidadeField.clear();
     }
 
-    // *** Novo método para retornar à PecasView ***
     private void returnToPecasView(ActionEvent event) {
         try {
             FXMLLoader loader = new FXMLLoader(getClass().getResource("/com/ufersa/OFIZE/view/PecasView.fxml"));
             Parent pecasView = loader.load();
 
-            // Obtém a Scene atual a partir do botão que disparou o evento
             Scene scene = ((Button) event.getSource()).getScene();
-            // Define o novo conteúdo para a Scene existente
             scene.setRoot(pecasView);
 
-            // Opcional: Atualiza o título da janela (Stage)
             Stage stage = (Stage) scene.getWindow();
-            stage.setTitle("Lista de Peças"); // Ou o título que você preferir para a lista
+            stage.setTitle("Lista de Peças");
         } catch (IOException e) {
             showAlert(Alert.AlertType.ERROR, "Erro de Navegação", "Não foi possível retornar à tela de peças: " + e.getMessage());
             e.printStackTrace();
@@ -108,7 +100,6 @@ public class CadastrarPecasController {
         alert.setHeaderText(null);
         alert.setContentText(message);
 
-        // Tenta obter a Stage para definir o owner do alerta, evitando que ele flutue
         Stage owner = null;
         if (nomeField != null && nomeField.getScene() != null) {
             owner = (Stage) nomeField.getScene().getWindow();

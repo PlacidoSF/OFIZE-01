@@ -36,10 +36,8 @@ public class AlterarPecasController {
         this.pecasService = new PecasService();
     }
 
-    // Método para receber a peça do controller anterior (PecasViewController)
     public void setPeca(Pecas peca) {
         this.pecaToAlter = peca;
-        // Preenche os campos com os dados da peça existente
         if (pecaToAlter != null) {
             nomeField.setText(pecaToAlter.getNome());
             fabricanteField.setText(pecaToAlter.getFabricante());
@@ -50,7 +48,6 @@ public class AlterarPecasController {
 
     @FXML
     public void initialize() {
-        // Nada a inicializar por enquanto, mas pode ser usado para listeners ou formatação
     }
 
     @FXML
@@ -61,7 +58,6 @@ public class AlterarPecasController {
         }
 
         try {
-            // Atualiza os dados da peça com os valores dos campos
             pecaToAlter.setNome(nomeField.getText());
             pecaToAlter.setFabricante(fabricanteField.getText());
             pecaToAlter.setPreco(Double.parseDouble(precoField.getText()));
@@ -95,7 +91,7 @@ public class AlterarPecasController {
             scene.setRoot(pecasView);
 
             Stage stage = (Stage) scene.getWindow();
-            stage.setTitle("Lista de Peças"); // Voltar ao título original
+            stage.setTitle("Lista de Peças");
         } catch (IOException e) {
             showAlert(Alert.AlertType.ERROR, "Erro de Navegação", "Não foi possível retornar à tela de peças: " + e.getMessage());
             e.printStackTrace();
@@ -107,7 +103,6 @@ public class AlterarPecasController {
         alert.setTitle(title);
         alert.setHeaderText(null);
         alert.setContentText(message);
-        // O initOwner pode ser adicionado se você tiver uma Stage para passar
         Stage owner = (Stage) nomeField.getScene().getWindow();
         if (owner != null) {
             alert.initOwner(owner);

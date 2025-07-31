@@ -49,7 +49,6 @@ public class ServicoViewController implements Initializable {
         loadServicos("");
         searchField.textProperty().addListener((observable, oldValue, newValue) -> loadServicos(newValue));
 
-        // Adiciona a ação de clique para voltar ao menu
         menuHamburguer.setOnMouseClicked(this::handleVoltarAoMenu);
 
         if (Main.getUsuarioLogado() == null || !(Main.getUsuarioLogado() instanceof Gerentes)) {
@@ -59,7 +58,6 @@ public class ServicoViewController implements Initializable {
         }
     }
 
-    // NOVO MÉTODO
     private void handleVoltarAoMenu(MouseEvent event) {
         try {
             Parent root = FXMLLoader.load(getClass().getResource("/com/ufersa/OFIZE/view/menu.fxml"));

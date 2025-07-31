@@ -7,7 +7,6 @@ import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.ManyToOne;
 import javax.persistence.OneToMany;
-import javax.persistence.JoinColumn;
 import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
@@ -21,9 +20,8 @@ public class Orcamento {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id; // Id unico do orçamento
 
-    private String nomeClienteString;
     private String veiculo;
-    private double valorVeiculo; // Agora representa a "taxa mínima do veículo"
+    private double valorVeiculo;
     private LocalDate data;
     private boolean status;
     private boolean pago;
@@ -36,12 +34,11 @@ public class Orcamento {
     @OneToMany(mappedBy = "orcamento", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<OrcamentoPeca> orcamentoPecas = new ArrayList<>();
 
-    // Relacionamento OneToMany para OrcamentoServico
     @OneToMany(mappedBy = "orcamento", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<OrcamentoServico> orcamentoServicos = new ArrayList<>();
 
 
-    // Construtor padrão
+    // Construtor
     public Orcamento() {
         this.data = LocalDate.now();
         this.status = false;
@@ -57,33 +54,56 @@ public class Orcamento {
     }
 
     // Getters e Setters
-    public Long getId() { return id; }
-    public void setId(Long id) { this.id = id; }
+    public Long getId() {
+        return id;
+    }
+    public void setId(Long id) {
+        this.id = id; }
 
-    public String getVeiculo() { return veiculo; }
-    public void setVeiculo(String veiculo) { this.veiculo = veiculo; }
+    public String getVeiculo() {
+        return veiculo; }
 
-    public double getValorVeiculo() { return valorVeiculo; }
-    public void setValorVeiculo(double valorVeiculo) { this.valorVeiculo = valorVeiculo; }
+    public void setVeiculo(String veiculo) {
+        this.veiculo = veiculo; }
 
-    public LocalDate getData() { return data; }
+    public double getValorVeiculo() {
+        return valorVeiculo; }
+
+    public void setValorVeiculo(double valorVeiculo) {
+        this.valorVeiculo = valorVeiculo; }
+
+    public LocalDate getData() {
+        return data; }
+
     public void setData(LocalDate data) {
         this.data = data;
     }
 
-    public boolean isStatus() { return status; }
-    public void setStatus(boolean status) { this.status = status; }
+    public boolean isStatus() {
+        return status; }
 
-    public boolean isPago() { return pago; }
-    public void setPago(boolean pago) { this.pago = pago; }
+    public void setStatus(boolean status) {
+        this.status = status; }
 
-    public double getValorTotal() { return valorTotal; }
+    public boolean isPago() {
+        return pago; }
+
+    public void setPago(boolean pago) {
+        this.pago = pago; }
+
+    public double getValorTotal() {
+        return valorTotal; }
 
 
-    public Clientes getCliente() { return cliente; }
-    public void setCliente(Clientes cliente) { this.cliente = cliente; }
+    public Clientes getCliente() {
+        return cliente; }
 
-    public List<OrcamentoPeca> getOrcamentoPecas() { return orcamentoPecas; }
+    public void setCliente(Clientes cliente) {
+        this.cliente = cliente; }
+
+    public List<OrcamentoPeca> getOrcamentoPecas() {
+        return orcamentoPecas; }
+
     public void setOrcamentoPecas(List<OrcamentoPeca> orcamentoPecas) {
         this.orcamentoPecas.clear();
         if (orcamentoPecas != null) {
@@ -91,20 +111,15 @@ public class Orcamento {
                 addOrcamentoPeca(op);
             }
         }
-        calcularValorTotal(); // Recalcular total ao definir as peças
+        calcularValorTotal();
     }
 
     public void addOrcamentoPeca(OrcamentoPeca orcamentoPeca) {
         this.orcamentoPecas.add(orcamentoPeca);
-        orcamentoPeca.setOrcamento(this); // Garante a referência inversa
-        calcularValorTotal(); // Recalcular total ao adicionar uma peça
+        orcamentoPeca.setOrcamento(this);
+        calcularValorTotal();
     }
 
-    public void removeOrcamentoPeca(OrcamentoPeca orcamentoPeca) {
-        this.orcamentoPecas.remove(orcamentoPeca);
-        orcamentoPeca.setOrcamento(null); // Remove a referência inversa
-        calcularValorTotal(); // Recalcular total ao remover uma peça
-    }
 
     public List<OrcamentoServico> getOrcamentoServicos() { return orcamentoServicos; }
     public void setOrcamentoServicos(List<OrcamentoServico> orcamentoServicos) {
@@ -114,22 +129,16 @@ public class Orcamento {
                 addOrcamentoServico(os);
             }
         }
-        calcularValorTotal(); // Recalcular total ao definir os serviços
+        calcularValorTotal();
     }
 
     public void addOrcamentoServico(OrcamentoServico orcamentoServico) {
         this.orcamentoServicos.add(orcamentoServico);
-        orcamentoServico.setOrcamento(this); // Garante a referência inversa
-        calcularValorTotal(); // Recalcular total ao adicionar um serviço
+        orcamentoServico.setOrcamento(this);
+        calcularValorTotal();
     }
 
-    public void removeOrcamentoServico(OrcamentoServico orcamentoServico) {
-        this.orcamentoServicos.remove(orcamentoServico);
-        orcamentoServico.setOrcamento(null); // Remove a referência inversa
-        calcularValorTotal(); // Recalcular total ao remover um serviço
-    }
 
-    // Método para calcular o valor total do orçamento
     public void calcularValorTotal() {
         double totalPecas = orcamentoPecas.stream()
                 .mapToDouble(op -> op.getQuantidade() * op.getValorUnitario())

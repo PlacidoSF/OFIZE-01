@@ -1,6 +1,6 @@
 package com.ufersa.OFIZE.model.service;
 
-import com.ufersa.OFIZE.exceptions.EntidadeNaoEncontradaException; // Import da exceção
+import com.ufersa.OFIZE.exceptions.EntidadeNaoEncontradaException;
 import com.ufersa.OFIZE.model.dao.OrcamentoPecaDAO;
 import com.ufersa.OFIZE.model.entitie.OrcamentoPeca;
 import com.ufersa.OFIZE.model.entitie.Pecas;
@@ -24,12 +24,12 @@ public class OrcamentoPecaService {
                 int quantidadeNova = orcamentoPeca.getQuantidade();
                 int quantidadeAntiga = 0;
 
-                Pecas pecaNoEstoque = pecasService.buscarPeca(pecaAssociada.getId()); // Este pode lançar a exceção
+                Pecas pecaNoEstoque = pecasService.buscarPeca(pecaAssociada.getId());
 
                 if (orcamentoPeca.getId() != null) {
                     OrcamentoPeca existingOrcamentoPeca = orcamentoPecaDAO.findById(orcamentoPeca.getId());
                     if (existingOrcamentoPeca == null) {
-                        throw new EntidadeNaoEncontradaException("Item de Orçamento-Peça", orcamentoPeca.getId()); // Adição da exceção
+                        throw new EntidadeNaoEncontradaException("Item de Orçamento-Peça", orcamentoPeca.getId());
                     }
                     quantidadeAntiga = existingOrcamentoPeca.getQuantidade();
 
@@ -46,8 +46,8 @@ public class OrcamentoPecaService {
             } else {
                 System.err.println("Dados do item de orçamento-peça inválidos.");
             }
-        } catch (EntidadeNaoEncontradaException e) { // Captura exceção de peça ou do próprio item
-            throw e; // Relança para a camada superior
+        } catch (EntidadeNaoEncontradaException e) {
+            throw e;
         } catch (Exception e) {
             System.err.println("Erro ao salvar/atualizar item de orçamento-peça: " + e.getMessage());
             e.printStackTrace();
@@ -59,7 +59,7 @@ public class OrcamentoPecaService {
             if (orcamentoPeca != null && orcamentoPeca.getId() != null) {
                 OrcamentoPeca existingOrcamentoPeca = orcamentoPecaDAO.findById(orcamentoPeca.getId());
                 if (existingOrcamentoPeca == null) {
-                    throw new EntidadeNaoEncontradaException("Item de Orçamento-Peça", orcamentoPeca.getId()); // Adição da exceção
+                    throw new EntidadeNaoEncontradaException("Item de Orçamento-Peça", orcamentoPeca.getId());
                 }
 
                 if (existingOrcamentoPeca.getPeca() != null && existingOrcamentoPeca.getQuantidade() > 0) {
@@ -71,8 +71,8 @@ public class OrcamentoPecaService {
             } else {
                 System.err.println("ID do item de orçamento-peça inválido para remoção.");
             }
-        } catch (EntidadeNaoEncontradaException e) { // Captura exceção se o item não for encontrado
-            throw e; // Relança para a camada superior
+        } catch (EntidadeNaoEncontradaException e) {
+            throw e;
         } catch (Exception e) {
             System.err.println("Erro ao remover item de orçamento-peça: " + e.getMessage());
             e.printStackTrace();
@@ -83,7 +83,7 @@ public class OrcamentoPecaService {
         try {
             OrcamentoPeca orcamentoPeca = orcamentoPecaDAO.findById(id);
             if (orcamentoPeca == null) {
-                throw new EntidadeNaoEncontradaException("Item de Orçamento-Peça", id); // Adição da exceção
+                throw new EntidadeNaoEncontradaException("Item de Orçamento-Peça", id);
             }
             return orcamentoPeca;
         } catch (Exception e) {

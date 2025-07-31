@@ -1,6 +1,6 @@
 package com.ufersa.OFIZE.model.service;
 
-import com.ufersa.OFIZE.exceptions.EntidadeNaoEncontradaException; // Import da exceção
+import com.ufersa.OFIZE.exceptions.EntidadeNaoEncontradaException;
 import com.ufersa.OFIZE.model.dao.OrcamentoServicoDAO;
 import com.ufersa.OFIZE.model.entitie.OrcamentoServico;
 import java.util.List;
@@ -19,7 +19,7 @@ public class OrcamentoServicoService {
                 if (orcamentoServico.getId() != null) {
                     OrcamentoServico existingOrcamentoServico = orcamentoServicoDAO.findById(orcamentoServico.getId());
                     if (existingOrcamentoServico == null) {
-                        throw new EntidadeNaoEncontradaException("Item de Orçamento-Serviço", orcamentoServico.getId()); // Adição da exceção
+                        throw new EntidadeNaoEncontradaException("Item de Orçamento-Serviço", orcamentoServico.getId());
                     }
                     orcamentoServicoDAO.merge(orcamentoServico);
                     System.out.println("Item de orçamento-serviço atualizado com sucesso!");
@@ -41,7 +41,7 @@ public class OrcamentoServicoService {
             if (orcamentoServico != null && orcamentoServico.getId() != null) {
                 OrcamentoServico existingOrcamentoServico = orcamentoServicoDAO.findById(orcamentoServico.getId());
                 if (existingOrcamentoServico == null) {
-                    throw new EntidadeNaoEncontradaException("Item de Orçamento-Serviço", orcamentoServico.getId()); // Adição da exceção
+                    throw new EntidadeNaoEncontradaException("Item de Orçamento-Serviço", orcamentoServico.getId());
                 }
                 orcamentoServicoDAO.remove(existingOrcamentoServico);
                 System.out.println("Item de orçamento-serviço removido com sucesso!");
@@ -58,7 +58,7 @@ public class OrcamentoServicoService {
         try {
             OrcamentoServico orcamentoServico = orcamentoServicoDAO.findById(id);
             if (orcamentoServico == null) {
-                throw new EntidadeNaoEncontradaException("Item de Orçamento-Serviço", id); // Adição da exceção
+                throw new EntidadeNaoEncontradaException("Item de Orçamento-Serviço", id);
             }
             return orcamentoServico;
         } catch (Exception e) {

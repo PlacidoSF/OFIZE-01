@@ -4,7 +4,7 @@ import com.ufersa.OFIZE.model.entitie.Pecas;
 import javax.persistence.TypedQuery;
 import java.util.List;
 
-// Estende DAOGenerico com a entidade Pecas e o tipo de ID Long
+// Estende DAOGenerico
 public class PecasDao extends DAOGenerico<Pecas, Long> {
 
 

@@ -1,6 +1,6 @@
 package com.ufersa.OFIZE.model.service;
 
-import com.ufersa.OFIZE.exceptions.EntidadeNaoEncontradaException; // Import da exceção
+import com.ufersa.OFIZE.exceptions.EntidadeNaoEncontradaException;
 import com.ufersa.OFIZE.model.dao.ServicoDAO;
 import com.ufersa.OFIZE.model.entitie.Servico;
 
@@ -32,7 +32,7 @@ public class ServicoService {
         try {
             Servico servico = servicoDAO.findById(id);
             if (servico == null) {
-                throw new EntidadeNaoEncontradaException("Serviço", id); // Adição da exceção
+                throw new EntidadeNaoEncontradaException("Serviço", id);
             }
             return servico;
         } catch (Exception e) {
@@ -57,7 +57,7 @@ public class ServicoService {
             if (servico != null && servico.getId() != null && servico.getNome() != null && !servico.getNome().trim().isEmpty() && servico.getValor() > 0) {
                 Servico servicoExistente = servicoDAO.findById(servico.getId());
                 if (servicoExistente == null) {
-                    throw new EntidadeNaoEncontradaException("Serviço", servico.getId()); // Adição da exceção
+                    throw new EntidadeNaoEncontradaException("Serviço", servico.getId());
                 }
                 servicoDAO.merge(servico);
                 System.out.println("Serviço atualizado com sucesso.");
@@ -75,7 +75,7 @@ public class ServicoService {
             if (id != null) {
                 Servico servicoExistente = servicoDAO.findById(id);
                 if (servicoExistente == null) {
-                    throw new EntidadeNaoEncontradaException("Serviço", id); // Adição da exceção
+                    throw new EntidadeNaoEncontradaException("Serviço", id);
                 }
                 servicoDAO.remove(servicoExistente);
                 System.out.println("Serviço removido com sucesso.");
